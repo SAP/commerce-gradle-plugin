@@ -8,13 +8,19 @@ import org.gradle.api.Plugin;
 import org.gradle.api.Project;
 import org.gradle.api.Task;
 import org.gradle.api.artifacts.Configuration;
+import org.gradle.api.internal.OverlappingOutputs;
+import org.gradle.api.internal.TaskExecutionHistory;
+import org.gradle.api.internal.tasks.OriginTaskExecutionMetadata;
 import org.gradle.api.tasks.Copy;
 import org.gradle.api.tasks.TaskCollection;
 import org.gradle.api.tasks.TaskExecutionException;
 
+import javax.annotation.Nullable;
 import java.io.File;
 import java.io.IOException;
+import java.util.Collections;
 import java.util.Date;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 public class HybrisPlugin implements Plugin<Project> {
@@ -58,16 +64,24 @@ public class HybrisPlugin implements Plugin<Project> {
             t.onlyIf(o -> versionMismatch(extension));
         });
 
-        Copy unpackPlatform = project.getTasks().create("unpackPlatform", Copy.class, t -> {
-            t.from(project.provider(() -> hybrisPlatform.getFiles().stream().map(o -> t.getProject().zipTree(o)).collect(Collectors.toSet())));
-            t.into(t.getProject().getProjectDir());
+        // Breaks on Windows: https://github.com/gradle/gradle/issues/3772
+//        Copy unpackPlatform = project.getTasks().create("unpackPlatform", Copy.class, t -> {
+//            t.from(project.provider(() -> hybrisPlatform.getFiles().stream().map(o -> t.getProject().zipTree(o)).collect(Collectors.toSet())));
+//            t.into(t.getProject().getProjectDir());
+//            t.onlyIf(o -> versionMismatch(extension));
+//        });
+
+        Task unpackPlatform = project.getTasks().create("unpackPlatform", t -> {
             t.onlyIf(o -> versionMismatch(extension));
         });
         unpackPlatform.mustRunAfter(cleanOnVersionChange);
-        project.afterEvaluate(p -> {
-            unpackPlatform.include(extension.getBootstrapInclude().get());
-            unpackPlatform.exclude(extension.getBootstrapExclude().get());
-        });
+
+        project.afterEvaluate(p -> unpackPlatform.doLast(t -> project.copy(c -> {
+            c.from(project.provider(() -> hybrisPlatform.getFiles().stream().map(o -> t.getProject().zipTree(o)).collect(Collectors.toSet())));
+            c.into(t.getProject().getProjectDir());
+            c.include(extension.getBootstrapInclude().get());
+            c.exclude(extension.getBootstrapExclude().get());
+        })));
 
         Task setupDBDriver = project.getTasks().create("setupDbDriver", Copy.class, t -> {
             File driverDir = t.getProject().file("hybris/bin/platform/lib/dbdriver");

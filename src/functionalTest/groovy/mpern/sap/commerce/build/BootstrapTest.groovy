@@ -18,7 +18,7 @@ class BootstrapTest extends Specification {
         buildFile = testProjectDir.newFile('build.gradle')
 
         def deps = testProjectDir.newFolder("dependencies").toPath()
-        TestUtils.setupDependencies(deps);
+        TestUtils.setupDependencies(deps)
         buildFile << """
             plugins {
                 id 'mpern.sap.commerce.build'
@@ -69,7 +69,7 @@ class BootstrapTest extends Specification {
         when:
         def result = GradleRunner.create()
                 .withProjectDir(testProjectDir.root)
-                .withArguments('bootstrapPlatform')
+                .withArguments('bootstrapPlatform', '--stacktrace')
                 .withPluginClasspath()
                 .build()
 
@@ -108,7 +108,7 @@ class BootstrapTest extends Specification {
         when: "running bootstrap task"
         def result = GradleRunner.create()
                 .withProjectDir(testProjectDir.root)
-                .withArguments('bootstrapPlatform')
+                .withArguments('bootstrapPlatform', '--stacktrace')
                 .withPluginClasspath()
                 .build()
 
