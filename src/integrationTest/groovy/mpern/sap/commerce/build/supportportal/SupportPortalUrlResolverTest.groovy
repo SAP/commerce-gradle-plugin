@@ -24,8 +24,8 @@ class SupportPortalUrlResolverTest extends Specification {
         given:
         assumeTrue(username != null && password != null)
 
-        //hybris 6.7.0.2 via searching for "hybris commerce" in https://launchpad.support.sap.com/
-        def source = new URI("https://launchpad.support.sap.com/#/softwarecenter/template/products/%20_APP=00200682500000001943&_EVENT=DISPHIER&HEADER=Y&FUNCTIONBAR=N&EVENT=TREE&NE=NAVIGATE&ENR=73554900100200008135&V=MAINT&TA=ACTUAL&PAGE=SEARCH/HYBRIS%20COMMERCE%206.7")
+        //HYBRIS COMMERCE 1808 Maintenance Software Component via searching for "hybris 1808" in https://launchpad.support.sap.com/
+        def source = new URI("https://launchpad.support.sap.com/#/softwarecenter/template/products/%20_APP=00200682500000001943&_EVENT=DISPHIER&HEADER=Y&FUNCTIONBAR=N&EVENT=TREE&NE=NAVIGATE&ENR=73555000100200008593&V=MAINT&TA=ACTUAL&PAGE=SEARCH/HYBRIS%20COMMERCE%201808")
 
         when:
         CookieManager ssoCookies = SSOLogin.withCredentails(username, password).forResource(SupportPortalUrlResolver.SUPPORT_PORTAL_API)
