@@ -135,6 +135,7 @@ public class CloudServicesPackagingPlugin implements Plugin<Project> {
             Map<String, Object> args = new HashMap<>();
             args.put("file", zipPackage.getArchivePath());
             args.put("format", "MD5SUM");
+            args.put("fileext", ".MD5");
             p.getAnt().invokeMethod("checksum", args);
             Path resolve = zipPackage.getDestinationDir().toPath().resolve(zipPackage.getArchiveName() + ".MD5");
             Path target = zipPackage.getDestinationDir().toPath().resolve(zipPackage.getBaseName() + ".md5");
