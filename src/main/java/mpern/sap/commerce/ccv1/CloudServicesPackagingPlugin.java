@@ -136,7 +136,7 @@ public class CloudServicesPackagingPlugin implements Plugin<Project> {
             args.put("file", zipPackage.getArchivePath());
             args.put("format", "MD5SUM");
             p.getAnt().invokeMethod("checksum", args);
-            Path resolve = zipPackage.getDestinationDir().toPath().resolve(zipPackage.getArchiveName() + ".md5");
+            Path resolve = zipPackage.getDestinationDir().toPath().resolve(zipPackage.getArchiveName() + ".MD5");
             Path target = zipPackage.getDestinationDir().toPath().resolve(zipPackage.getBaseName() + ".md5");
             try {
                 Files.delete(target);
