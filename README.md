@@ -2,9 +2,9 @@
 
 This projects provides two gradle plugins to ease the life of a hybris developer:
 
-- [`mpern.sap.commerce.build`][build]: Automates the developer setup and allows you to work with the platform build inside gradle
-- [`mpern.sap.commerce.ccv1.package`][package]: Creates CCv1 compliant deployment packages (Deployment Packagaging Guidelines v.2.3.3)
-- [`mpern.sap.commerce.build.ccv2`][ccv2]: Use `manifest.json` to build and configure your commerce project locally
+- [`mpern.sap.commerce.build`][build] ([Documentation][build-doc]): Automates the developer setup and allows you to work with the platform build inside gradle
+- [`mpern.sap.commerce.build.ccv2`][ccv2] ([Documentation][ccv2-doc]): Use `manifest.json` to build and configure your commerce project locally
+- [`mpern.sap.commerce.ccv1.package`][package] ([Documentation][package-doc]): Creates CCv1 compliant deployment packages (Deployment Packagaging Guidelines v.2.3.3)
 
 The plugins require Gradle 4+
 
@@ -20,6 +20,9 @@ This project uses [Semantic Versioning 2.0.0](https://semver.org/spec/v2.0.0.htm
 and reflects what I (up until now) always did by hand and/or hacked together in ad-hoc build scripts.*
 
 [build]: https://plugins.gradle.org/plugin/mpern.sap.commerce.build
+[build-doc]: https://github.com/sap-commerce-tools/commerce-gradle-plugin/wiki/Plugin-mpern.sap.commerce.build
 [package]: https://plugins.gradle.org/plugin/mpern.sap.commerce.ccv1.package
+[package-doc]: https://github.com/sap-commerce-tools/commerce-gradle-plugin/wiki/Plugin-mpern.sap.commerce.ccv1.package
 [ccv2]: https://plugins.gradle.org/plugin/mpern.sap.commerce.build.ccv2
+[ccv2-doc]: https://github.com/sap-commerce-tools/commerce-gradle-plugin/wiki/Plugin-mpern.sap.commerce.build.ccv2
 [tools]:https://github.com/sap-commerce-tools
