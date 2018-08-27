@@ -1,0 +1,136 @@
+{
+  "commerceSuiteVersion": "18.08.0",
+  "extensions": [
+    "modeltacceleratorservices",
+    "electronicsstore",
+    "privacyoverlayeraddon",
+    "yacceleratorstorefront",
+    "backoffice"
+  ],
+  "properties": [
+    {
+      "key": "common.property",
+      "value": "common.property.value"
+    },
+    {
+      "key": "test.property.1",
+      "value": "test.property.1.value",
+      "persona": "production"
+    },
+    {
+      "key": "test.property.2",
+      "value": "test.property.2.value",
+      "persona": "development"
+    },
+    {
+      "key": "test.property.2",
+      "value": "test.property.2.value.in.prod.only",
+      "persona": "production"
+    }
+  ],
+  "storefrontAddons": [
+    {
+      "addon": "privacyoverlayeraddon",
+      "storefront": "albinostorefront",
+      "template": "yacceleratorstorefront"
+    },
+    {
+      "addon": "albinoaddon",
+      "storefront": "albinostorefront",
+      "template": "yacceleratorstorefront"
+    }
+  ],
+  "aspects": [
+    {
+      "name": "backoffice",
+      "properties": [
+        {
+          "key": "test.property.1",
+          "value": "test.property-1-value-prod-backoffice",
+          "persona": "production"
+        },
+        {
+          "key": "test.property.2",
+          "value": "test.property-2-value-backoffice"
+        }
+      ],
+      "webapps": [
+        {
+          "name": "hac",
+          "contextPath": "/hac"
+        },
+        {
+          "name": "mediaweb",
+          "contextPath": "/medias"
+        },
+        {
+          "name": "backoffice",
+          "contextPath": ""
+        }
+      ]
+    },
+    {
+      "name": "accstorefront",
+      "properties": [
+        {
+          "key": "spring.session.enabled",
+          "value": "true"
+        },
+        {
+          "key": "spring.session.yacceleratorstorefront.save",
+          "value":"async"
+        },
+        {
+          "key": "spring.session.yacceleratorstorefront.cookie.name",
+          "value": "JSESSIONID"
+        },
+        {
+          "key": "spring.session.yacceleratorstorefront.cookie.path",
+          "value": "/"
+        },
+        {
+          "key":"storefrontContextRoot",
+          "value":""
+        }
+      ],
+      "webapps": [
+        {
+          "name": "mediaweb",
+          "contextPath": "/medias"
+        },
+        {
+          "name": "albinostorefront",
+          "contextPath": ""
+        },
+        {
+          "name": "acceleratorservices",
+          "contextPath": "/acceleratorservices"
+        }
+      ]
+    },
+    {
+      "name": "backgroundProcessing",
+      "properties": [],
+      "webapps": [
+        {
+          "name": "hac",
+          "contextPath": ""
+        },
+        {
+          "name": "mediaweb",
+          "contextPath": "/medias"
+        }
+      ]
+    }
+  ],
+  "tests": {
+    "extensions": ["privacyoverlayeraddon",
+      "yacceleratorstorefront"],
+    "annotations": ["UnitTests", "IntegrationTests"],
+    "packages": ["de.hybris.infra.*"]
+  },
+  "webTests": {
+    "extensions": ["yacceleratorstorefront"],
+    "excludedPackages": ["de.hybris.platform.*"]
+  }
+}

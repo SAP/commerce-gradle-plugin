@@ -11,6 +11,7 @@ import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.internal.OverlappingOutputs;
 import org.gradle.api.internal.TaskExecutionHistory;
 import org.gradle.api.internal.tasks.OriginTaskExecutionMetadata;
+import org.gradle.api.logging.Logger;
 import org.gradle.api.tasks.Copy;
 import org.gradle.api.tasks.TaskCollection;
 import org.gradle.api.tasks.TaskExecutionException;
@@ -61,18 +62,11 @@ public class HybrisPlugin implements Plugin<Project> {
         Task cleanOnVersionChange = project.getTasks().create("cleanPlatformIfVersionChanged", GlobClean.class, t -> {
             t.getBaseFolder().set(hybrisBin);
             t.getGlob().set(extension.getCleanGlob());
-            t.onlyIf(o -> versionMismatch(extension));
+            t.onlyIf(o -> versionMismatch(extension, t.getLogger()));
         });
 
-        // Breaks on Windows: https://github.com/gradle/gradle/issues/3772
-//        Copy unpackPlatform = project.getTasks().create("unpackPlatform", Copy.class, t -> {
-//            t.from(project.provider(() -> hybrisPlatform.getFiles().stream().map(o -> t.getProject().zipTree(o)).collect(Collectors.toSet())));
-//            t.into(t.getProject().getProjectDir());
-//            t.onlyIf(o -> versionMismatch(extension));
-//        });
-
         Task unpackPlatform = project.getTasks().create("unpackPlatform", t -> {
-            t.onlyIf(o -> versionMismatch(extension));
+            t.onlyIf(o -> versionMismatch(extension, t.getLogger()));
         });
         unpackPlatform.mustRunAfter(cleanOnVersionChange);
 
@@ -143,7 +137,8 @@ public class HybrisPlugin implements Plugin<Project> {
 
     }
 
-    private boolean versionMismatch(HybrisPluginExtension extension) {
+    private boolean versionMismatch(HybrisPluginExtension extension, Logger logger) {
+        logger.lifecycle("current version: {}; required version: {}", extension.getPlatform().getVersion().get(), extension.getVersion().get());
         return !extension.getPlatform().getVersion().get().equals(extension.getVersion().get());
     }
 
