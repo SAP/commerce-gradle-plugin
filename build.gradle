@@ -1,5 +1,5 @@
 plugins {
-    id "com.gradle.plugin-publish" version "0.9.10"
+    id "com.gradle.plugin-publish" version "0.10.0"
 }
 
 apply plugin: 'groovy'
@@ -7,7 +7,7 @@ apply plugin: 'java-gradle-plugin'
 
 
 group = 'mpern.sap.commerce'
-version = '1.0.2'
+version = '1.1.0'
 
 repositories {
     jcenter()
@@ -29,30 +29,37 @@ gradlePlugin {
             id = 'mpern.sap.commerce.ccv1.package'
             implementationClass = 'mpern.sap.commerce.ccv1.CloudServicesPackagingPlugin'
         }
+        ccv2BuildSupport {
+            id = 'mpern.sap.commerce.build.ccv2'
+            implementationClass = 'mpern.sap.commerce.ccv2.CloudV2Plugin'
+        }
     }
 }
 pluginBundle {
     website = 'https://github.com/sap-commerce-tools/commerce-gradle-plugin/wiki'
     vcsUrl = 'https://github.com/sap-commerce-tools/commerce-gradle-plugin'
 
-  plugins {
-    hybrisPlugin {
-      id = 'mpern.sap.commerce.build'
-      displayName = 'SAP (Hybris) Commerce Bootstrap & Build Plugin'
-      description = """Automatically bootstrap your SAP (Hybris) Commerce Project
-      from the SAP Support Portal and manage the whole software development lifecycle
-       of SAP (Hybris) Commerce inside gradle
-      """
-      tags = ['sap commerce', 'sap hybris commerce', 'hybris', 'sap', 'commerce', 'bootstrap', 'build']
+    plugins {
+        hybrisPlugin {
+            displayName = 'SAP (Hybris) Commerce Bootstrap & Build Plugin'
+            description = """Automatically bootstrap your SAP (Hybris) Commerce Project
+            from the SAP Support Portal and manage the whole software development lifecycle
+            of SAP (Hybris) Commerce inside gradle
+            """
+            tags = ['sap commerce', 'sap hybris commerce', 'hybris', 'sap', 'commerce', 'bootstrap', 'build']
+        }
+        hybrisCCv1Packaging {
+            displayName = "SAP Hybris CCv1 Packaging Plugin"
+            description = """Configure and package your SAP (Hybris) Commerce project
+            according to the Deployment Packagaging Guidelines v.2.3.3"""
+            tags = ['sap commerce', 'sap hybris commerce', 'hybris', 'sap', 'commerce', 'ccv1', 'package']
+        }
+        ccv2BuildSupport {
+            displayName = "SAP Hybris CCv2 Build Support Plugin"
+            description = """Use the CCv2 manifest.json to build and configure your local development environmennt"""
+            tags = ['sap commerce', 'sap hybris commerce', 'hybris', 'sap', 'commerce', 'ccv1', 'package']
+        }
     }
-    hybrisCCv1Packaging {
-        id = 'mpern.sap.commerce.ccv1.package'
-        displayName = "SAP Hybris CCv1 Packaging Plugin"
-        description = """Configure and package your SAP (Hybris) Commerce project
-        according to the Deployment Packagaging Guidelines v.2.3.3"""
-        tags = ['sap commerce', 'sap hybris commerce', 'hybris', 'sap', 'commerce', 'ccv1', 'package']
-    }
-  }
 }
 
 sourceSets {

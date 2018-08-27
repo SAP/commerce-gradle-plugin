@@ -14,8 +14,11 @@ import java.util.Properties;
 
 public class HybrisAntTask extends JavaExec {
 
+    private Map<String, String> antProperties;
+
     public HybrisAntTask() {
         super();
+        antProperties = new HashMap<>();
     }
 
     public static class HybrisAntConfigureAdapter extends TaskExecutionAdapter {
@@ -27,7 +30,7 @@ public class HybrisAntTask extends JavaExec {
                 Map<String, Object> systemProperties = fetchSystemProperties();
                 t.systemProperties(systemProperties);
 
-                t.systemProperty("maven.update.dbdrivers","false");
+                t.antProperty("maven.update.dbdrivers","false");
 
                 ConfigurableFileTree files = buildPlatformAntClasspath(t);
                 t.setClasspath(files);
@@ -38,6 +41,8 @@ public class HybrisAntTask extends JavaExec {
                 t.setMain("org.apache.tools.ant.launch.Launcher");
 
                 t.workingDir(platform.getPlatformHome());
+
+                t.antProperties.forEach((k, v) -> t.args("-D"+k+"="+v));
             }
         }
 
@@ -54,5 +59,22 @@ public class HybrisAntTask extends JavaExec {
             propertyMap.remove("user.dir");
             return propertyMap;
         }
+    }
+
+    /**
+     * Add a new runtime property to configure the ant target
+     * @param key key of the property
+     * @param value value of the property
+     */
+    public void antProperty(String key, String value) {
+        antProperties.put(key, value);
+    }
+
+    /**
+     * Set (override) all ant properties with the values of the set
+     * @param antProperties ant properties to use for the target
+     */
+    public void setAntProperties(Map<String, String> antProperties) {
+        this.antProperties = new HashMap<>(antProperties);
     }
 }

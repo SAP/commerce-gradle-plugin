@@ -68,7 +68,7 @@ public class HybrisPlatform {
             LOG.debug("could not open build.number", e);
         }
         String bootstrappedVersion = properties.getProperty("version", "NONE");
-        LOG.lifecycle("found hybris platform version: {}", bootstrappedVersion);
+//        LOG.lifecycle("found hybris platform version: {}", bootstrappedVersion);
         return bootstrappedVersion;
     }
 
