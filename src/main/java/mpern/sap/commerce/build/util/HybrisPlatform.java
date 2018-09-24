@@ -79,7 +79,7 @@ public class HybrisPlatform {
             Files.walkFileTree(platformPath, visitor);
             Path antHome = visitor
                     .getAntHome()
-                    .orElseThrow(() -> new IllegalStateException("could not find hybris platform ant in hybris/bin/platform/apache-ant-*"));
+                    .orElseThrow(() -> new IllegalStateException("could not find hybris platform ant in hybris/bin/platform/apache-ant*"));
             return antHome.toString();
         } catch (IOException e) {
             throw new IllegalStateException("could not find hybris platform ant", e);
@@ -92,7 +92,7 @@ public class HybrisPlatform {
 
         public AntPathVisitor() {
             this.foundPath = null;
-            antPathMatcher = FileSystems.getDefault().getPathMatcher("glob:**/apache-ant-*");
+            antPathMatcher = FileSystems.getDefault().getPathMatcher("glob:**/apache-ant*");
         }
 
         @Override
