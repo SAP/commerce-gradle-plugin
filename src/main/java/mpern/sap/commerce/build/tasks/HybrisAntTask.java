@@ -48,7 +48,7 @@ public class HybrisAntTask extends JavaExec {
 
         private ConfigurableFileTree buildPlatformAntClasspath(HybrisAntTask t) {
             ConfigurableFileTree files = t.getProject().fileTree("hybris/bin/platform");
-            files.include("apache-ant-*/lib/ant-launcher.jar");
+            files.include("apache-ant*/lib/ant-launcher.jar");
             return files;
         }
 

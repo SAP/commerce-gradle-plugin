@@ -7,7 +7,7 @@ apply plugin: 'java-gradle-plugin'
 
 
 group = 'mpern.sap.commerce'
-version = '1.1.0'
+version = '1.1.1'
 
 repositories {
     jcenter()
