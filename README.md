@@ -14,8 +14,6 @@ This projects provides two gradle plugins to ease the life of a hybris developer
 
 The plugins require Gradle 4+
 
-To build, run `./gradlew build`
-
 For the user documentation, please check the [Wiki](https://github.com/sap-commerce-tools/commerce-gradle-plugin/wiki)
 
 There are various usage examples available in [sap-commerce-tools][tools], check the `*-example` repositories:
