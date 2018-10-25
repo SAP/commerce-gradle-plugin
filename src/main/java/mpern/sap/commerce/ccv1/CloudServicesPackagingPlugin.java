@@ -287,23 +287,23 @@ public class CloudServicesPackagingPlugin implements Plugin<Project> {
             Path commonFolder = configurationFolder.resolve(COMMON_CONFIG).resolve("solr");
             Path targetFolder = packageFolder.resolve("solr/config/" + environment);
 
-            Copy copyCommonConfig = p.getTasks().create("copySolrCommonEnv_" + environment, Copy.class, t -> {
+            Copy copySolrCommonConfig = p.getTasks().create("copySolrCommonEnv_" + environment, Copy.class, t -> {
                 t.from(commonFolder);
                 t.into(targetFolder);
                 t.setDuplicatesStrategy(DuplicatesStrategy.INCLUDE);
                 t.exclude(SOLR_CONFIG_EXCLUDE);
             });
-            copyCommonConfig.dependsOn(cleanTargetFolder);
+            copySolrCommonConfig.dependsOn(cleanTargetFolder);
 
-            Copy copyDatahubConfig = p.getTasks().create("copySolrEnv_" + environment, Copy.class, t -> {
+            Copy copySolrConfig = p.getTasks().create("copySolrEnv_" + environment, Copy.class, t -> {
                 t.from(sourceFolder);
                 t.into(targetFolder);
                 t.setDuplicatesStrategy(DuplicatesStrategy.INCLUDE);
-                t.exclude(DATAHUB_CONFIG_EXCLUDE);
+                t.exclude(SOLR_CONFIG_EXCLUDE);
             });
-            copyDatahubConfig.dependsOn(copyCommonConfig);
+            copySolrConfig.dependsOn(copySolrCommonConfig);
 
-            zipPackage.dependsOn(copyDatahubConfig);
+            zipPackage.dependsOn(copySolrConfig);
         }
     }
 
