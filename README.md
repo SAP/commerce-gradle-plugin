@@ -16,7 +16,7 @@ The plugins require Gradle 4+
 
 For the user documentation, please check the [Wiki](https://github.com/sap-commerce-tools/commerce-gradle-plugin/wiki)
 
-There are various usage examples available in [sap-commerce-tools][tools], check the `*-example` repositories:
+There are various usage examples available in [sap-commerce-tools][tools], check the repositories ending with `-example`
 
 
 This project uses [Semantic Versioning 2.0.0](https://semver.org/spec/v2.0.0.html)
