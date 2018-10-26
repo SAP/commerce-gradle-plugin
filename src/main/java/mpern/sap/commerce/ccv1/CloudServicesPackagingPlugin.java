@@ -33,6 +33,7 @@ public class CloudServicesPackagingPlugin implements Plugin<Project> {
     public static final String GROUP = "CCV1 Packaging";
     public static final String[] HYBRIS_CONFIG_EXCLUDE = {"**/hybrislicence.jar", "solr/**", "tomcat/**", "customer*.properties", "localextensions.xml"};
     public static final String[] DATAHUB_CONFIG_EXCLUDE = {"**/local.properties", "**/logback.xml", "customer*.properties"};
+    public static final String[] SOLR_CONFIG_EXCLUDE = {};
 
     @Override
     public void apply(Project project) {
@@ -87,6 +88,12 @@ public class CloudServicesPackagingPlugin implements Plugin<Project> {
                             Files.createDirectories(datahubConfigFolder);
                         }
                     }
+                    if (extension.getSolr().getOrElse(Boolean.FALSE)) {
+                        Path solrConfigFolder = configurationFolder.resolve(environment).resolve("solr");
+                        if (!Files.exists(solrConfigFolder)) {
+                            Files.createDirectories(solrConfigFolder);
+                        }
+                    }
                 }
             } catch (IOException e) {
                 tsk.getLogger().error("could not setup config folders", e);
@@ -129,6 +136,10 @@ public class CloudServicesPackagingPlugin implements Plugin<Project> {
 
         if (extension.getDatahub().getOrElse(Boolean.FALSE)) {
             setupDatahubPackaging(p, extension, packageFolder, zipPackage, cleanTargetFolder);
+        }
+
+        if (extension.getSolr().getOrElse(Boolean.FALSE)) {
+            setupSolrPackaging(p, extension, packageFolder, zipPackage, cleanTargetFolder);
         }
 
         Task md5Sum = p.getTasks().create("md5Sum", t -> t.doLast(a -> {
@@ -264,6 +275,35 @@ public class CloudServicesPackagingPlugin implements Plugin<Project> {
             });
             copyEnvMiscToTarget.dependsOn(copyCommonMiscToTarget);
             zipPackageFolder.dependsOn(copyEnvMiscToTarget);
+        }
+    }
+
+    private void setupSolrPackaging(Project p, PackagingExtension extension, Path packageFolder, Zip zipPackage, Task cleanTargetFolder) {
+        // FIXME This is only POC for Solr configuration only.
+        Set<String> environments = extension.getEnvironments().get();
+        Path configurationFolder = extension.getConfigurationFolder().getAsFile().get().toPath();
+        for (String environment : environments) {
+            Path sourceFolder = configurationFolder.resolve(environment).resolve("solr");
+            Path commonFolder = configurationFolder.resolve(COMMON_CONFIG).resolve("solr");
+            Path targetFolder = packageFolder.resolve("solr/config/" + environment);
+
+            Copy copySolrCommonConfig = p.getTasks().create("copySolrCommonEnv_" + environment, Copy.class, t -> {
+                t.from(commonFolder);
+                t.into(targetFolder);
+                t.setDuplicatesStrategy(DuplicatesStrategy.INCLUDE);
+                t.exclude(SOLR_CONFIG_EXCLUDE);
+            });
+            copySolrCommonConfig.dependsOn(cleanTargetFolder);
+
+            Copy copySolrConfig = p.getTasks().create("copySolrEnv_" + environment, Copy.class, t -> {
+                t.from(sourceFolder);
+                t.into(targetFolder);
+                t.setDuplicatesStrategy(DuplicatesStrategy.INCLUDE);
+                t.exclude(SOLR_CONFIG_EXCLUDE);
+            });
+            copySolrConfig.dependsOn(copySolrCommonConfig);
+
+            zipPackage.dependsOn(copySolrConfig);
         }
     }
 

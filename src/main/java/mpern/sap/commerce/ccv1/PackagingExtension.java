@@ -11,6 +11,7 @@ import javax.inject.Inject;
 
 public class PackagingExtension {
     private final Property<Boolean> datahub;
+    private final Property<Boolean> solr;
 
     private final Property<String> preProductionEnvironment;
     private final Property<String> customerID;
@@ -31,6 +32,8 @@ public class PackagingExtension {
     public PackagingExtension(Project project) {
         datahub = project.getObjects().property(Boolean.class);
         datahub.set(Boolean.FALSE);
+        solr = project.getObjects().property(Boolean.class);
+        solr.set(Boolean.FALSE);
         preProductionEnvironment = project.getObjects().property(String.class);
         customerID = project.getObjects().property(String.class);
         projectID = project.getObjects().property(String.class);
@@ -50,6 +53,10 @@ public class PackagingExtension {
 
     public Property<Boolean> getDatahub() {
         return datahub;
+    }
+
+    public Property<Boolean> getSolr() {
+        return solr;
     }
 
     public Property<String> getPreProductionEnvironment() {
