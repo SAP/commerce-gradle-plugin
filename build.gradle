@@ -7,7 +7,7 @@ apply plugin: 'java-gradle-plugin'
 
 
 group = 'mpern.sap.commerce'
-version = '1.1.1'
+version = '1.2.0'
 
 repositories {
     jcenter()
@@ -57,7 +57,7 @@ pluginBundle {
         ccv2BuildSupport {
             displayName = "SAP Hybris CCv2 Build Support Plugin"
             description = """Use the CCv2 manifest.json to build and configure your local development environmennt"""
-            tags = ['sap commerce', 'sap hybris commerce', 'hybris', 'sap', 'commerce', 'ccv1', 'package']
+            tags = ['sap commerce', 'sap hybris commerce', 'hybris', 'sap', 'commerce', 'ccv2', 'public cloud', 'manifest']
         }
     }
 }
