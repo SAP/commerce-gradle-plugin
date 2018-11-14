@@ -9,7 +9,7 @@ This projects provides two gradle plugins to ease the life of a hybris developer
 |Published Plugin|Documentation|Description|
 |---|---|---|
 |[`mpern.sap.commerce.build`][build]|[Documentation][build-doc]|Automates the developer setup and allows you to work with the platform build inside gradle|
-|[`mpern.sap.commerce.build.ccv2`][ccv2]|[Documentation][ccv2-doc]|Use `manifest.json` to build and configure your commerce project locally|
+|[`mpern.sap.commerce.build.ccv2`][ccv2]|[Documentation][ccv2-doc]|**Experimental** Use `manifest.json` to build and configure your commerce project locally|
 |[`mpern.sap.commerce.ccv1.package`][package]|[Documentation][package-doc]|Creates CCv1 compliant deployment packages (Deployment Packagaging Guidelines v.2.3.3)|
 
 The plugins require Gradle 4+
