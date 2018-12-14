@@ -22,7 +22,6 @@ public class HybrisAntRule implements Rule {
     public void apply(String taskName) {
         if (taskName.startsWith(PREFIX)) {
             String antTarget = taskName.substring(PREFIX.length());
-            antTarget = antTarget.toLowerCase();
             HybrisAntTask javaExec = project.getTasks().create(taskName, HybrisAntTask.class);
             javaExec.args(antTarget);
         }
