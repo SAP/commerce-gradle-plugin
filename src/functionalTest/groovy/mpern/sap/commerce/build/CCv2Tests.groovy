@@ -18,6 +18,8 @@ class CCv2Tests extends Specification {
 
     String manifestVersion = "18.08.0"
 
+    GradleRunner runner
+
     def setup() {
         buildFile = testProjectDir.newFile('build.gradle')
 
@@ -42,6 +44,14 @@ class CCv2Tests extends Specification {
         new File(testProjectDir.newFolder("hybris", "bin", "platform"), "build.number") << """
             version=18.08
         """
+
+        runner = GradleRunner.create()
+                .withProjectDir(testProjectDir.root)
+        def testVersion = System.getenv("GRADLE_VERSION")
+        if (testVersion) {
+            runner.withGradleVersion(testVersion)
+        }
+        runner.withPluginClasspath()
     }
 
     def "hybris.version is configured by manifest.json"() {
@@ -50,9 +60,7 @@ class CCv2Tests extends Specification {
         version=2020.0
         """
         when: "running bootstrap task"
-        def result = GradleRunner.create()
-                .withProjectDir(testProjectDir.root)
-                .withPluginClasspath()
+        def result = runner
                 .withArguments("bootstrapPlatform", "--stacktrace")
                 .build()
 
@@ -73,9 +81,7 @@ class CCv2Tests extends Specification {
         """
 
         when: "running bootstrap task"
-        def result = GradleRunner.create()
-                .withProjectDir(testProjectDir.root)
-                .withPluginClasspath()
+        def result = runner
                 .withArguments("bootstrapPlatform", "--stacktrace")
                 .build()
         println(result.output)
@@ -87,9 +93,7 @@ class CCv2Tests extends Specification {
 
     def "property files generated per apsect and persona"() {
         when: "running generateCloudProperties task"
-        def result = GradleRunner.create()
-                .withProjectDir(testProjectDir.root)
-                .withPluginClasspath()
+        def result = runner
                 .withArguments("generateCloudProperties", "--stacktrace")
                 .build()
 
@@ -104,9 +108,7 @@ class CCv2Tests extends Specification {
 
     def "generate localextensions based on manifest.json"() {
         when: "running generateCloudProperties task"
-        def result = GradleRunner.create()
-                .withProjectDir(testProjectDir.root)
-                .withPluginClasspath()
+        def result = runner
                 .withArguments("generateCloudLocalextensions", "--stacktrace")
                 .build()
 

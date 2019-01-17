@@ -17,6 +17,8 @@ class BootstrapTest extends Specification {
 
     String providedVersion = '2020.0'
 
+    GradleRunner runner
+
     def setup() {
         buildFile = testProjectDir.newFile('build.gradle')
 
@@ -34,6 +36,14 @@ class BootstrapTest extends Specification {
         Path dbDriver = deps.resolve("jdbc-TEST.jar")
         Files.createFile(dbDriver)
         TestUtils.generateDummyPlatform(deps, providedVersion)
+
+        runner = GradleRunner.create()
+                .withProjectDir(testProjectDir.root)
+        def testVersion = System.getenv("GRADLE_VERSION")
+        if (testVersion) {
+            runner.withGradleVersion(testVersion)
+        }
+        runner.withPluginClasspath()
     }
 
 
@@ -50,10 +60,8 @@ class BootstrapTest extends Specification {
         """
 
         when: "running bootstrap task"
-        def result = GradleRunner.create()
-                .withProjectDir(testProjectDir.root)
+        def result = runner
                 .withArguments("--stacktrace", 'bootstrapPlatform')
-                .withPluginClasspath()
                 .build()
 
         then: "the task is skipped"
@@ -70,10 +78,8 @@ class BootstrapTest extends Specification {
         """
 
         when:
-        def result = GradleRunner.create()
-                .withProjectDir(testProjectDir.root)
+        def result = runner
                 .withArguments('bootstrapPlatform', '--stacktrace')
-                .withPluginClasspath()
                 .build()
 
         then:
@@ -108,10 +114,8 @@ class BootstrapTest extends Specification {
         localProperties.createNewFile()
 
         when: "running bootstrap task"
-        def result = GradleRunner.create()
-                .withProjectDir(testProjectDir.root)
+        def result = runner
                 .withArguments('bootstrapPlatform', '--stacktrace')
-                .withPluginClasspath()
                 .build()
 
         println(result.output)
@@ -149,10 +153,8 @@ class BootstrapTest extends Specification {
         def beforeBootstrap = new Date()
         beforeBootstrap.seconds -= 1
 
-        def result = GradleRunner.create()
-                .withProjectDir(testProjectDir.root)
+        def result = runner
                 .withArguments("--stacktrace", 'bootstrapPlatform')
-                .withPluginClasspath()
                 .build()
 
         def driverFile = new File(testProjectDir.getRoot(), "hybris/bin/platform/lib/dbdriver/jdbc-TEST.jar")
@@ -183,9 +185,7 @@ class BootstrapTest extends Specification {
         localProperties.createNewFile()
 
         when: "running the clean target"
-        def result = GradleRunner.create()
-                .withProjectDir(testProjectDir.root)
-                .withArguments("--stacktrace", 'cleanPlatformIfVersionChanged')
+        def result = runner.withArguments("--stacktrace", 'cleanPlatformIfVersionChanged')
                 .withPluginClasspath()
                 .build()
 

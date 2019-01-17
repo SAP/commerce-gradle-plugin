@@ -11,6 +11,7 @@ import org.gradle.api.logging.Logger;
 import org.gradle.api.logging.Logging;
 import org.gradle.api.tasks.Copy;
 import org.gradle.api.tasks.Delete;
+import org.gradle.api.tasks.StopExecutionException;
 import org.gradle.api.tasks.WriteProperties;
 import org.gradle.api.tasks.bundling.Zip;
 
@@ -40,7 +41,7 @@ public class CloudServicesPackagingPlugin implements Plugin<Project> {
         PackagingExtension extension = project.getExtensions().create(EXTENSION, PackagingExtension.class, project);
         extension.getPlatformZip().set(project.file("hybris/temp/hybris/hybrisServer/hybrisServer-Platform.zip"));
         extension.getAllExtensionsZip().set(project.file("hybris/temp/hybris/hybrisServer/hybrisServer-AllExtensions.zip"));
-        extension.getEnvironments().set(Arrays.asList("dev", "stag", "prod"));
+        extension.getEnvironments().set(project.provider(() -> new HashSet<>(Arrays.asList("dev", "stag", "prod"))));
         extension.getPreProductionEnvironment().set("stag");
         extension.getProjectID().set(project.provider(project::getName));
 
@@ -173,7 +174,9 @@ public class CloudServicesPackagingPlugin implements Plugin<Project> {
             t.from(extension.getPlatformZip());
             t.into(hybrisBin);
             t.onlyIf(a -> {
-                a.getInputs().getSourceFiles().stopExecutionIfEmpty();
+                if (a.getInputs().getSourceFiles().isEmpty()) {
+                    throw new StopExecutionException("no platform file found");
+                }
                 return true;
             });
         });
@@ -185,7 +188,9 @@ public class CloudServicesPackagingPlugin implements Plugin<Project> {
             t.from(extension.getAllExtensionsZip());
             t.into(hybrisBin);
             t.onlyIf(a -> {
-                a.getInputs().getSourceFiles().stopExecutionIfEmpty();
+                if (a.getInputs().getSourceFiles().isEmpty()) {
+                    throw new StopExecutionException("no allExtensions file found");
+                }
                 return true;
             });
         });
@@ -311,12 +316,11 @@ public class CloudServicesPackagingPlugin implements Plugin<Project> {
         Copy copyDataHubWar = p.getTasks().create("copyDataHubWar", Copy.class, t -> {
             t.from(extension.getDatahubWar(), s -> s.rename(".*", "datahub-webapp.war"));
             t.into(packageFolder.resolve("datahub/bin"));
-            t.onlyIf(task -> {
-                boolean datahub = extension.getDatahub().getOrElse(false);
-                if (datahub) {
-                    t.getInputs().getSourceFiles().stopExecutionIfEmpty();
+            t.onlyIf(a -> {
+                if (a.getInputs().getSourceFiles().isEmpty()) {
+                    throw new StopExecutionException("no datahub file found");
                 }
-                return datahub;
+                return true;
             });
         });
         copyDataHubWar.dependsOn(cleanTargetFolder);

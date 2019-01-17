@@ -11,6 +11,7 @@ import java.nio.file.attribute.BasicFileAttributes
 class PackagingTest extends Specification {
     @Rule
     TemporaryFolder testProjectDir = new TemporaryFolder()
+
     File buildFile
 
     File common
@@ -28,6 +29,7 @@ class PackagingTest extends Specification {
 
     String packageName = "${customerID}-${projectID}_v${version}"
 
+    GradleRunner runner
 
     def setup() {
         buildFile = testProjectDir.newFile('build.gradle')
@@ -55,6 +57,14 @@ class PackagingTest extends Specification {
 
         hybrisExtensionsZip = new File(hybrisProductionFolder, "hybrisServer-AllExtensions.zip")
         hybrisExtensionsZip.createNewFile()
+
+        runner = GradleRunner.create()
+                .withProjectDir(testProjectDir.root)
+        def testVersion = System.getenv("GRADLE_VERSION")
+        if (testVersion) {
+            runner.withGradleVersion(testVersion)
+        }
+        runner.withPluginClasspath()
     }
 
     def cleanup() {
@@ -77,10 +87,7 @@ class PackagingTest extends Specification {
         hybrisPlatformZip.delete()
 
         when:
-        GradleRunner.create()
-                .withProjectDir(testProjectDir.root)
-                .withArguments("--stacktrace", 'buildCCV1Package')
-                .withPluginClasspath()
+        runner.withArguments("--stacktrace", 'buildCCV1Package')
                 .buildAndFail()
 
         then:
@@ -97,10 +104,7 @@ class PackagingTest extends Specification {
         """
 
         when: "building package"
-        GradleRunner.create()
-                .withProjectDir(testProjectDir.root)
-                .withArguments("--stacktrace", 'buildCCV1Package')
-                .withPluginClasspath()
+        runner.withArguments("--stacktrace", 'buildCCV1Package')
                 .build()
 
         def (_, Path packageRoot) = openPackageFile()
@@ -120,10 +124,7 @@ class PackagingTest extends Specification {
         """
 
         when: "building package"
-        GradleRunner.create()
-                .withProjectDir(testProjectDir.root)
-                .withArguments("--stacktrace", 'buildCCV1Package')
-                .withPluginClasspath()
+        runner.withArguments("--stacktrace", 'buildCCV1Package')
                 .build()
 
         def (_, Path packageRoot) = openPackageFile()
@@ -146,10 +147,7 @@ class PackagingTest extends Specification {
         """
 
         when: "building package"
-        GradleRunner.create()
-                .withProjectDir(testProjectDir.root)
-                .withArguments("--stacktrace", 'buildCCV1Package')
-                .withPluginClasspath()
+        runner.withArguments("--stacktrace", 'buildCCV1Package')
                 .build()
 
         then: "hash file is present"
@@ -181,10 +179,7 @@ class PackagingTest extends Specification {
         datahub.createNewFile()
 
         when: "building CCV1 package"
-        GradleRunner.create()
-                .withProjectDir(testProjectDir.root)
-                .withArguments("--stacktrace", 'buildCCV1Package')
-                .withPluginClasspath()
+        runner.withArguments("--stacktrace", 'buildCCV1Package')
                 .build()
 
 
@@ -205,10 +200,7 @@ class PackagingTest extends Specification {
         """
 
         when: "building CCV1 package and fail"
-        GradleRunner.create()
-                .withProjectDir(testProjectDir.root)
-                .withArguments("--stacktrace", 'buildCCV1Package')
-                .withPluginClasspath()
+        runner.withArguments("--stacktrace", 'buildCCV1Package')
                 .buildAndFail()
 
         then: "it failed"
@@ -232,10 +224,7 @@ class PackagingTest extends Specification {
         Files.createFile(devDatahubConfig.resolve("customer.properties"))
 
         when:
-        GradleRunner.create()
-                .withProjectDir(testProjectDir.root)
-                .withArguments("--stacktrace", 'buildCCV1Package')
-                .withPluginClasspath()
+        runner.withArguments("--stacktrace", 'buildCCV1Package')
                 .build()
 
         def (_, Path packageRoot) = openPackageFile()
@@ -267,10 +256,7 @@ class PackagingTest extends Specification {
         """.stripIndent()
 
         when:
-        GradleRunner.create()
-                .withProjectDir(testProjectDir.root)
-                .withArguments("--stacktrace", 'buildCCV1Package')
-                .withPluginClasspath()
+        runner.withArguments("--stacktrace", 'buildCCV1Package')
                 .build()
 
         def (_, Path packageRoot) = openPackageFile()
@@ -310,11 +296,9 @@ class PackagingTest extends Specification {
         stag_app << "stag app"
 
         when:
-        GradleRunner.create()
-                .withProjectDir(testProjectDir.root)
-                .withArguments("--stacktrace", 'buildCCV1Package')
-                .withPluginClasspath()
+        runner.withArguments("--stacktrace", 'buildCCV1Package')
                 .build()
+
         def (_, Path packageRoot) = openPackageFile()
 
         then:
@@ -340,10 +324,7 @@ class PackagingTest extends Specification {
         dev << "dev"
 
         when:
-        GradleRunner.create()
-                .withProjectDir(testProjectDir.root)
-                .withArguments("--stacktrace", 'buildCCV1Package')
-                .withPluginClasspath()
+        runner.withArguments("--stacktrace", 'buildCCV1Package')
                 .build()
         def (_, Path packageRoot) = openPackageFile()
 

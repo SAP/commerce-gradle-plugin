@@ -11,7 +11,7 @@ class ManifestParseSpec extends Specification {
         Map<String, Object> rawManifest = new JsonSlurper().parse(this.getClass().getResource('/test-manifest.json'))
 
         when:
-        Manifest m = Manifest.fromMap(rawManifest);
+        Manifest m = Manifest.fromMap(rawManifest)
 
         then:
         m.commerceSuiteVersion == "6.7.0.1"

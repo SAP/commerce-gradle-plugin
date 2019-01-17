@@ -1,20 +1,27 @@
 plugins {
     id "com.gradle.plugin-publish" version "0.10.0"
+    id 'pl.allegro.tech.build.axion-release' version '1.10.0'
 }
 
 apply plugin: 'groovy'
 apply plugin: 'java-gradle-plugin'
 
+scmVersion {
+    tag {
+        prefix = 'v'
+        versionSeparator = ''
+    }
+}
 
 group = 'mpern.sap.commerce'
-version = '1.2.2'
+project.version = scmVersion.version
 
 repositories {
     jcenter()
 }
 
 dependencies {
-    testCompile('org.spockframework:spock-core:1.1-groovy-2.4') {
+    testCompile('org.spockframework:spock-core:1.2-groovy-2.4') {
         exclude group: 'org.codehaus.groovy'
     }
 }
