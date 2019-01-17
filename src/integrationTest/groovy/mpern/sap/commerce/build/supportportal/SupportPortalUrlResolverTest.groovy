@@ -17,6 +17,10 @@ class SupportPortalUrlResolverTest extends Specification {
         }
         username = properties.username
         password = properties.password
+        if (username == null || password == null) {
+            username = System.getenv("SUPPORTPORTAL_USER")
+            password = System.getenv("SUPPORTPORTAL_PASSWORD")
+        }
     }
 
 
