@@ -118,7 +118,7 @@ public class DownloadInfoFile {
         Files.write(file, s.getBytes(StandardCharsets.UTF_8), StandardOpenOption.WRITE, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
     }
 
-    public static DownloadInfoFile getInfoFor(Path p) throws IOException{
+    public static DownloadInfoFile getInfoFor(Path p) throws IOException {
         Path infoFile = infoFileName(p);
         return new DownloadInfoFile(infoFile);
     }

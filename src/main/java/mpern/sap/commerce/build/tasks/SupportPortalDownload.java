@@ -43,8 +43,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import static mpern.sap.commerce.build.util.HttpUtils.connectAndUpdateCookies;
-
 public class SupportPortalDownload extends DefaultTask {
 
     private final Property<String> supportPortalUrl;
@@ -89,10 +87,10 @@ public class SupportPortalDownload extends DefaultTask {
         onlyIf(t -> !hashesMatch.isSatisfiedBy(t));
     }
 
-    private DownloadInfoFile getInfoFileForTarget() throws Exception{
+    private DownloadInfoFile getInfoFileForTarget() throws Exception {
         Path target = targetFile.get().getAsFile().toPath();
         DownloadInfoFile infoFile = DownloadInfoFile.getInfoFor(target);
-        if(!infoFile.getSupportUrl().equals(supportPortalUrl.get())) {
+        if (!infoFile.getSupportUrl().equals(supportPortalUrl.get())) {
             infoFile.clear();
         }
         if (!Files.exists(target)) {
@@ -124,7 +122,7 @@ public class SupportPortalDownload extends DefaultTask {
 
             updateMetaData(connection.getHeaderFields(), infoFile);
 
-            Path tempDownloadFile = targetPath.getParent().resolve(targetPath.getFileName() +".progress");
+            Path tempDownloadFile = targetPath.getParent().resolve(targetPath.getFileName() + ".progress");
             PercentageProgressWriter progressWriter = new PercentageProgressWriter("Downloading " + targetPath.getFileName(), Long.parseLong(infoFile.getContentLength()));
             downloadFile(connection, tempDownloadFile, progressWriter);
 

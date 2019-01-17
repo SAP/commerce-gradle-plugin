@@ -16,13 +16,14 @@ class CCv2Tests extends Specification {
     TemporaryFolder testProjectDir = new TemporaryFolder()
     File buildFile
 
+    String manifestVersion = "18.08.0"
+
     def setup() {
         buildFile = testProjectDir.newFile('build.gradle')
 
         def deps = testProjectDir.newFolder("dependencies").toPath()
 
-        //version mismatch: manifest.json requires 18.08.0, but build.number file of 18.08 reports the version as 18.08 :(
-        TestUtils.generateDummyPlatform(deps, "18.08")
+        TestUtils.generateDummyPlatform(deps, "18.08.0")
 
         Path dummy = Paths.get(TestUtils.class.getResource("/test-manifest.json").toURI())
         Files.copy(dummy, testProjectDir.root.toPath().resolve("manifest.json"))
@@ -37,9 +38,6 @@ class CCv2Tests extends Specification {
                     dirs 'dependencies'
                 }
             }
-            
-            hybris {
-            }
         """
         new File(testProjectDir.newFolder("hybris", "bin", "platform"), "build.number") << """
             version=18.08
@@ -47,8 +45,9 @@ class CCv2Tests extends Specification {
     }
 
     def "hybris.version is configured by manifest.json"() {
+        given: "platform with different version"
         testProjectDir.root.toPath().resolve("hybris/bin/platform/build.number") << """
-        version=OTHER_VERSION
+        version=2020.0
         """
         when: "running bootstrap task"
         def result = GradleRunner.create()
@@ -57,9 +56,33 @@ class CCv2Tests extends Specification {
                 .withArguments("bootstrapPlatform", "--stacktrace")
                 .build()
 
-        then: "the task is performed"
+        then: "platform is cleaned and correct version unpacked"
         result.task(":cleanPlatformIfVersionChanged").outcome == TaskOutcome.SUCCESS
         result.task(":unpackPlatform").outcome == TaskOutcome.SUCCESS
+    }
+
+    def "configured version overrides manifest.json version"() {
+        given: "platform with different version"
+        testProjectDir.root.toPath().resolve("hybris/bin/platform/build.number") << """
+        version=1811.0
+        """
+        buildFile << """
+        hybris {
+            version = '1811.0'
+        }
+        """
+
+        when: "running bootstrap task"
+        def result = GradleRunner.create()
+                .withProjectDir(testProjectDir.root)
+                .withPluginClasspath()
+                .withArguments("bootstrapPlatform", "--stacktrace")
+                .build()
+        println(result.output)
+
+        then: "platform is not modified"
+        result.task(":cleanPlatformIfVersionChanged").outcome == TaskOutcome.SKIPPED
+        result.task(":unpackPlatform").outcome == TaskOutcome.SKIPPED
     }
 
     def "property files generated per apsect and persona"() {
@@ -88,7 +111,7 @@ class CCv2Tests extends Specification {
                 .build()
 
         def localExtensions = testProjectDir.root.toPath().resolve("generated-configuration").resolve("localextensions.xml").text
-        println(localExtensions)
+
         then:
         localExtensions.contains("<extension name='modeltacceleratorservices' />")
         localExtensions.contains("<extension name='electronicsstore' />")

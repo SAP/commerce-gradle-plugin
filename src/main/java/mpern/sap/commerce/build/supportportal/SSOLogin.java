@@ -14,8 +14,6 @@ import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static mpern.sap.commerce.build.util.HttpUtils.connectAndUpdateCookies;
-
 public class SSOLogin {
 
     private static Logger LOG = Logging.getLogger(SSOLogin.class);

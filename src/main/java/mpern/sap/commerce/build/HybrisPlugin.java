@@ -4,24 +4,20 @@ import mpern.sap.commerce.build.rules.HybrisAntRule;
 import mpern.sap.commerce.build.tasks.GlobClean;
 import mpern.sap.commerce.build.tasks.HybrisAntTask;
 import mpern.sap.commerce.build.tasks.SupportPortalDownload;
+import mpern.sap.commerce.build.util.Version;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
 import org.gradle.api.Task;
 import org.gradle.api.artifacts.Configuration;
-import org.gradle.api.internal.OverlappingOutputs;
-import org.gradle.api.internal.TaskExecutionHistory;
-import org.gradle.api.internal.tasks.OriginTaskExecutionMetadata;
 import org.gradle.api.logging.Logger;
 import org.gradle.api.tasks.Copy;
 import org.gradle.api.tasks.TaskCollection;
 import org.gradle.api.tasks.TaskExecutionException;
 
-import javax.annotation.Nullable;
 import java.io.File;
 import java.io.IOException;
-import java.util.Collections;
+import java.util.Arrays;
 import java.util.Date;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 public class HybrisPlugin implements Plugin<Project> {
@@ -35,9 +31,9 @@ public class HybrisPlugin implements Plugin<Project> {
 
         extension.getCleanGlob().set("glob:**hybris/bin/{ext-**,platform**}");
 
-        extension.getBootstrapInclude().add("hybris/**");
+        extension.getBootstrapInclude().set(project.provider(() -> Arrays.asList("hybris/**")));
         //this folder contains some utf-8 filenames that lead to issues on linux
-        extension.getBootstrapExclude().add("hybris/bin/ext-content/npmancillary/resources/npm/node_modules/http-server/node_modules/ecstatic/test/**");
+        extension.getBootstrapExclude().set(project.provider(() -> Arrays.asList("hybris/bin/ext-content/npmancillary/resources/npm/node_modules/http-server/node_modules/ecstatic/test/**")));
 
         final Configuration hybrisPlatform = project.getConfigurations().create("hybrisPlatform")
                 .setDescription("Hybris Platform Dependencies. Expects zip files that are unpacked into the project root folder");
@@ -138,8 +134,21 @@ public class HybrisPlugin implements Plugin<Project> {
     }
 
     private boolean versionMismatch(HybrisPluginExtension extension, Logger logger) {
-        logger.lifecycle("current version: {}; required version: {}", extension.getPlatform().getVersion().get(), extension.getVersion().get());
-        return !extension.getPlatform().getVersion().get().equals(extension.getVersion().get());
+        Version current;
+        try {
+            current = Version.parseVersion(extension.getPlatform().getVersion().get());
+        } catch (IllegalArgumentException e) {
+            current = Version.UNDEFINED;
+        }
+        Version required;
+
+        try {
+            required = Version.parseVersion(extension.getVersion().get());
+        } catch (IllegalArgumentException e) {
+            required = Version.UNDEFINED;
+        }
+        logger.lifecycle("current version: {}; required version: {} -> {}", current, required, current.equals(required) ? "MATCH" : "MISMATCH");
+        return !current.equals(required);
     }
 
 }

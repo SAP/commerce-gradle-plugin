@@ -51,10 +51,14 @@ public class SupportPortalUrlResolver {
     private URI resolveDownloadLink() throws Exception {
         URI fileList = getUrlToItemList(source);
         Map<String, String> downloadItemSet = fetchFirstODataEntry(fileList);
-        String entryId = downloadItemSet.computeIfAbsent("entry-id", s -> { throw new IllegalStateException("could not find DownloadItemSet"); });
+        String entryId = downloadItemSet.computeIfAbsent("entry-id", s -> {
+            throw new IllegalStateException("could not find DownloadItemSet");
+        });
         Map<String, String> detailedDownloadItemSet = fetchFirstODataEntry(new URI(entryId));
 
-        String downloadDirectLink = detailedDownloadItemSet.computeIfAbsent("DownloadDirectLink", s -> { throw new IllegalStateException("download link not found"); });
+        String downloadDirectLink = detailedDownloadItemSet.computeIfAbsent("DownloadDirectLink", s -> {
+            throw new IllegalStateException("download link not found");
+        });
 
         return new URI(downloadDirectLink);
     }

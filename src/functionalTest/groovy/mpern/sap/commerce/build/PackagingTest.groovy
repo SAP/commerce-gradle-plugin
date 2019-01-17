@@ -78,10 +78,10 @@ class PackagingTest extends Specification {
 
         when:
         GradleRunner.create()
-            .withProjectDir(testProjectDir.root)
-            .withArguments("--stacktrace", 'buildCCV1Package')
-            .withPluginClasspath()
-            .buildAndFail()
+                .withProjectDir(testProjectDir.root)
+                .withArguments("--stacktrace", 'buildCCV1Package')
+                .withPluginClasspath()
+                .buildAndFail()
 
         then:
         noExceptionThrown()
@@ -98,12 +98,12 @@ class PackagingTest extends Specification {
 
         when: "building package"
         GradleRunner.create()
-            .withProjectDir(testProjectDir.root)
-            .withArguments("--stacktrace", 'buildCCV1Package')
-            .withPluginClasspath()
-            .build()
+                .withProjectDir(testProjectDir.root)
+                .withArguments("--stacktrace", 'buildCCV1Package')
+                .withPluginClasspath()
+                .build()
 
-        def (_ , Path packageRoot) = openPackageFile()
+        def (_, Path packageRoot) = openPackageFile()
 
         then: "package root is package name"
         Files.exists(packageRoot)
@@ -121,10 +121,10 @@ class PackagingTest extends Specification {
 
         when: "building package"
         GradleRunner.create()
-            .withProjectDir(testProjectDir.root)
-            .withArguments("--stacktrace", 'buildCCV1Package')
-            .withPluginClasspath()
-            .build()
+                .withProjectDir(testProjectDir.root)
+                .withArguments("--stacktrace", 'buildCCV1Package')
+                .withPluginClasspath()
+                .build()
 
         def (_, Path packageRoot) = openPackageFile()
 
@@ -147,16 +147,16 @@ class PackagingTest extends Specification {
 
         when: "building package"
         GradleRunner.create()
-            .withProjectDir(testProjectDir.root)
-            .withArguments("--stacktrace", 'buildCCV1Package')
-            .withPluginClasspath()
-            .build()
+                .withProjectDir(testProjectDir.root)
+                .withArguments("--stacktrace", 'buildCCV1Package')
+                .withPluginClasspath()
+                .build()
 
         then: "hash file is present"
         Files.exists(testProjectDir.root.toPath().resolve("dist/${packageName}.md5"))
     }
 
-    private void dumpDir(Path p ) {
+    private void dumpDir(Path p) {
         Files.walkFileTree(p, new SimpleFileVisitor<Path>() {
             @Override
             FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
@@ -182,10 +182,10 @@ class PackagingTest extends Specification {
 
         when: "building CCV1 package"
         GradleRunner.create()
-            .withProjectDir(testProjectDir.root)
-            .withArguments("--stacktrace", 'buildCCV1Package')
-            .withPluginClasspath()
-            .build()
+                .withProjectDir(testProjectDir.root)
+                .withArguments("--stacktrace", 'buildCCV1Package')
+                .withPluginClasspath()
+                .build()
 
 
         def (_, Path packageRoot) = openPackageFile()
@@ -206,10 +206,10 @@ class PackagingTest extends Specification {
 
         when: "building CCV1 package and fail"
         GradleRunner.create()
-            .withProjectDir(testProjectDir.root)
-            .withArguments("--stacktrace", 'buildCCV1Package')
-            .withPluginClasspath()
-            .buildAndFail()
+                .withProjectDir(testProjectDir.root)
+                .withArguments("--stacktrace", 'buildCCV1Package')
+                .withPluginClasspath()
+                .buildAndFail()
 
         then: "it failed"
         noExceptionThrown()

@@ -20,9 +20,9 @@ public class Property {
 
     public static Property fromMap(Map<String, Object> jsonMap) {
         return new Property(
-                validateNullOrWhitespace((String)jsonMap.get("key"), "Property.key must have a value"),
-                nullToEmpty((String)jsonMap.get("value")),
-                nullToEmpty((String)jsonMap.get("persona")),
+                validateNullOrWhitespace((String) jsonMap.get("key"), "Property.key must have a value"),
+                nullToEmpty((String) jsonMap.get("value")),
+                nullToEmpty((String) jsonMap.get("persona")),
                 jsonMap.get("secret") != null && (boolean) jsonMap.get("secret")
         );
     }
