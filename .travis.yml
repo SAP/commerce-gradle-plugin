@@ -23,3 +23,17 @@ env:
   - GRADLE_VERSION=5.1
   - GRADLE_VERSION=5.1.1
 
+stages:
+  - prepare
+  - test
+  - publish
+
+jobs:
+  include:
+    - stage: prepare
+      script: true
+      env: GRADLE_VERSION=4.5
+    - stage: publish
+      script: ./gradlew publishPlugins
+      env: GRADLE_VERSION=5.1.1
+      if: (tag =~ ^v) AND (branch = master)

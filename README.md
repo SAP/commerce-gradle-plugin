@@ -3,6 +3,8 @@ and reflects what I (up until now) always did by hand and/or hacked together in 
 
 # Gradle Plugins for SAP (Hybris) Commerce 1.2.2
 
+![Build Status](https://travis-ci.org/sap-commerce-tools/commerce-gradle-plugin.svg?branch=master)
+
 This projects provides two gradle plugins to ease the life of a hybris developer \
 (**The plugins are already published to https://plugins.gradle.org/**, so you can just use them for your commerce project)
 
