@@ -1,7 +1,7 @@
 **Disclaimer**: *This is in no way, shape or form an official plugin provided by SAP. It is just something I came up with in my spare time,
 and reflects what I (up until now) always did by hand and/or hacked together in ad-hoc build scripts.*
 
-# Gradle Plugins for SAP (Hybris) Commerce
+# Gradle Plugins for SAP (Hybris) Commerce 1.2.2
 
 This projects provides two gradle plugins to ease the life of a hybris developer \
 (**The plugins are already published to https://plugins.gradle.org/**, so you can just use them for your commerce project)
