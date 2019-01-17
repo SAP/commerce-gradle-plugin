@@ -15,6 +15,9 @@ scmVersion {
         pre 'fileUpdate', [file: 'README.md', pattern: {v, c -> /Gradle Plugins for SAP \(Hybris\) Commerce $v/}, replacement: {v, c -> "Gradle Plugins for SAP (Hybris) Commerce $v"}]
         pre 'commit'
     }
+    checks {
+        aheadOfRemote = false
+    }
 }
 
 group = 'mpern.sap.commerce'
