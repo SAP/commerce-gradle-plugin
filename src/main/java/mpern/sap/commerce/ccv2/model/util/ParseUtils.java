@@ -9,6 +9,7 @@ public class ParseUtils {
     public static String nullToEmpty(String v) {
         return v == null ? "" : v;
     }
+
     public static String validateNullOrWhitespace(String value, String message) {
         if (value == null || value.matches("\\s*")) {
             throw new IllegalArgumentException(message);

@@ -26,7 +26,7 @@ public class Aspect {
     public static Aspect fromMap(Map<String, Object> jsonMap) {
         String name = validateNullOrWhitespace((String) jsonMap.get("name"), "Aspect.name must have a value");
 
-        List<Map<String,Object>> raw = Optional.ofNullable((List<Map<String, Object>>) jsonMap.get("properties")).orElse(Collections.emptyList());
+        List<Map<String, Object>> raw = Optional.ofNullable((List<Map<String, Object>>) jsonMap.get("properties")).orElse(Collections.emptyList());
         List<Property> properties = raw.stream().map(Property::fromMap).collect(Collectors.toList());
 
         raw = Optional.ofNullable((List<Map<String, Object>>) jsonMap.get("webapps")).orElse(Collections.emptyList());

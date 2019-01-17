@@ -3,20 +3,19 @@ package mpern.sap.commerce.build;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.nio.file.*;
+import java.nio.file.FileSystem;
+import java.nio.file.FileSystems;
+import java.nio.file.FileVisitResult;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.SimpleFileVisitor;
+import java.nio.file.StandardOpenOption;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.HashMap;
 import java.util.Map;
 
 public class TestUtils {
-
-    public static void setupDependencies(Path destination) throws Exception {
-        Path dbDriver = destination.resolve("jdbc-TEST.jar");
-        Files.createFile(dbDriver);
-
-
-        generateDummyPlatform(destination, "TEST");
-    }
 
     public static void generateDummyPlatform(Path destination, String version) throws IOException, URISyntaxException {
         Path targetZip = destination.resolve(String.format("hybris-commerce-suite-%s.zip", version));
@@ -37,6 +36,9 @@ public class TestUtils {
                     return super.visitFile(file, attrs);
                 }
             });
+            String build = String.format("version=%s\n", version);
+            Path buildNumber = zipfs.getPath("hybris", "bin", "platform", "build.number");
+            Files.write(buildNumber, build.getBytes(), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
         }
     }
 }

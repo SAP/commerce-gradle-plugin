@@ -30,19 +30,19 @@ public class HybrisAntTask extends JavaExec {
                 Map<String, Object> systemProperties = fetchSystemProperties();
                 t.systemProperties(systemProperties);
 
-                t.antProperty("maven.update.dbdrivers","false");
+                t.antProperty("maven.update.dbdrivers", "false");
 
                 ConfigurableFileTree files = buildPlatformAntClasspath(t);
                 t.setClasspath(files);
 
-                HybrisPlatform platform = ((HybrisPluginExtension)t.getProject().getExtensions().getByName(HybrisPlugin.HYBRIS_EXTENSION)).getPlatform();
+                HybrisPlatform platform = ((HybrisPluginExtension) t.getProject().getExtensions().getByName(HybrisPlugin.HYBRIS_EXTENSION)).getPlatform();
                 t.systemProperty("ant.home", platform.getAntHome().get().getAsFile());
 
                 t.setMain("org.apache.tools.ant.launch.Launcher");
 
                 t.workingDir(platform.getPlatformHome());
 
-                t.antProperties.forEach((k, v) -> t.args("-D"+k+"="+v));
+                t.antProperties.forEach((k, v) -> t.args("-D" + k + "=" + v));
             }
         }
 
@@ -63,7 +63,8 @@ public class HybrisAntTask extends JavaExec {
 
     /**
      * Add a new runtime property to configure the ant target
-     * @param key key of the property
+     *
+     * @param key   key of the property
      * @param value value of the property
      */
     public void antProperty(String key, String value) {
@@ -72,6 +73,7 @@ public class HybrisAntTask extends JavaExec {
 
     /**
      * Set (override) all ant properties with the values of the set
+     *
      * @param antProperties ant properties to use for the target
      */
     public void setAntProperties(Map<String, String> antProperties) {

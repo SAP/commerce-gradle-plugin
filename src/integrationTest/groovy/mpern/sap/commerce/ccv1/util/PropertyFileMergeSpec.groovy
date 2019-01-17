@@ -9,7 +9,8 @@ import java.nio.file.Path
 
 class PropertyFileMergeSpec extends Specification {
 
-    @Shared @ClassRule
+    @Shared
+    @ClassRule
     TemporaryFolder propertyFolder = new TemporaryFolder()
 
     @Shared

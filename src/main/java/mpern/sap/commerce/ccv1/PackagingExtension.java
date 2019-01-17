@@ -42,7 +42,7 @@ public class PackagingExtension {
 
         datahubWar = project.getLayout().fileProperty();
         platformZip = project.getLayout().fileProperty();
-        allExtensionsZip  = project.getLayout().fileProperty();
+        allExtensionsZip = project.getLayout().fileProperty();
 
         environments = project.getObjects().setProperty(String.class);
 

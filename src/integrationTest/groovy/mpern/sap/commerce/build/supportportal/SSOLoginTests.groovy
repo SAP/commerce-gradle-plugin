@@ -13,7 +13,7 @@ class SSOLoginTests extends Specification {
 
     def setup() {
         def properties = new Properties()
-        this.getClass().getResource( '/test-user.properties' )?.withInputStream {
+        this.getClass().getResource('/test-user.properties')?.withInputStream {
             properties.load(it)
         }
         username = properties.username

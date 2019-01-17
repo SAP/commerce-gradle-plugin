@@ -19,7 +19,7 @@ class DownloadInfoFileTest extends Specification {
         DownloadInfoFile.infoFileName(original) == expected;
 
         where:
-        original                                               || expected
+        original                                          || expected
         Paths.get("some/folder/file.extension")           || Paths.get("some/folder/file.extension.download-info")
         Paths.get("some/folder/file.extension.extension") || Paths.get("some/folder/file.extension.extension.download-info")
         Paths.get("some/folder/file")                     || Paths.get("some/folder/file.download-info")

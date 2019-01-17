@@ -112,7 +112,7 @@ public class CloudServicesPackagingPlugin implements Plugin<Project> {
         Path packageFolder = extension.getTempFolder().getAsFile().get().toPath().resolve(packageName);
 
         Delete cleanTargetFolder = p.getTasks().create("cleanTempFolder", Delete.class, t -> {
-           t.delete(packageFolder);
+            t.delete(packageFolder);
         });
 
         WriteProperties writeProps = p.getTasks().create("writeMetaData", WriteProperties.class, t -> {
@@ -345,7 +345,7 @@ public class CloudServicesPackagingPlugin implements Plugin<Project> {
             });
             copyDatahubConfig.dependsOn(copyCommonConfig);
 
-            MergePropertyFiles mergeProperties = p.getTasks().create("mergeDatahub_customer.properties_"+environment, MergePropertyFiles.class, t -> {
+            MergePropertyFiles mergeProperties = p.getTasks().create("mergeDatahub_customer.properties_" + environment, MergePropertyFiles.class, t -> {
                 t.getInputFiles().setFrom(Arrays.asList(
                         commonFolder.resolve("customer.properties"),
                         sourceFolder.resolve("customer.properties")

@@ -41,7 +41,7 @@ public class Manifest {
             throw new IllegalArgumentException("Manifest.extensions must have values");
         }
 
-        List<Map<String,Object>> raw = (List<Map<String, Object>>) jsonMap.get("storefrontAddons");
+        List<Map<String, Object>> raw = (List<Map<String, Object>>) jsonMap.get("storefrontAddons");
         List<Addon> addons = raw.stream().map(Addon::fromMap).collect(Collectors.toList());
 
         raw = (List<Map<String, Object>>) jsonMap.get("properties");
@@ -53,7 +53,7 @@ public class Manifest {
         Map<String, Object> rawConfig = (Map<String, Object>) jsonMap.get("tests");
         TestConfiguration tests = Optional.ofNullable(rawConfig).map(TestConfiguration::fromMap).orElse(TestConfiguration.NO_VALUE);
 
-        rawConfig =  (Map<String, Object>) jsonMap.get("webTests");
+        rawConfig = (Map<String, Object>) jsonMap.get("webTests");
         TestConfiguration webTests = Optional.ofNullable(rawConfig).map(TestConfiguration::fromMap).orElse(TestConfiguration.NO_VALUE);
 
         return new Manifest(

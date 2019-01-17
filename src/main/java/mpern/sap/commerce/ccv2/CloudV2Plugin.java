@@ -54,7 +54,7 @@ public class CloudV2Plugin implements Plugin<Project> {
         project.getPlugins().withType(HybrisPlugin.class, hybrisPlugin -> {
             Object byName = project.getExtensions().getByName(HybrisPlugin.HYBRIS_EXTENSION);
             if (byName instanceof HybrisPluginExtension) {
-                project.afterEvaluate(pro -> ((HybrisPluginExtension) byName).getVersion().set(ManifestVersionMapper.mapToBuildVersion(manifest.commerceSuiteVersion)));
+                ((HybrisPluginExtension) byName).getVersion().set(project.provider(() -> manifest.commerceSuiteVersion));
                 configureAddonInstall(project, manifest.storefrontAddons);
                 configureTests(project, manifest.tests);
                 configureWebTests(project, manifest.webTests);

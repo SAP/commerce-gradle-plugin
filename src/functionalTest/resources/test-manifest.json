@@ -78,7 +78,7 @@
         },
         {
           "key": "spring.session.yacceleratorstorefront.save",
-          "value":"async"
+          "value": "async"
         },
         {
           "key": "spring.session.yacceleratorstorefront.cookie.name",
@@ -89,8 +89,8 @@
           "value": "/"
         },
         {
-          "key":"storefrontContextRoot",
-          "value":""
+          "key": "storefrontContextRoot",
+          "value": ""
         }
       ],
       "webapps": [
@@ -124,13 +124,24 @@
     }
   ],
   "tests": {
-    "extensions": ["privacyoverlayeraddon",
-      "yacceleratorstorefront"],
-    "annotations": ["UnitTests", "IntegrationTests"],
-    "packages": ["de.hybris.infra.*"]
+    "extensions": [
+      "privacyoverlayeraddon",
+      "yacceleratorstorefront"
+    ],
+    "annotations": [
+      "UnitTests",
+      "IntegrationTests"
+    ],
+    "packages": [
+      "de.hybris.infra.*"
+    ]
   },
   "webTests": {
-    "extensions": ["yacceleratorstorefront"],
-    "excludedPackages": ["de.hybris.platform.*"]
+    "extensions": [
+      "yacceleratorstorefront"
+    ],
+    "excludedPackages": [
+      "de.hybris.platform.*"
+    ]
   }
 }
