@@ -11,8 +11,17 @@ public class HashUtil {
 
     public static String md5Hash(Path path) throws Exception {
         MessageDigest md = MessageDigest.getInstance("MD5");
+        return hashAndEncode(md, path);
+    }
+
+    public static String sha256Sum(Path path) throws Exception {
+        MessageDigest md = MessageDigest.getInstance("SHA-256");
+        return hashAndEncode(md, path);
+    }
+
+    private static String hashAndEncode(MessageDigest md, Path path) throws Exception {
         try (FileChannel ch = FileChannel.open(path, StandardOpenOption.READ)) {
-            ByteBuffer bb = ByteBuffer.allocateDirect(256 * 1024);
+            ByteBuffer bb = ByteBuffer.allocateDirect(512 * 1024);
             while (ch.read(bb) != -1) {
                 bb.flip();
                 md.update(bb);

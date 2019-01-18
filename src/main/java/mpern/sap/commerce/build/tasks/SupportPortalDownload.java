@@ -15,7 +15,9 @@ import org.gradle.api.provider.Property;
 import org.gradle.api.specs.Spec;
 import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.Internal;
+import org.gradle.api.tasks.Optional;
 import org.gradle.api.tasks.OutputFile;
+import org.gradle.api.tasks.StopExecutionException;
 import org.gradle.api.tasks.TaskAction;
 import org.gradle.api.tasks.TaskExecutionException;
 
@@ -37,6 +39,7 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Base64;
 import java.util.EnumSet;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -50,6 +53,7 @@ public class SupportPortalDownload extends DefaultTask {
     private final Property<String> password;
     private final RegularFileProperty targetFile;
     private final Property<String> md5Hash;
+    private final Property<String> sha256Sum;
     private SSOCredentialsCache credentialsCache;
 
     public SupportPortalDownload() {
@@ -57,27 +61,43 @@ public class SupportPortalDownload extends DefaultTask {
         username = getProject().getObjects().property(String.class);
         password = getProject().getObjects().property(String.class);
         md5Hash = getProject().getObjects().property(String.class);
+        sha256Sum = getProject().getObjects().property(String.class);
         targetFile = newOutputFile();
 
         Spec<Task> hashesMatch = t -> {
+            String md5HashOrNull = md5Hash.getOrNull();
+            String sha256SumOrNull = sha256Sum.getOrNull();
+            if (md5HashOrNull == null && sha256SumOrNull == null) {
+                throw new StopExecutionException("Please define either md5Hash or sha256Sum");
+            }
+
             try {
                 Path target = targetFile.get().getAsFile().toPath();
                 if (!Files.exists(target)) {
                     return false;
                 }
                 DownloadInfoFile infoFile = getInfoFileForTarget();
-                String expectedHash = md5Hash.get();
+                boolean md5 = true;
+                String expectedHash = md5HashOrNull;
+                if (expectedHash == null) {
+                    expectedHash = sha256SumOrNull;
+                    md5 = false;
+                }
                 String fileHash;
                 if (!infoFile.getCachedMd5Hash().isEmpty()) {
                     fileHash = infoFile.getCachedMd5Hash();
-                    getLogger().lifecycle("Using cached hash to compare", fileHash);
+                    getLogger().debug("Using cached hash to compare", fileHash);
                 } else {
-                    getLogger().lifecycle("No valid hash found for {}, recalculating...", target.getFileName());
-                    fileHash = HashUtil.md5Hash(target);
+                    getLogger().debug("No valid hash found for {}, recalculating...", target.getFileName());
+                    if (md5) {
+                        fileHash = HashUtil.md5Hash(target);
+                    } else {
+                        fileHash = HashUtil.sha256Sum(target);
+                    }
                     infoFile.setCachedMd5Hash(fileHash);
                     infoFile.write();
                 }
-                getLogger().lifecycle("{}: Expected md5: {} File md5: {}", target.getFileName(), expectedHash, fileHash);
+                getLogger().debug("{}: Expected hash: {} File hash: {}", target.getFileName(), expectedHash, fileHash);
                 return fileHash.equals(expectedHash);
             } catch (Exception e) {
                 throw new RuntimeException(e);
@@ -103,6 +123,11 @@ public class SupportPortalDownload extends DefaultTask {
     @TaskAction
     public void downloadFile() {
         DownloadInfoFile infoFile = null;
+        String md5HashOrNull = md5Hash.getOrNull();
+        String sha256SumOrNull = sha256Sum.getOrNull();
+        if (md5HashOrNull == null && sha256SumOrNull == null) {
+            throw new StopExecutionException("Please define either md5Hash or sha256Sum");
+        }
         try {
             Path targetPath = targetFile.get().getAsFile().toPath();
             infoFile = getInfoFileForTarget();
@@ -130,11 +155,19 @@ public class SupportPortalDownload extends DefaultTask {
             ZonedDateTime reportedLastModified = ZonedDateTime.parse(infoFile.getLastModified(), DateTimeFormatter.RFC_1123_DATE_TIME);
             Files.setLastModifiedTime(targetPath, FileTime.from(reportedLastModified.toInstant()));
 
-            String hash = HashUtil.md5Hash(targetPath);
-            infoFile.setCachedMd5Hash(hash);
-            String expectedHash = md5Hash.get();
-            if (!hash.equals(expectedHash)) {
-                throw new IllegalStateException(String.format("Download of %s not successful. Hashes don't match. Found: %s Expected: %s", targetPath.getFileName(), hash, expectedHash));
+            String fileHash;
+            String expectedHash;
+
+            if (md5HashOrNull != null) {
+                fileHash = HashUtil.md5Hash(targetPath);
+                expectedHash = md5HashOrNull;
+            } else {
+                fileHash = HashUtil.sha256Sum(targetPath);
+                expectedHash = sha256SumOrNull;
+            }
+            infoFile.setCachedMd5Hash(fileHash);
+            if (!fileHash.equals(expectedHash)) {
+                throw new StopExecutionException(String.format("Download of %s not successful. Hashes don't match. Found: %s Expected: %s", targetPath.getFileName(), fileHash, expectedHash));
             }
         } catch (Exception e) {
             throw new TaskExecutionException(this, e);
@@ -168,17 +201,7 @@ public class SupportPortalDownload extends DefaultTask {
         progressWriter.start();
         try (ReadableByteChannel input = Channels.newChannel(connection.getInputStream());
              FileChannel output = FileChannel.open(tempDownloadFile, EnumSet.of(StandardOpenOption.WRITE, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING))) {
-            ByteBuffer transferBuffer = ByteBuffer.allocateDirect(512 * 1024);
-            int bytesRead = 0;
-            long total = 0;
-            while ((bytesRead = input.read(transferBuffer)) != -1) {
-                transferBuffer.flip();
-                output.write(transferBuffer);
-                transferBuffer.compact();
-                total += bytesRead;
-
-                progressWriter.logProgress(total);
-            }
+            output.transferFrom(input, 0, Long.MAX_VALUE);
         }
         progressWriter.finish();
     }
@@ -234,8 +257,15 @@ public class SupportPortalDownload extends DefaultTask {
     }
 
     @Input
+    @Optional
     public Property<String> getMd5Hash() {
         return md5Hash;
+    }
+
+    @Input
+    @Optional
+    public Property<String> getSha256Sum() {
+        return sha256Sum;
     }
 
     public static final class ConfigureSupportPortalDownload implements TaskExecutionGraphListener {
