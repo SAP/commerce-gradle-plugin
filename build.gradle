@@ -18,6 +18,9 @@ scmVersion {
     checks {
         aheadOfRemote = false
     }
+    scmVersion {
+        localOnly = true
+    }
 }
 
 group = 'mpern.sap.commerce'
