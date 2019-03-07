@@ -42,13 +42,28 @@ public class Manifest {
         }
 
         List<Map<String, Object>> raw = (List<Map<String, Object>>) jsonMap.get("storefrontAddons");
-        List<Addon> addons = raw.stream().map(Addon::fromMap).collect(Collectors.toList());
+        List<Addon> addons;
+        if (raw == null) {
+            addons = Collections.emptyList();
+        } else {
+            addons = raw.stream().map(Addon::fromMap).collect(Collectors.toList());
+        }
 
         raw = (List<Map<String, Object>>) jsonMap.get("properties");
-        List<Property> properties = raw.stream().map(Property::fromMap).collect(Collectors.toList());
+        List<Property> properties;
+        if (raw == null) {
+            properties = Collections.emptyList();
+        } else {
+            properties = raw.stream().map(Property::fromMap).collect(Collectors.toList());
+        }
 
         raw = (List<Map<String, Object>>) jsonMap.get("aspects");
-        List<Aspect> aspects = raw.stream().map(Aspect::fromMap).collect(Collectors.toList());
+        List<Aspect> aspects;
+        if (raw == null) {
+            aspects = Collections.emptyList();
+        } else {
+            aspects = raw.stream().map(Aspect::fromMap).collect(Collectors.toList());
+        }
 
         Map<String, Object> rawConfig = (Map<String, Object>) jsonMap.get("tests");
         TestConfiguration tests = Optional.ofNullable(rawConfig).map(TestConfiguration::fromMap).orElse(TestConfiguration.NO_VALUE);
