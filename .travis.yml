@@ -36,4 +36,4 @@ jobs:
     - stage: publish
       script: ./gradlew publishPlugins "-Pgradle.publish.key=${PUBLISH_KEY}" "-Pgradle.publish.secret=${PUBLISH_SECRET}"
       env: GRADLE_VERSION=5.1.1
-      if: (tag =~ ^v) AND (branch = master)
+      if: (tag =~ /^v.*/) AND (branch = master)

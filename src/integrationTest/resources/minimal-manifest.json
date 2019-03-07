@@ -1,0 +1,10 @@
+{
+  "commerceSuiteVersion": "1811.3",
+  "extensions": [
+    "modeltacceleratorservices",
+    "electronicsstore",
+    "privacyoverlayeraddon",
+    "yacceleratorstorefront",
+    "backoffice"
+  ]
+}
