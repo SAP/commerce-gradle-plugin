@@ -8,20 +8,15 @@ cache:
     - $HOME/.gradle/wrapper/
 
 env:
-  - GRADLE_VERSION=4.5
   - GRADLE_VERSION=4.5.1
   - GRADLE_VERSION=4.6
   - GRADLE_VERSION=4.7
-  - GRADLE_VERSION=4.8
   - GRADLE_VERSION=4.8.1
   - GRADLE_VERSION=4.9
-  - GRADLE_VERSION=4.10
-  - GRADLE_VERSION=4.10.1
-  - GRADLE_VERSION=4.10.2
   - GRADLE_VERSION=4.10.3
   - GRADLE_VERSION=5.0
-  - GRADLE_VERSION=5.1
   - GRADLE_VERSION=5.1.1
+  - GRADLE_VERSION=5.2.1
 
 stages:
   - prepare
@@ -36,4 +31,4 @@ jobs:
     - stage: publish
       script: ./gradlew publishPlugins "-Pgradle.publish.key=${PUBLISH_KEY}" "-Pgradle.publish.secret=${PUBLISH_SECRET}"
       env: GRADLE_VERSION=5.1.1
-      if: (tag =~ ^v) AND (branch = master)
+      if: (tag =~ /^v.*/)

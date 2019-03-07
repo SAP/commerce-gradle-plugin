@@ -4,5 +4,6 @@
 
 .idea
 *.iml
+*.orig
 
 test-user.properties
