@@ -36,6 +36,9 @@ class PackagingTest extends Specification {
         buildFile << """
             plugins {
                 id 'mpern.sap.commerce.ccv1.package'
+                //add java plugin to setup defaults for all packaging tasks
+                //those defaults could potentially break the CCv1 packaging
+                id 'base'
             }
             version = '${version}'
             CCV1 {
@@ -111,6 +114,7 @@ class PackagingTest extends Specification {
 
         then: "package root is package name"
         Files.exists(packageRoot)
+        packageRoot.fileName.toString() == packageName
     }
 
 

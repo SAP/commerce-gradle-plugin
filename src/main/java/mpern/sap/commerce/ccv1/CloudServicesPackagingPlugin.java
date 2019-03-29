@@ -128,6 +128,8 @@ public class CloudServicesPackagingPlugin implements Plugin<Project> {
             z.from(packageFolder);
             z.into(packageName);
             z.setBaseName(packageName);
+            z.setVersion("");
+            z.setClassifier("");
             z.setDestinationDir(extension.getDistributionFolder().getAsFile().get());
         });
 
@@ -149,8 +151,10 @@ public class CloudServicesPackagingPlugin implements Plugin<Project> {
             args.put("format", "MD5SUM");
             args.put("fileext", ".MD5");
             p.getAnt().invokeMethod("checksum", args);
-            Path resolve = zipPackage.getDestinationDir().toPath().resolve(zipPackage.getArchiveName() + ".MD5");
-            Path target = zipPackage.getDestinationDir().toPath().resolve(zipPackage.getBaseName() + ".md5");
+
+            String archiveName = zipPackage.getArchiveName();
+            Path resolve = zipPackage.getDestinationDir().toPath().resolve(archiveName + ".MD5");
+            Path target = zipPackage.getDestinationDir().toPath().resolve(archiveName.substring(0, archiveName.lastIndexOf('.')) + ".md5");
             try {
                 Files.delete(target);
             } catch (IOException e) {
