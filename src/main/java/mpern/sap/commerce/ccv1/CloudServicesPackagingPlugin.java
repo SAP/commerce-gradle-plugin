@@ -27,8 +27,6 @@ import java.util.Set;
 
 public class CloudServicesPackagingPlugin implements Plugin<Project> {
 
-    private static final Logger LOG = Logging.getLogger(CloudServicesPackagingPlugin.class);
-
     public static final String EXTENSION = "CCV1";
     public static final String COMMON_CONFIG = "common";
     public static final String GROUP = "CCV1 Packaging";
@@ -123,6 +121,7 @@ public class CloudServicesPackagingPlugin implements Plugin<Project> {
             t.setOutputFile(packageFolder.resolve("metadata.properties"));
         });
         writeProps.dependsOn(cleanTargetFolder);
+        buildPackage.getInputs().file(writeProps.getOutputFile());
 
         Zip zipPackage = p.getTasks().create("zipCCV1Package", Zip.class, z -> {
             z.from(packageFolder);
@@ -132,43 +131,59 @@ public class CloudServicesPackagingPlugin implements Plugin<Project> {
             z.setClassifier("");
             z.setDestinationDir(extension.getDistributionFolder().getAsFile().get());
         });
-
         zipPackage.dependsOn(writeProps);
+        buildPackage.getOutputs().file(zipPackage.getArchivePath());
 
         setupPlatformPackaging(p, extension, packageFolder, zipPackage, cleanTargetFolder);
+        buildPackage.getInputs().dir(extension.getConfigurationFolder());
+        buildPackage.getInputs().file(extension.getAllExtensionsZip());
+        buildPackage.getInputs().file(extension.getPlatformZip());
+
 
         if (extension.getDatahub().getOrElse(Boolean.FALSE)) {
             setupDatahubPackaging(p, extension, packageFolder, zipPackage, cleanTargetFolder);
+            buildPackage.getInputs().file(extension.getDatahubWar());
         }
 
         if (extension.getSolr().getOrElse(Boolean.FALSE)) {
             setupSolrPackaging(p, extension, packageFolder, zipPackage, cleanTargetFolder);
         }
 
-        Task md5Sum = p.getTasks().create("md5Sum", t -> t.doLast(a -> {
-            Map<String, Object> args = new HashMap<>();
-            args.put("file", zipPackage.getArchivePath());
-            args.put("format", "MD5SUM");
-            args.put("fileext", ".MD5");
-            p.getAnt().invokeMethod("checksum", args);
+        Task md5Sum = p.getTasks().create("md5Sum", t -> {
+
+            Path packagePath = zipPackage.getArchivePath().toPath();
+
+            t.getInputs().file(packagePath);
 
             String archiveName = zipPackage.getArchiveName();
-            Path resolve = zipPackage.getDestinationDir().toPath().resolve(archiveName + ".MD5");
-            Path target = zipPackage.getDestinationDir().toPath().resolve(archiveName.substring(0, archiveName.lastIndexOf('.')) + ".md5");
-            try {
-                Files.delete(target);
-            } catch (IOException e) {
-                //we dont care
-            }
-            try {
-                Files.move(resolve, target);
-            } catch (IOException e) {
-                throw new GradleException("could not move md5 file", e);
-            }
-        }));
+            Path resolve = packagePath.getParent().resolve(archiveName + ".MD5");
+            Path target = packagePath.getParent().resolve(archiveName.substring(0, archiveName.lastIndexOf('.')) + ".md5");
+
+            t.getOutputs().file(target);
+            buildPackage.getOutputs().file(target);
+
+            t.doLast(a -> {
+                Map<String, Object> args = new HashMap<>();
+                args.put("file", zipPackage.getArchivePath());
+                args.put("format", "MD5SUM");
+                args.put("fileext", ".MD5");
+                p.getAnt().invokeMethod("checksum", args);
+                try {
+                    Files.delete(target);
+                } catch (IOException e) {
+                    //we dont care
+                }
+                try {
+                    Files.move(resolve, target);
+                } catch (IOException e) {
+                    throw new GradleException("could not move md5 file", e);
+                }
+            });
+        });
         md5Sum.dependsOn(zipPackage);
 
         buildPackage.dependsOn(md5Sum);
+
     }
 
     private void setupPlatformPackaging(Project p, PackagingExtension extension, Path packageFolder, Task zipPackageFolder, Task cleanTargetFolder) {
@@ -287,35 +302,6 @@ public class CloudServicesPackagingPlugin implements Plugin<Project> {
         }
     }
 
-    private void setupSolrPackaging(Project p, PackagingExtension extension, Path packageFolder, Zip zipPackage, Task cleanTargetFolder) {
-        // FIXME This is only POC for Solr configuration only.
-        Set<String> environments = extension.getEnvironments().get();
-        Path configurationFolder = extension.getConfigurationFolder().getAsFile().get().toPath();
-        for (String environment : environments) {
-            Path sourceFolder = configurationFolder.resolve(environment).resolve("solr");
-            Path commonFolder = configurationFolder.resolve(COMMON_CONFIG).resolve("solr");
-            Path targetFolder = packageFolder.resolve("solr/config/" + environment);
-
-            Copy copySolrCommonConfig = p.getTasks().create("copySolrCommonEnv_" + environment, Copy.class, t -> {
-                t.from(commonFolder);
-                t.into(targetFolder);
-                t.setDuplicatesStrategy(DuplicatesStrategy.INCLUDE);
-                t.exclude(SOLR_CONFIG_EXCLUDE);
-            });
-            copySolrCommonConfig.dependsOn(cleanTargetFolder);
-
-            Copy copySolrConfig = p.getTasks().create("copySolrEnv_" + environment, Copy.class, t -> {
-                t.from(sourceFolder);
-                t.into(targetFolder);
-                t.setDuplicatesStrategy(DuplicatesStrategy.INCLUDE);
-                t.exclude(SOLR_CONFIG_EXCLUDE);
-            });
-            copySolrConfig.dependsOn(copySolrCommonConfig);
-
-            zipPackage.dependsOn(copySolrConfig);
-        }
-    }
-
     private void setupDatahubPackaging(Project p, PackagingExtension extension, Path packageFolder, Zip zipPackage, Task cleanTargetFolder) {
         Copy copyDataHubWar = p.getTasks().create("copyDataHubWar", Copy.class, t -> {
             t.from(extension.getDatahubWar(), s -> s.rename(".*", "datahub-webapp.war"));
@@ -363,6 +349,35 @@ public class CloudServicesPackagingPlugin implements Plugin<Project> {
             mergeProperties.dependsOn(copyDatahubConfig);
 
             zipPackage.dependsOn(mergeProperties);
+        }
+    }
+
+    private void setupSolrPackaging(Project p, PackagingExtension extension, Path packageFolder, Zip zipPackage, Task cleanTargetFolder) {
+        // FIXME This is only POC for Solr configuration only.
+        Set<String> environments = extension.getEnvironments().get();
+        Path configurationFolder = extension.getConfigurationFolder().getAsFile().get().toPath();
+        for (String environment : environments) {
+            Path sourceFolder = configurationFolder.resolve(environment).resolve("solr");
+            Path commonFolder = configurationFolder.resolve(COMMON_CONFIG).resolve("solr");
+            Path targetFolder = packageFolder.resolve("solr/config/" + environment);
+
+            Copy copySolrCommonConfig = p.getTasks().create("copySolrCommonEnv_" + environment, Copy.class, t -> {
+                t.from(commonFolder);
+                t.into(targetFolder);
+                t.setDuplicatesStrategy(DuplicatesStrategy.INCLUDE);
+                t.exclude(SOLR_CONFIG_EXCLUDE);
+            });
+            copySolrCommonConfig.dependsOn(cleanTargetFolder);
+
+            Copy copySolrConfig = p.getTasks().create("copySolrEnv_" + environment, Copy.class, t -> {
+                t.from(sourceFolder);
+                t.into(targetFolder);
+                t.setDuplicatesStrategy(DuplicatesStrategy.INCLUDE);
+                t.exclude(SOLR_CONFIG_EXCLUDE);
+            });
+            copySolrConfig.dependsOn(copySolrCommonConfig);
+
+            zipPackage.dependsOn(copySolrConfig);
         }
     }
 }
