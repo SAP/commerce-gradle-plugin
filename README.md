@@ -5,6 +5,8 @@ and reflects what I (up until now) always did by hand and/or hacked together in 
 
 [![Build Status](https://travis-ci.org/sap-commerce-tools/commerce-gradle-plugin.svg?branch=master)](https://travis-ci.org/sap-commerce-tools/commerce-gradle-plugin)
 
+[![ko-fi](https://www.ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/W7W7VS24)
+
 This projects provides two gradle plugins to ease the life of a hybris developer \
 (**The plugins are already published to https://plugins.gradle.org/**, so you can just use them for your commerce project)
 
