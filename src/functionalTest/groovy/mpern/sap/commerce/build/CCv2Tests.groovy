@@ -9,6 +9,7 @@ import spock.lang.Specification
 import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.Paths
+import java.nio.file.StandardCopyOption
 
 
 class CCv2Tests extends Specification {
@@ -16,19 +17,24 @@ class CCv2Tests extends Specification {
     TemporaryFolder testProjectDir = new TemporaryFolder()
     File buildFile
 
-    String manifestVersion = "18.08.0"
-
     GradleRunner runner
+
+    Path testProjectPath
 
     def setup() {
         buildFile = testProjectDir.newFile('build.gradle')
 
         def deps = testProjectDir.newFolder("dependencies").toPath()
 
-        TestUtils.generateDummyPlatform(deps, "18.08.0")
+        TestUtils.generateDummyPlatform(deps, "1808.0")
+
+        TestUtils.generateDummyPlatform(deps, "1905.1")
+        TestUtils.generateDummyExtensionPack(deps, "1905.6")
+
+        testProjectPath = testProjectDir.root.toPath()
 
         Path dummy = Paths.get(TestUtils.class.getResource("/test-manifest.json").toURI())
-        Files.copy(dummy, testProjectDir.root.toPath().resolve("manifest.json"))
+        Files.copy(dummy, testProjectPath.resolve("manifest.json"))
 
         buildFile << """
             plugins {
@@ -120,5 +126,57 @@ class CCv2Tests extends Specification {
         localExtensions.contains("<extension name='privacyoverlayeraddon' />")
         localExtensions.contains("<extension name='yacceleratorstorefront' />")
         localExtensions.contains("<extension name='backoffice' />")
+    }
+
+    def "useCloudExtensionPack triggers unpack and setup of extension pack"() {
+        given: "manifest with enabled cloud extenison pack"
+        enableCep()
+
+
+        when: "running bootstrap task"
+        def result = runner
+                .withArguments("bootstrapPlatform", "--stacktrace")
+                .build()
+        def cepFolder = testProjectPath.resolve("cloud-extension-pack")
+
+        then: "cloud extension pack is resolved correctly and expanded to build folder"
+        Files.exists(cepFolder)
+        Files.exists(cepFolder.resolve(Paths.get("hybris", "bin", "modules", "sap-ccv2-hotfolder", "azurecloudhotfolder", "extensioninfo.xml")))
+    }
+
+    def enableCep() {
+        Path dummy = Paths.get(TestUtils.class.getResource("/cloud-extension-pack-manifest.json").toURI())
+        Files.copy(dummy, testProjectDir.root.toPath().resolve("manifest.json"), StandardCopyOption.REPLACE_EXISTING)
+    }
+
+    def "useCloudExtensionPack patches localextensions.xml to load extension pack"() {
+        given: "localextensions.xml present"
+        enableCep()
+        def configDir = testProjectDir.newFolder("hybris", "config")
+        def localExtensions = new File(configDir, "localextensions.xml")
+        localExtensions << """<?xml version="1.0" encoding="UTF-8"?>
+        <hybrisconfig xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                      xsi:noNamespaceSchemaLocation="resources/schemas/extensions.xsd">
+            <extensions>
+                <path dir="\${HYBRIS_BIN_DIR}" />
+                <extension name='dummy' />
+            </extensions>
+        </hybrisconfig>
+        """.stripIndent()
+
+        when: "running bootstrap task"
+        runner.withArguments("bootstrapPlatform", "--stacktrace")
+                .build()
+        def local = new XmlSlurper().parse(localExtensions)
+
+        then: "plugin patches localextensions.xml to load cloud extension pack first"
+        local.extensions.path[0].'@dir' == '${HYBRIS_BIN_DIR}/../../cloud-extension-pack'
+        local.extensions.path[1].'@dir' == '${HYBRIS_BIN_DIR}'
+        cepDirResolvesCorrectly(local.extensions.path[0].'@dir'.toString())
+    }
+
+    void cepDirResolvesCorrectly(folderName) {
+        folderName = folderName.replace('${HYBRIS_BIN_DIR}', testProjectDir.root.toPath().resolve(Paths.get("hybris", "bin")).toString())
+        assert Files.exists(Paths.get(folderName))
     }
 }

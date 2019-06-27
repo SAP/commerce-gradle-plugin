@@ -11,11 +11,15 @@ import mpern.sap.commerce.ccv2.model.Property;
 import mpern.sap.commerce.ccv2.model.TestConfiguration;
 import mpern.sap.commerce.ccv2.model.Webapp;
 import mpern.sap.commerce.ccv2.tasks.GenerateLocalextensions;
+import mpern.sap.commerce.ccv2.tasks.PatchLocalExtensions;
 import org.gradle.api.Action;
 import org.gradle.api.InvalidUserDataException;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
 import org.gradle.api.Task;
+import org.gradle.api.artifacts.Configuration;
+import org.gradle.api.tasks.Copy;
+import org.gradle.api.tasks.Delete;
 import org.gradle.api.tasks.WriteProperties;
 
 import java.io.File;
@@ -27,11 +31,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
+import java.util.stream.Collectors;
 
 public class CloudV2Plugin implements Plugin<Project> {
 
     private static final String GROUP = "CCv2 Build";
     private static final String MANIFEST_PATH = "manifest.json";
+    public static final String EXTENSION_PACK = "cloudExtensionPack";
 
     private CCv2Extension extension;
 
@@ -49,6 +55,16 @@ public class CloudV2Plugin implements Plugin<Project> {
 
         extension = project.getExtensions().create("CCV2", CCv2Extension.class, project, manifest);
         extension.getGeneratedConfiguration().set(project.file("generated-configuration"));
+        extension.getCloudExtensionPackFolder().set(project.file("cloud-extension-pack"));
+
+        final Configuration extensionPack = project.getConfigurations().create(EXTENSION_PACK);
+        extensionPack.defaultDependencies(deps -> {
+            //de/hybris/platform/hybris-cloud-extension-pack/1905.06/
+            String commerceSuiteVersion = manifest.commerceSuiteVersion;
+            String cepVersion = commerceSuiteVersion.replaceAll("(.+)(\\.\\d\\d)?", "$1.+");
+
+            deps.add(project.getDependencies().create("de.hybris.platform:hybris-cloud-extension-pack:" + cepVersion + "@zip"));
+        });
 
 
         project.getPlugins().withType(HybrisPlugin.class, hybrisPlugin -> {
@@ -58,6 +74,7 @@ public class CloudV2Plugin implements Plugin<Project> {
                 configureAddonInstall(project, manifest.storefrontAddons);
                 configureTests(project, manifest.tests);
                 configureWebTests(project, manifest.webTests);
+                configureCloudExtensionPackBootstrap(project, manifest.useCloudExtensionPack);
             }
         });
         configurePropertyFileGeneration(project, manifest);
@@ -91,23 +108,6 @@ public class CloudV2Plugin implements Plugin<Project> {
         allTests.setDescription("run ant alltests with manifest configuration");
     }
 
-    private Action<HybrisAntTask> configureTest(TestConfiguration tests) {
-        return t -> {
-            String extensions = String.join(",", tests.extensions);
-            String annotations = String.join(",", tests.annotations);
-            String packages = String.join(",", tests.packages);
-            Set<String> ex = new LinkedHashSet<>(tests.excludedPackages);
-            ex.add("de.hybris.*");
-            ex.add("com.hybris.*");
-            String excludedPackages = String.join(",", ex);
-
-            t.antProperty("testclasses.extensions", extensions);
-            t.antProperty("testclasses.annotations", annotations);
-            t.antProperty("testclasses.packages", packages);
-            t.antProperty("testclasses.packages.excluded", excludedPackages);
-        };
-    }
-
     private void configureWebTests(Project project, TestConfiguration test) {
         if (test == TestConfiguration.NO_VALUE) {
             return;
@@ -116,6 +116,47 @@ public class CloudV2Plugin implements Plugin<Project> {
         allWebTests.setArgs(Collections.singletonList("allwebtests"));
         allWebTests.setGroup(GROUP);
         allWebTests.setDescription("run ant allwebtests with manifest configuration");
+    }
+
+    private void configureCloudExtensionPackBootstrap(Project project, boolean useCloudExtensionPack) {
+        if (!useCloudExtensionPack) {
+            return;
+        }
+        Task cleanCep = project.getTasks().create("cleanCloudExtensionPack", Delete.class, d -> {
+            d.delete(extension.getCloudExtensionPackFolder().getAsFile());
+        });
+        Copy unpackCep = project.getTasks().create("unpackCloudExtensionPack", Copy.class, c -> {
+            c.dependsOn(cleanCep);
+            c.from(project.provider(() -> project.getConfigurations()
+                            .getByName(EXTENSION_PACK)
+                            .getFiles()
+                            .stream()
+                            .map(project::zipTree)
+                            .collect(Collectors.toSet())
+                    )
+            );
+            c.into(extension.getCloudExtensionPackFolder().getAsFile());
+            c.doLast(a -> project.getConfigurations().getByName(EXTENSION_PACK)
+                    .getResolvedConfiguration()
+                    .getFirstLevelModuleDependencies()
+                    .forEach(r -> a.getLogger().lifecycle("Using Cloud Extension Pack: {}", r.getModuleVersion())));
+        });
+
+        Task bootstrapPlatform = project.getTasks().getByName("bootstrapPlatform");
+        bootstrapPlatform.dependsOn(unpackCep);
+        String reservedTypeCodes = "hybris/bin/platform/ext/core/resources/core/unittest/reservedTypecodes.txt";
+        Copy copyTypeCodes = project.getTasks().create("copyCEPTypeCode", Copy.class, c -> {
+            c.mustRunAfter(unpackCep);
+            c.mustRunAfter("unpackPlatform");
+            c.from(extension.getCloudExtensionPackFolder().file(reservedTypeCodes));
+            c.into(project.file(reservedTypeCodes).getParent());
+        });
+        bootstrapPlatform.dependsOn(copyTypeCodes);
+        PatchLocalExtensions patch = project.getTasks().create("patchLocalExtensions", PatchLocalExtensions.class, p -> {
+           p.getTarget().set(project.file("hybris/config/localextensions.xml"));
+           p.getCepFolder().set(extension.getCloudExtensionPackFolder());
+        });
+        bootstrapPlatform.dependsOn(patch);
     }
 
     private void configurePropertyFileGeneration(Project project, Manifest manifest) {
@@ -150,10 +191,6 @@ public class CloudV2Plugin implements Plugin<Project> {
         }
     }
 
-    private String propertyFileKey(String prefix, String suffix) {
-        return suffix.isEmpty() ? prefix : prefix + "_" + suffix;
-    }
-
     private void configureExtensionGeneration(Project project, Manifest manifest) {
         project.getTasks().create("generateCloudLocalextensions", GenerateLocalextensions.class, t -> {
             t.setGroup(GROUP);
@@ -162,5 +199,26 @@ public class CloudV2Plugin implements Plugin<Project> {
             t.getTarget().set(extension.getGeneratedConfiguration().file("localextensions.xml"));
             t.getCloudExtensions().set(manifest.extensions);
         });
+    }
+
+    private Action<HybrisAntTask> configureTest(TestConfiguration tests) {
+        return t -> {
+            String extensions = String.join(",", tests.extensions);
+            String annotations = String.join(",", tests.annotations);
+            String packages = String.join(",", tests.packages);
+            Set<String> ex = new LinkedHashSet<>(tests.excludedPackages);
+            ex.add("de.hybris.*");
+            ex.add("com.hybris.*");
+            String excludedPackages = String.join(",", ex);
+
+            t.antProperty("testclasses.extensions", extensions);
+            t.antProperty("testclasses.annotations", annotations);
+            t.antProperty("testclasses.packages", packages);
+            t.antProperty("testclasses.packages.excluded", excludedPackages);
+        };
+    }
+
+    private String propertyFileKey(String prefix, String suffix) {
+        return suffix.isEmpty() ? prefix : prefix + "_" + suffix;
     }
 }
