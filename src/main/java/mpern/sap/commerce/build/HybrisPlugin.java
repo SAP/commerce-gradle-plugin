@@ -40,7 +40,17 @@ public class HybrisPlugin implements Plugin<Project> {
 
         final Configuration dbDrivers = project.getConfigurations().create("dbDriver")
                 .setDescription("JDBC Drivers. Automatically downloaded and configured during bootstrap");
-        hybrisPlatform.defaultDependencies(dependencies -> dependencies.add(project.getDependencies().create("de.hybris.platform:hybris-commerce-suite:" + extension.getVersion().get() + "@zip")));
+        hybrisPlatform.defaultDependencies(dependencies -> {
+            String v = extension.getVersion().get();
+            Version version = Version.parseVersion(v);
+            if (version.getPatch() == Integer.MAX_VALUE) {
+                if (!v.endsWith(".")) {
+                    v += ".";
+                }
+                v += "+";
+            }
+            dependencies.add(project.getDependencies().create("de.hybris.platform:hybris-commerce-suite:" + v + "@zip"));
+        });
 
         Task bootstrap = project.task("bootstrapPlatform");
         bootstrap.setGroup(HYBRIS_BOOTSTRAP);
@@ -67,7 +77,7 @@ public class HybrisPlugin implements Plugin<Project> {
         unpackPlatform.mustRunAfter(cleanOnVersionChange);
 
         project.afterEvaluate(p -> unpackPlatform.doLast(t -> project.copy(c -> {
-            c.from(project.provider(() -> hybrisPlatform.getFiles().stream().map(o -> t.getProject().zipTree(o)).collect(Collectors.toSet())));
+            c.from(project.provider(() -> hybrisPlatform.getFiles().stream().map(project::zipTree).collect(Collectors.toSet())));
             c.into(t.getProject().getProjectDir());
             c.include(extension.getBootstrapInclude().get());
             c.exclude(extension.getBootstrapExclude().get());
@@ -147,8 +157,17 @@ public class HybrisPlugin implements Plugin<Project> {
         } catch (IllegalArgumentException e) {
             required = Version.UNDEFINED;
         }
-        logger.lifecycle("current version: {}; required version: {} -> {}", current, required, current.equals(required) ? "MATCH" : "MISMATCH");
-        return !current.equals(required);
+
+        boolean exactMatch = current.equals(required);
+        boolean nearMatch = current.equalsIgnorePatch(required) && required.getPatch() == Integer.MAX_VALUE;
+
+        if (nearMatch) {
+            logger.lifecycle("current version {}; required version: {} -> {}", current, required, "NEAR MATCH");
+            logger.lifecycle("required version does not specify patch level; treating as equal");
+        } else {
+            logger.lifecycle("current version: {}; required version: {} -> {}", current, required, current.equals(required) ? "MATCH" : "MISMATCH");
+        }
+        return !(exactMatch || nearMatch);
     }
 
 }

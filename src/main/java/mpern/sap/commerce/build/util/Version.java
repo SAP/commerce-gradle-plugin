@@ -35,20 +35,21 @@ public class Version implements Comparable<Version> {
         Matcher newV = NEW_VERSION.matcher(v);
 
         if (newV.matches()) {
-            int patch = 0;
+            int patch = Integer.MAX_VALUE;
+
             if (newV.groupCount() > 3 && newV.group(4) != null) {
                 patch = Integer.parseInt(newV.group(4));
             }
             return new Version(Integer.parseInt(newV.group(1)), Integer.parseInt(newV.group(2)), 0, patch, v);
         } else if (oldV.matches()) {
-            int patch = 0;
+            int patch = Integer.MAX_VALUE;
             if (oldV.groupCount() > 4 && oldV.group(5) != null) {
                 patch = Integer.parseInt(oldV.group(5));
             }
             return new Version(Integer.parseInt(oldV.group(1)), Integer.parseInt(oldV.group(2)), Integer.parseInt(oldV.group(3)), patch, v);
         }
         String[] split = v.split("\\.");
-        int major = 0, minor = 0, release = 0, patch = 0;
+        int major = Integer.MAX_VALUE, minor = Integer.MAX_VALUE, release = Integer.MAX_VALUE, patch = Integer.MAX_VALUE;
         switch (split.length) {
             case 4:
                 patch = Integer.parseInt(split[3]);
@@ -68,6 +69,15 @@ public class Version implements Comparable<Version> {
     @Override
     public int compareTo(Version o) {
         return VERSION_COMPARATOR.compare(this, o);
+    }
+
+    public boolean equalsIgnorePatch(Version o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Version version = (Version) o;
+        return major == version.major &&
+                minor == version.minor &&
+                release == version.release;
     }
 
     @Override

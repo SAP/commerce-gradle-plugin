@@ -17,6 +17,7 @@ class ManifestParseSpec extends Specification {
         then:
         with(m) {
             commerceSuiteVersion == "6.7.0.1"
+            useCloudExtensionPack == false
             extensions == [
                     "modeltacceleratorservices",
                     "electronicsstore",
@@ -166,6 +167,7 @@ class ManifestParseSpec extends Specification {
         then:
         with(m) {
             commerceSuiteVersion == "1811.3"
+            useCloudExtensionPack == true
             extensions == [
                     "modeltacceleratorservices",
                     "electronicsstore",
@@ -179,6 +181,5 @@ class ManifestParseSpec extends Specification {
             tests == TestConfiguration.NO_VALUE
             webTests == TestConfiguration.NO_VALUE
         }
-
     }
 }
