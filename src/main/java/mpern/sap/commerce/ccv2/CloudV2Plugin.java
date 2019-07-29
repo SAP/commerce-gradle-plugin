@@ -1,6 +1,7 @@
 package mpern.sap.commerce.ccv2;
 
 import groovy.json.JsonSlurper;
+import groovy.lang.Tuple2;
 import mpern.sap.commerce.build.HybrisPlugin;
 import mpern.sap.commerce.build.HybrisPluginExtension;
 import mpern.sap.commerce.build.tasks.HybrisAntTask;
@@ -21,10 +22,12 @@ import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.tasks.Copy;
 import org.gradle.api.tasks.Delete;
 import org.gradle.api.tasks.WriteProperties;
+import org.gradle.internal.impldep.aQute.lib.strings.Strings;
 
 import java.io.File;
 import java.time.Instant;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -35,10 +38,9 @@ import java.util.stream.Collectors;
 
 public class CloudV2Plugin implements Plugin<Project> {
 
+    public static final String EXTENSION_PACK = "cloudExtensionPack";
     private static final String GROUP = "CCv2 Build";
     private static final String MANIFEST_PATH = "manifest.json";
-    public static final String EXTENSION_PACK = "cloudExtensionPack";
-
     private CCv2Extension extension;
 
     @Override
@@ -88,12 +90,23 @@ public class CloudV2Plugin implements Plugin<Project> {
         Task installManifestAddons = project.getTasks().create("installManifestAddons");
         installManifestAddons.setGroup(GROUP);
         installManifestAddons.setDescription("runs ant addoninstall for all addons configured in manifest.json");
+
+        Map<Tuple2<String, String>, Set<String>> addonsPerStorefront = new HashMap<>();
         for (Addon c : storefrontAddons) {
-            HybrisAntTask install = project.getTasks().create(String.format("addonInstall_%s_%s_%s", c.addon, c.storefront, c.template), HybrisAntTask.class, t -> {
-                t.args("addoninstall");
-                t.antProperty("addonnames", c.addon);
-                t.antProperty("addonStorefront." + c.template, c.storefront);
-            });
+            Tuple2<String, String> templateStorefront = new Tuple2<>(c.template, c.storefront);
+            addonsPerStorefront.computeIfAbsent(templateStorefront, t -> new LinkedHashSet<>()).add(c.addon);
+        }
+        for (Map.Entry<Tuple2<String, String>, Set<String>> tuple2SetEntry : addonsPerStorefront.entrySet()) {
+            Tuple2<String, String> templateStorefront = tuple2SetEntry.getKey();
+            Set<String> addons = tuple2SetEntry.getValue();
+            HybrisAntTask install = project.getTasks().create(
+                    String.format("addonInstall_%s_%s", templateStorefront.getFirst(), templateStorefront.getSecond()),
+                    HybrisAntTask.class,
+                    t -> {
+                        t.args("addoninstall");
+                        t.antProperty("addonnames", Strings.join(",", addons));
+                        t.antProperty("addonStorefront." + templateStorefront.getFirst(), templateStorefront.getSecond());
+                    });
             installManifestAddons.dependsOn(install);
         }
     }
@@ -153,8 +166,8 @@ public class CloudV2Plugin implements Plugin<Project> {
         });
         bootstrapPlatform.dependsOn(copyTypeCodes);
         PatchLocalExtensions patch = project.getTasks().create("patchLocalExtensions", PatchLocalExtensions.class, p -> {
-           p.getTarget().set(project.file("hybris/config/localextensions.xml"));
-           p.getCepFolder().set(extension.getCloudExtensionPackFolder());
+            p.getTarget().set(project.file("hybris/config/localextensions.xml"));
+            p.getCepFolder().set(extension.getCloudExtensionPackFolder());
         });
         bootstrapPlatform.dependsOn(patch);
     }
