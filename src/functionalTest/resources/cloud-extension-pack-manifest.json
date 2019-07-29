@@ -1,33 +1,6 @@
 {
-  "commerceSuiteVersion": "1808.0",
-  "extensions": [
-    "modeltacceleratorservices",
-    "electronicsstore",
-    "privacyoverlayeraddon",
-    "yacceleratorstorefront",
-    "backoffice"
-  ],
-  "properties": [
-    {
-      "key": "common.property",
-      "value": "common.property.value"
-    },
-    {
-      "key": "test.property.1",
-      "value": "test.property.1.value",
-      "persona": "production"
-    },
-    {
-      "key": "test.property.2",
-      "value": "test.property.2.value",
-      "persona": "development"
-    },
-    {
-      "key": "test.property.2",
-      "value": "test.property.2.value.in.prod.only",
-      "persona": "production"
-    }
-  ],
+  "commerceSuiteVersion": "1905",
+  "useCloudExtensionPack": true,
   "storefrontAddons": [
     {
       "addon": "privacyoverlayeraddon",

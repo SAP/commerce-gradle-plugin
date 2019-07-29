@@ -12,6 +12,7 @@ import static mpern.sap.commerce.ccv2.model.util.ParseUtils.validateNullOrWhites
 
 public class Manifest {
     public final String commerceSuiteVersion;
+    public final boolean useCloudExtensionPack;
     public final Set<String> extensions;
 
     public final List<Addon> storefrontAddons;
@@ -24,8 +25,9 @@ public class Manifest {
 
     public final TestConfiguration webTests;
 
-    public Manifest(String commerceSuiteVersion, Set<String> extensions, List<Addon> storefrontAddons, List<Property> properties, List<Aspect> aspects, TestConfiguration tests, TestConfiguration webTests) {
+    public Manifest(String commerceSuiteVersion, boolean useCloudExtensionPack, Set<String> extensions, List<Addon> storefrontAddons, List<Property> properties, List<Aspect> aspects, TestConfiguration tests, TestConfiguration webTests) {
         this.commerceSuiteVersion = commerceSuiteVersion;
+        this.useCloudExtensionPack = useCloudExtensionPack;
         this.extensions = Collections.unmodifiableSet(extensions);
         this.storefrontAddons = Collections.unmodifiableList(storefrontAddons);
         this.properties = Collections.unmodifiableList(properties);
@@ -36,9 +38,19 @@ public class Manifest {
 
     public static Manifest fromMap(Map<String, Object> jsonMap) {
         String version = validateNullOrWhitespace((String) jsonMap.get("commerceSuiteVersion"), "Manifest.commerceSuiteVersion must have a value");
+        boolean useExtensionPack = false;
+        Object rawBool = jsonMap.get("useCloudExtensionPack");
+        if (rawBool != null ) {
+            if (! (rawBool instanceof Boolean)) {
+                throw new IllegalArgumentException("Manifest.useCloudExtensionPack must be a boolean value");
+            }
+            useExtensionPack = (boolean) rawBool;
+
+        }
+        //TODO: check useConfig
         Set<String> extensions = emptyOrSet((List<String>) jsonMap.get("extensions"));
         if (extensions.isEmpty()) {
-            throw new IllegalArgumentException("Manifest.extensions must have values");
+
         }
 
         List<Map<String, Object>> raw = (List<Map<String, Object>>) jsonMap.get("storefrontAddons");
@@ -73,6 +85,7 @@ public class Manifest {
 
         return new Manifest(
                 version,
+                useExtensionPack,
                 extensions,
                 addons,
                 properties,
