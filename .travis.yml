@@ -1,4 +1,8 @@
 language: java
+
+jdk:
+  - openjdk8
+
 before_cache:
   - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
   - rm -fr $HOME/.gradle/caches/*/plugin-resolution/
@@ -19,6 +23,7 @@ env:
   - GRADLE_VERSION=5.2.1
   - GRADLE_VERSION=5.3.1
   - GRADLE_VERSION=5.4.1
+  - GRADLE_VERSION=5.5.1
 
 stages:
   - prepare
@@ -32,5 +37,5 @@ jobs:
       env: GRADLE_VERSION=4.5.1
     - stage: publish
       script: ./gradlew publishPlugins "-Pgradle.publish.key=${PUBLISH_KEY}" "-Pgradle.publish.secret=${PUBLISH_SECRET}"
-      env: GRADLE_VERSION=5.4.1
+      env: GRADLE_VERSION=5.5.1
       if: (tag =~ /^v.*/)
