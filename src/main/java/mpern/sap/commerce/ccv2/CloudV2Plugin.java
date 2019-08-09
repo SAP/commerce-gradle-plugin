@@ -22,7 +22,6 @@ import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.tasks.Copy;
 import org.gradle.api.tasks.Delete;
 import org.gradle.api.tasks.WriteProperties;
-import org.gradle.internal.impldep.aQute.lib.strings.Strings;
 
 import java.io.File;
 import java.time.Instant;
@@ -104,7 +103,7 @@ public class CloudV2Plugin implements Plugin<Project> {
                     HybrisAntTask.class,
                     t -> {
                         t.args("addoninstall");
-                        t.antProperty("addonnames", Strings.join(",", addons));
+                        t.antProperty("addonnames", String.join(",", addons));
                         t.antProperty("addonStorefront." + templateStorefront.getFirst(), templateStorefront.getSecond());
                     });
             installManifestAddons.dependsOn(install);
