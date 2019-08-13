@@ -3,9 +3,9 @@ and reflects what I (up until now) always did by hand and/or hacked together in 
 
 # Gradle Plugins for SAP (Hybris) Commerce 1.5.0
 
-[![Build Status](https://travis-ci.org/sap-commerce-tools/commerce-gradle-plugin.svg?branch=master)](https://travis-ci.org/sap-commerce-tools/commerce-gradle-plugin)
+[![Actions Status](https://wdp9fww0r9.execute-api.us-west-2.amazonaws.com/production/badge/sap-commerce-tools/commerce-gradle-plugin)](https://wdp9fww0r9.execute-api.us-west-2.amazonaws.com/production/results/sap-commerce-tools/commerce-gradle-plugin)
 
-[![ko-fi](https://www.ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/W7W7VS24)
+> Shout out to [@CultureHQ](https://github.com/CultureHQ) for providing [github-actions-badge](https://github.com/CultureHQ/github-actions-badge)
 
 This projects provides two gradle plugins to ease the life of a hybris developer \
 (**The plugins are already published to https://plugins.gradle.org/**, so you can just use them for your commerce project)
