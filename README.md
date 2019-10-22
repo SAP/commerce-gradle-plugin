@@ -1,7 +1,7 @@
 **Disclaimer**: *This is in no way, shape or form an official plugin provided by SAP. It is just something I came up with in my spare time,
 and reflects what I (up until now) always did by hand and/or hacked together in ad-hoc build scripts.*
 
-# Gradle Plugins for SAP (Hybris) Commerce 1.5.0
+# Gradle Plugins for SAP (Hybris) Commerce 1.5.1
 
 [![Actions Status](https://github.com/sap-commerce-tools/commerce-gradle-plugin/workflows/Gradle%20CI/badge.svg)](https://github.com/sap-commerce-tools/commerce-gradle-plugin/actions)
 
