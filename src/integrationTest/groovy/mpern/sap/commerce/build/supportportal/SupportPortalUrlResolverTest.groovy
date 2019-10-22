@@ -26,7 +26,7 @@ class SupportPortalUrlResolverTest extends Specification {
 
     def "resolve should find URI for softwaredownloads.sap.com"() {
         given:
-        assumeTrue(username != null && password != null)
+        assumeTrue(username != null && !(username.isBlank()) && password != null && !password.isBlank())
 
         //HYBRIS COMMERCE 1808 Maintenance Software Component via searching for "hybris 1808" in https://launchpad.support.sap.com/
 //        def source = new URI("https://launchpad.support.sap.com/#/softwarecenter/template/products/%20_APP=00200682500000001943&_EVENT=DISPHIER&HEADER=Y&FUNCTIONBAR=N&EVENT=TREE&NE=NAVIGATE&ENR=73555000100200008593&V=MAINT&TA=ACTUAL&PAGE=SEARCH/HYBRIS%20COMMERCE%201808")

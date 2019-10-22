@@ -120,3 +120,9 @@ check.dependsOn functionalTest
 gradlePlugin {
     testSourceSets sourceSets.functionalTest
 }
+
+tasks.withType(Test) {
+    testLogging {
+        events "passed", "failed", "skipped", "standardError"
+    }
+}
