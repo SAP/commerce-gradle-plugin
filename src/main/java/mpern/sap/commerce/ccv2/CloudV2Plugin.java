@@ -39,7 +39,7 @@ public class CloudV2Plugin implements Plugin<Project> {
 
     public static final String EXTENSION_PACK = "cloudExtensionPack";
     private static final String GROUP = "CCv2 Build";
-    private static final String MANIFEST_PATH = "manifest.json";
+    private static final String MANIFEST_PATH = "core-customize/manifest.json";
     private CCv2Extension extension;
 
     @Override
