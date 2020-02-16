@@ -5,6 +5,7 @@ import org.gradle.api.DefaultTask;
 import org.gradle.api.GradleException;
 import org.gradle.api.file.DirectoryProperty;
 import org.gradle.api.file.RegularFileProperty;
+import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.TaskAction;
 import org.w3c.dom.Comment;
 import org.w3c.dom.Document;
@@ -30,8 +31,8 @@ public class PatchLocalExtensions extends DefaultTask {
 
 
     public PatchLocalExtensions() {
-        this.target = newInputFile();
-        this.cepFolder = newInputDirectory();
+        this.target = getProject().getObjects().fileProperty();
+        this.cepFolder = getProject().getObjects().directoryProperty();
     }
 
     @TaskAction
@@ -97,10 +98,12 @@ public class PatchLocalExtensions extends DefaultTask {
         transformer.transform(source, result);
     }
 
+    @Input
     public RegularFileProperty getTarget() {
         return target;
     }
 
+    @Input
     public DirectoryProperty getCepFolder() {
         return cepFolder;
     }

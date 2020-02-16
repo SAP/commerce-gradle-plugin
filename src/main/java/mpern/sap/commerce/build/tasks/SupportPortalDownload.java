@@ -62,7 +62,7 @@ public class SupportPortalDownload extends DefaultTask {
         password = getProject().getObjects().property(String.class);
         md5Hash = getProject().getObjects().property(String.class);
         sha256Sum = getProject().getObjects().property(String.class);
-        targetFile = newOutputFile();
+        targetFile = getProject().getObjects().fileProperty();
 
         Spec<Task> hashesMatch = t -> {
             String md5HashOrNull = md5Hash.getOrNull();

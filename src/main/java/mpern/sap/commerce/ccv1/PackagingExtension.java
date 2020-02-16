@@ -40,15 +40,15 @@ public class PackagingExtension {
 
         packageName = project.provider(() -> buildPackageName(project));
 
-        datahubWar = project.getLayout().fileProperty();
-        platformZip = project.getLayout().fileProperty();
-        allExtensionsZip = project.getLayout().fileProperty();
+        datahubWar = project.getObjects().fileProperty();
+        platformZip = project.getObjects().fileProperty();
+        allExtensionsZip = project.getObjects().fileProperty();
 
         environments = project.getObjects().setProperty(String.class);
 
-        configurationFolder = project.getLayout().directoryProperty();
-        distributionFolder = project.getLayout().directoryProperty();
-        tempFolder = project.getLayout().directoryProperty();
+        configurationFolder = project.getObjects().directoryProperty();
+        distributionFolder = project.getObjects().directoryProperty();
+        tempFolder = project.getObjects().directoryProperty();
     }
 
     public Property<Boolean> getDatahub() {

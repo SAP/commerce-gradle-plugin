@@ -23,7 +23,7 @@ public class GlobClean extends DefaultTask {
 
     public GlobClean() {
         glob = getProject().getObjects().property(String.class);
-        baseFolder = newInputDirectory();
+        baseFolder = getProject().getObjects().directoryProperty();
     }
 
     @TaskAction

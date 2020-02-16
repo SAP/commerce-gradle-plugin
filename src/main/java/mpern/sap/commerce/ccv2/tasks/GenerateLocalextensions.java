@@ -30,7 +30,7 @@ public class GenerateLocalextensions extends DefaultTask {
     private final SetProperty<String> cloudExtensions;
 
     public GenerateLocalextensions() {
-        target = newOutputFile();
+        target = getProject().getObjects().fileProperty();
         cloudExtensions = getProject().getObjects().setProperty(String.class);
     }
 

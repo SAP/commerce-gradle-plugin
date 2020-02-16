@@ -15,8 +15,8 @@ public class CCv2Extension {
 
     @Inject
     public CCv2Extension(Project project, Manifest manifest) {
-        generatedConfiguration = project.getLayout().directoryProperty();
-        cloudExtensionPackFolder = project.getLayout().directoryProperty();
+        generatedConfiguration = project.getObjects().directoryProperty();
+        cloudExtensionPackFolder = project.getObjects().directoryProperty();
         this.manifest = manifest;
     }
 
