@@ -28,9 +28,9 @@ class SupportPortalUrlResolverTest extends Specification {
         given:
         assumeTrue(username != null && !(username.isBlank()) && password != null && !password.isBlank())
 
-        //HYBRIS COMMERCE 1808 Maintenance Software Component via searching for "hybris 1808" in https://launchpad.support.sap.com/
-//        def source = new URI("https://launchpad.support.sap.com/#/softwarecenter/template/products/%20_APP=00200682500000001943&_EVENT=DISPHIER&HEADER=Y&FUNCTIONBAR=N&EVENT=TREE&NE=NAVIGATE&ENR=73555000100200008593&V=MAINT&TA=ACTUAL&PAGE=SEARCH/HYBRIS%20COMMERCE%201808")
-        def source = new URI("https://launchpad.support.sap.com/#/softwarecenter/template/products/%20_APP=00200682500000001943&_EVENT=DISPHIER&HEADER=Y&FUNCTIONBAR=N&EVENT=TREE&NE=NAVIGATE&ENR=73555000100200008592&V=MAINT&TA=ACTUAL&PAGE=SEARCH/HYBRIS%20DATAHUB%201808")
+        //CX COMMERCE 1905 (SUPPORT PACKAGES AND PATCHES)
+        //https://launchpad.support.sap.com/ -> search for "CX COMM" in "Downloads"
+       def source = new URI("https://launchpad.support.sap.com/#/softwarecenter/template/products/%20_APP=00200682500000001943&_EVENT=DISPHIER&HEADER=Y&FUNCTIONBAR=N&EVENT=TREE&NE=NAVIGATE&ENR=73555000100200010345&V=MAINT&TA=ACTUAL&PAGE=SEARCH/CX%20COMMERCE%201905")
 
         when:
         CookieManager ssoCookies = SSOLogin.withCredentails(username, password).forResource(SupportPortalUrlResolver.SUPPORT_PORTAL_API)
