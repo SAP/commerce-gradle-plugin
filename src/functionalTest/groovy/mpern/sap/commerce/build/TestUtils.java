@@ -63,4 +63,26 @@ public class TestUtils {
             });
         }
     }
+
+    public static void generateDummyIntegrationPack(Path destination, String version) throws Exception {
+        Path targetZip = destination.resolve(String.format("hybris-commerce-integrations-%s.zip", version));
+        Map<String, String> env = new HashMap<>();
+        env.put("create", "true");
+        try (FileSystem zipfs = FileSystems.newFileSystem(URI.create("jar:" + targetZip.toUri().toString()), env, null)) {
+            Path sourceDir = Paths.get(TestUtils.class.getResource("/dummy-integration-pack").toURI());
+            Files.walkFileTree(sourceDir, new SimpleFileVisitor<Path>() {
+                @Override
+                public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+                    Path relative = sourceDir.relativize(file);
+                    if (relative.getParent() != null) {
+                        Path path = zipfs.getPath(relative.getParent().toString());
+                        Files.createDirectories(path);
+                    }
+                    Path target = zipfs.getPath(relative.toString());
+                    Files.copy(file, target);
+                    return super.visitFile(file, attrs);
+                }
+            });
+        }
+    }
 }

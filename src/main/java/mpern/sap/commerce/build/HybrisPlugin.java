@@ -8,6 +8,7 @@ import mpern.sap.commerce.build.util.Version;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
 import org.gradle.api.Task;
+import org.gradle.api.UnknownDomainObjectException;
 import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.logging.Logger;
 import org.gradle.api.tasks.Copy;
@@ -24,32 +25,37 @@ public class HybrisPlugin implements Plugin<Project> {
 
     public static final String HYBRIS_EXTENSION = "hybris";
     public static final String HYBRIS_BOOTSTRAP = "Hybris Platform Bootstrap";
+    public static final String HYBRIS_PLATFORM_CONFIGURATION = "hybrisPlatform";
 
     @Override
     public void apply(Project project) {
         HybrisPluginExtension extension = project.getExtensions().create(HYBRIS_EXTENSION, HybrisPluginExtension.class, project);
 
-        extension.getCleanGlob().set("glob:**hybris/bin/{ext-**,platform**}");
+        extension.getCleanGlob().set("glob:**hybris/bin/{ext-**,platform**,modules**}");
 
         extension.getBootstrapInclude().set(project.provider(() -> Arrays.asList("hybris/**")));
         //this folder contains some utf-8 filenames that lead to issues on linux
         extension.getBootstrapExclude().set(project.provider(() -> Arrays.asList("hybris/bin/ext-content/npmancillary/resources/npm/node_modules/http-server/node_modules/ecstatic/test/**")));
 
-        final Configuration hybrisPlatform = project.getConfigurations().create("hybrisPlatform")
+        final Configuration hybrisPlatform = project.getConfigurations().create(HYBRIS_PLATFORM_CONFIGURATION)
                 .setDescription("Hybris Platform Dependencies. Expects zip files that are unpacked into the project root folder");
 
         final Configuration dbDrivers = project.getConfigurations().create("dbDriver")
                 .setDescription("JDBC Drivers. Automatically downloaded and configured during bootstrap");
         hybrisPlatform.defaultDependencies(dependencies -> {
+            boolean ccv2Plugin = false;
+            try {
+                project.getExtensions().getByName("CCV2");
+                ccv2Plugin = true;
+            } catch (UnknownDomainObjectException e) {
+                //ignore
+            }
+            if (ccv2Plugin) {
+                return;
+            }
             String v = extension.getVersion().get();
             Version version = Version.parseVersion(v);
-            if (version.getPatch() == Integer.MAX_VALUE) {
-                if (!v.endsWith(".")) {
-                    v += ".";
-                }
-                v += "+";
-            }
-            dependencies.add(project.getDependencies().create("de.hybris.platform:hybris-commerce-suite:" + v + "@zip"));
+            dependencies.add(project.getDependencies().create("de.hybris.platform:hybris-commerce-suite:" + version.getDependencyVersion() + "@zip"));
         });
 
         Task bootstrap = project.task("bootstrapPlatform");

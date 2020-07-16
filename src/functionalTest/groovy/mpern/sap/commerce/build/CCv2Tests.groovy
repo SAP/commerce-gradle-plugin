@@ -31,6 +31,9 @@ class CCv2Tests extends Specification {
         TestUtils.generateDummyPlatform(deps, "1905.1")
         TestUtils.generateDummyExtensionPack(deps, "1905.6")
 
+        TestUtils.generateDummyPlatform(deps, "2005.0")
+        TestUtils.generateDummyIntegrationPack(deps, '2005.0')
+
         testProjectPath = testProjectDir.root.toPath()
 
         Path dummy = Paths.get(TestUtils.class.getResource("/test-manifest.json").toURI())
@@ -97,7 +100,7 @@ class CCv2Tests extends Specification {
         result.task(":unpackPlatform").outcome == TaskOutcome.SKIPPED
     }
 
-    def "property files generated per apsect and persona"() {
+    def "property files generated per aspect and persona"() {
         when: "running generateCloudProperties task"
         def result = runner
                 .withArguments("generateCloudProperties", "--stacktrace")
@@ -128,6 +131,11 @@ class CCv2Tests extends Specification {
         localExtensions.contains("<extension name='backoffice' />")
     }
 
+    def enableCep() {
+        Path dummy = Paths.get(TestUtils.class.getResource("/cloud-extension-pack-manifest.json").toURI())
+        Files.copy(dummy, testProjectDir.root.toPath().resolve("manifest.json"), StandardCopyOption.REPLACE_EXISTING)
+    }
+
     def "useCloudExtensionPack triggers unpack and setup of extension pack"() {
         given: "manifest with enabled cloud extenison pack"
         enableCep()
@@ -142,11 +150,6 @@ class CCv2Tests extends Specification {
         then: "cloud extension pack is resolved correctly and expanded to build folder"
         Files.exists(cepFolder)
         Files.exists(cepFolder.resolve(Paths.get("hybris", "bin", "modules", "sap-ccv2-hotfolder", "azurecloudhotfolder", "extensioninfo.xml")))
-    }
-
-    def enableCep() {
-        Path dummy = Paths.get(TestUtils.class.getResource("/cloud-extension-pack-manifest.json").toURI())
-        Files.copy(dummy, testProjectDir.root.toPath().resolve("manifest.json"), StandardCopyOption.REPLACE_EXISTING)
     }
 
     def "useCloudExtensionPack patches localextensions.xml to load extension pack"() {
@@ -178,5 +181,20 @@ class CCv2Tests extends Specification {
     void cepDirResolvesCorrectly(folderName) {
         folderName = folderName.replace('${HYBRIS_BIN_DIR}', testProjectDir.root.toPath().resolve(Paths.get("hybris", "bin")).toString())
         assert Files.exists(Paths.get(folderName))
+    }
+
+    def "extensionPacks are automatically bootstrapped"() {
+        given: "manifest with enabled integration-extension-pack pack"
+        Path dummy = Paths.get(TestUtils.class.getResource("/manifest.2005.json").toURI())
+        Files.copy(dummy, testProjectDir.root.toPath().resolve("manifest.json"), StandardCopyOption.REPLACE_EXISTING)
+
+        when: "running bootstrap task"
+        runner.withArguments("bootstrapPlatform", "--stacktrace")
+                .build()
+        def cpiProject = testProjectPath.resolve(Paths.get("hybris", "bin", "modules", "scpi", "sapcpiproductexchange", "project.properties"))
+
+        then:
+        Files.exists(cpiProject)
+        Files.isRegularFile(cpiProject)
     }
 }

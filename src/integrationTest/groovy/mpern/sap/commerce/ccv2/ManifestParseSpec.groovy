@@ -182,4 +182,18 @@ class ManifestParseSpec extends Specification {
             webTests == TestConfiguration.NO_VALUE
         }
     }
+
+    def "parsing integration packs works"() {
+        given:
+        Map<String, Object> manifest = new JsonSlurper().parse(this.getClass().getResource('/manifest.2005.json'))
+        when:
+        Manifest m = Manifest.fromMap(manifest)
+        then:
+        with(m) {
+            with(extensionPacks[0]) {
+                name == "hybris-commerce-integrations"
+                version == "2005.0"
+            }
+        }
+    }
 }

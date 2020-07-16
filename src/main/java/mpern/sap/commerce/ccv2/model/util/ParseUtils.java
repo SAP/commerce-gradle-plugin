@@ -24,4 +24,12 @@ public class ParseUtils {
             return new LinkedHashSet<>(list);
         }
     }
+
+    public static String toEmpty(String input) {
+        if (input == null) {
+            return "";
+        } else {
+            return input.trim();
+        }
+    }
 }

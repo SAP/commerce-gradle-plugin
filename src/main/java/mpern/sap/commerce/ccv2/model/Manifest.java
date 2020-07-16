@@ -13,6 +13,10 @@ import static mpern.sap.commerce.ccv2.model.util.ParseUtils.validateNullOrWhites
 public class Manifest {
     public final String commerceSuiteVersion;
     public final boolean useCloudExtensionPack;
+    public final boolean enableImageProcessingService;
+
+    public final List<ExtensionPack> extensionPacks;
+
     public final Set<String> extensions;
 
     public final List<Addon> storefrontAddons;
@@ -25,9 +29,11 @@ public class Manifest {
 
     public final TestConfiguration webTests;
 
-    public Manifest(String commerceSuiteVersion, boolean useCloudExtensionPack, Set<String> extensions, List<Addon> storefrontAddons, List<Property> properties, List<Aspect> aspects, TestConfiguration tests, TestConfiguration webTests) {
+    public Manifest(String commerceSuiteVersion, boolean useCloudExtensionPack, boolean enableImageProcessingService, List<ExtensionPack> extensionPacks, Set<String> extensions, List<Addon> storefrontAddons, List<Property> properties, List<Aspect> aspects, TestConfiguration tests, TestConfiguration webTests) {
         this.commerceSuiteVersion = commerceSuiteVersion;
         this.useCloudExtensionPack = useCloudExtensionPack;
+        this.enableImageProcessingService = enableImageProcessingService;
+        this.extensionPacks = extensionPacks;
         this.extensions = Collections.unmodifiableSet(extensions);
         this.storefrontAddons = Collections.unmodifiableList(storefrontAddons);
         this.properties = Collections.unmodifiableList(properties);
@@ -45,15 +51,30 @@ public class Manifest {
                 throw new IllegalArgumentException("Manifest.useCloudExtensionPack must be a boolean value");
             }
             useExtensionPack = (boolean) rawBool;
-
         }
+        boolean enableImageProcessingService = false;
+        rawBool = jsonMap.get("enableImageProcessingService");
+        if (rawBool != null ) {
+            if (! (rawBool instanceof Boolean)) {
+                throw new IllegalArgumentException("Manifest.enableImageProcessingService must be a boolean value");
+            }
+            enableImageProcessingService = (boolean) rawBool;
+        }
+
+        List<Map<String, Object>> raw = (List<Map<String, Object>>) jsonMap.get("extensionPacks");
+        List<ExtensionPack> extensionPacks;
+        if (raw == null) {
+            extensionPacks = Collections.emptyList();
+        } else {
+            extensionPacks = raw.stream().map(ExtensionPack::fromMap).collect(Collectors.toList());
+        }
+
         //TODO: check useConfig
+
+
         Set<String> extensions = emptyOrSet((List<String>) jsonMap.get("extensions"));
-        if (extensions.isEmpty()) {
 
-        }
-
-        List<Map<String, Object>> raw = (List<Map<String, Object>>) jsonMap.get("storefrontAddons");
+        raw = (List<Map<String, Object>>) jsonMap.get("storefrontAddons");
         List<Addon> addons;
         if (raw == null) {
             addons = Collections.emptyList();
@@ -86,6 +107,8 @@ public class Manifest {
         return new Manifest(
                 version,
                 useExtensionPack,
+                enableImageProcessingService,
+                extensionPacks,
                 extensions,
                 addons,
                 properties,

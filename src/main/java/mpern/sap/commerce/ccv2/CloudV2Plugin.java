@@ -5,6 +5,7 @@ import groovy.lang.Tuple2;
 import mpern.sap.commerce.build.HybrisPlugin;
 import mpern.sap.commerce.build.HybrisPluginExtension;
 import mpern.sap.commerce.build.tasks.HybrisAntTask;
+import mpern.sap.commerce.build.util.Version;
 import mpern.sap.commerce.ccv2.model.Addon;
 import mpern.sap.commerce.ccv2.model.Aspect;
 import mpern.sap.commerce.ccv2.model.Manifest;
@@ -71,7 +72,7 @@ public class CloudV2Plugin implements Plugin<Project> {
         project.getPlugins().withType(HybrisPlugin.class, hybrisPlugin -> {
             Object byName = project.getExtensions().getByName(HybrisPlugin.HYBRIS_EXTENSION);
             if (byName instanceof HybrisPluginExtension) {
-                ((HybrisPluginExtension) byName).getVersion().set(project.provider(() -> manifest.commerceSuiteVersion));
+                configureDefaultDependencies(((HybrisPluginExtension) byName), project, manifest);
                 configureAddonInstall(project, manifest.storefrontAddons);
                 configureTests(project, manifest.tests);
                 configureWebTests(project, manifest.webTests);
@@ -82,13 +83,34 @@ public class CloudV2Plugin implements Plugin<Project> {
         configureExtensionGeneration(project, manifest);
     }
 
+    private void configureDefaultDependencies(HybrisPluginExtension extension, Project project, Manifest manifest) {
+        extension.getVersion().set(project.provider(() -> manifest.commerceSuiteVersion));
+        final Configuration hybrisPlatform = project.getConfigurations().getByName(HybrisPlugin.HYBRIS_PLATFORM_CONFIGURATION);
+        hybrisPlatform.defaultDependencies(dependencies -> {
+            String v = extension.getVersion().get();
+            Version version = Version.parseVersion(v);
+            dependencies.add(project.getDependencies().create("de.hybris.platform:hybris-commerce-suite:" + version.getDependencyVersion() + "@zip"));
+            manifest.extensionPacks.forEach(p -> {
+                if (!p.artifact.isEmpty()) {
+                    dependencies.add(project.getDependencies().create(p.artifact));
+                } else {
+                    System.out.println(p.artifact);
+                    System.out.println(p.version);
+                    Version parseVersion = Version.parseVersion(p.version);
+                    dependencies.add(project.getDependencies().create(String.format("de.hybris.platform:%s:%s@zip", p.name, parseVersion.getDependencyVersion())));
+                }
+            });
+        });
+    }
+
     private void configureAddonInstall(Project project, List<Addon> storefrontAddons) {
-        if (storefrontAddons.isEmpty()) {
-            return;
-        }
         Task installManifestAddons = project.getTasks().create("installManifestAddons");
         installManifestAddons.setGroup(GROUP);
         installManifestAddons.setDescription("runs ant addoninstall for all addons configured in manifest.json");
+
+        if (storefrontAddons.isEmpty()) {
+            return;
+        }
 
         Map<Tuple2<String, String>, Set<String>> addonsPerStorefront = new HashMap<>();
         for (Addon c : storefrontAddons) {

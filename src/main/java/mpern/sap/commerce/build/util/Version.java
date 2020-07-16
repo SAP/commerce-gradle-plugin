@@ -116,4 +116,15 @@ public class Version implements Comparable<Version> {
     public int getPatch() {
         return patch;
     }
+
+    public String getDependencyVersion() {
+        String v = this.original;
+        if (this.getPatch() == Integer.MAX_VALUE) {
+            if (!v.endsWith(".")) {
+                v += ".";
+            }
+            v += "+";
+        }
+        return v;
+    }
 }
