@@ -28,7 +28,5 @@ class ManifestExploreTest extends Specification {
         firstAddon.get("addon") == "privacyoverlayeraddon"
         firstAddon.get("storefront") == "albinostorefront"
         firstAddon.get("template") == "yacceleratorstorefront"
-
-
     }
 }

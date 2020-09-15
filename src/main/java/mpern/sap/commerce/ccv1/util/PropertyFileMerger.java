@@ -29,7 +29,7 @@ public class PropertyFileMerger {
                 properties.load(reader);
                 properties.forEach((key, value) -> finalProperties.put(String.valueOf(key), String.valueOf(value)));
             } catch (IOException e) {
-                //ignore
+                // ignore
             }
         }
         return Collections.unmodifiableMap(finalProperties);

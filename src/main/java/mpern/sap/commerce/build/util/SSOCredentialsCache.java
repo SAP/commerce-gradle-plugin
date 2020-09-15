@@ -1,14 +1,14 @@
 package mpern.sap.commerce.build.util;
 
-import mpern.sap.commerce.build.supportportal.SSOLogin;
-
 import java.net.CookieManager;
 import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
 
+import mpern.sap.commerce.build.supportportal.SSOLogin;
+
 public class SSOCredentialsCache {
-    //maybe build a thread-safe memoizer?
+    // maybe build a thread-safe memoizer?
     private Map<String, CookieManager> cache = new HashMap<>();
 
     public CookieManager getCookiesFor(String username, String password, URI uri) {
@@ -26,5 +26,4 @@ public class SSOCredentialsCache {
     private String buildKey(String username, String password, URI uri) {
         return String.format("%s|%s|%s", username, password, uri);
     }
-
 }

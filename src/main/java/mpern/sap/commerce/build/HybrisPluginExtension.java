@@ -1,9 +1,10 @@
 package mpern.sap.commerce.build;
 
-import mpern.sap.commerce.build.util.HybrisPlatform;
 import org.gradle.api.Project;
 import org.gradle.api.provider.ListProperty;
 import org.gradle.api.provider.Property;
+
+import mpern.sap.commerce.build.util.HybrisPlatform;
 
 public class HybrisPluginExtension {
     private final Property<String> version;
@@ -24,7 +25,6 @@ public class HybrisPluginExtension {
         bootstrapExclude = project.getObjects().listProperty(String.class);
 
         platform = project.getObjects().newInstance(HybrisPlatform.class, project);
-
     }
 
     public Property<String> getVersion() {

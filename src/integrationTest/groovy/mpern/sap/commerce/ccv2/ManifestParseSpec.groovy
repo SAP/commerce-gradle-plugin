@@ -1,9 +1,10 @@
 package mpern.sap.commerce.ccv2
 
 import groovy.json.JsonSlurper
+import spock.lang.Specification
+
 import mpern.sap.commerce.ccv2.model.Manifest
 import mpern.sap.commerce.ccv2.model.TestConfiguration
-import spock.lang.Specification
 
 class ManifestParseSpec extends Specification {
 
@@ -19,11 +20,11 @@ class ManifestParseSpec extends Specification {
             commerceSuiteVersion == "6.7.0.1"
             useCloudExtensionPack == false
             extensions == [
-                    "modeltacceleratorservices",
-                    "electronicsstore",
-                    "privacyoverlayeraddon",
-                    "yacceleratorstorefront",
-                    "backoffice"
+                "modeltacceleratorservices",
+                "electronicsstore",
+                "privacyoverlayeraddon",
+                "yacceleratorstorefront",
+                "backoffice"
             ] as Set<String>
 
             with(properties.get(0)) {
@@ -135,24 +136,24 @@ class ManifestParseSpec extends Specification {
 
             with(tests) {
                 extensions == [
-                        "privacyoverlayeraddon",
-                        "yacceleratorstorefront"
+                    "privacyoverlayeraddon",
+                    "yacceleratorstorefront"
                 ] as Set<String>
                 annotations == [
-                        "UnitTests",
-                        "IntegrationTests"
+                    "UnitTests",
+                    "IntegrationTests"
                 ] as Set<String>
                 packages == [
-                        "de.hybris.infra.*"
+                    "de.hybris.infra.*"
                 ] as Set<String>
             }
 
             with(webTests) {
                 extensions == [
-                        "yacceleratorstorefront"
+                    "yacceleratorstorefront"
                 ] as Set<String>
                 excludedPackages == [
-                        "de.hybris.platform.*"
+                    "de.hybris.platform.*"
                 ] as Set<String>
             }
         }
@@ -169,11 +170,11 @@ class ManifestParseSpec extends Specification {
             commerceSuiteVersion == "1811.3"
             useCloudExtensionPack == true
             extensions == [
-                    "modeltacceleratorservices",
-                    "electronicsstore",
-                    "privacyoverlayeraddon",
-                    "yacceleratorstorefront",
-                    "backoffice"
+                "modeltacceleratorservices",
+                "electronicsstore",
+                "privacyoverlayeraddon",
+                "yacceleratorstorefront",
+                "backoffice"
             ] as Set<String>
 
             aspects == []

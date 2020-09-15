@@ -1,10 +1,11 @@
 package mpern.sap.commerce.ccv2;
 
-import mpern.sap.commerce.ccv2.model.Manifest;
+import javax.inject.Inject;
+
 import org.gradle.api.Project;
 import org.gradle.api.file.DirectoryProperty;
 
-import javax.inject.Inject;
+import mpern.sap.commerce.ccv2.model.Manifest;
 
 public class CCv2Extension {
 

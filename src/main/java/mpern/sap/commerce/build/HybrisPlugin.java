@@ -1,10 +1,11 @@
 package mpern.sap.commerce.build;
 
-import mpern.sap.commerce.build.rules.HybrisAntRule;
-import mpern.sap.commerce.build.tasks.GlobClean;
-import mpern.sap.commerce.build.tasks.HybrisAntTask;
-import mpern.sap.commerce.build.tasks.SupportPortalDownload;
-import mpern.sap.commerce.build.util.Version;
+import java.io.File;
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.stream.Collectors;
+
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
 import org.gradle.api.Task;
@@ -15,11 +16,11 @@ import org.gradle.api.tasks.Copy;
 import org.gradle.api.tasks.TaskCollection;
 import org.gradle.api.tasks.TaskExecutionException;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.stream.Collectors;
+import mpern.sap.commerce.build.rules.HybrisAntRule;
+import mpern.sap.commerce.build.tasks.GlobClean;
+import mpern.sap.commerce.build.tasks.HybrisAntTask;
+import mpern.sap.commerce.build.tasks.SupportPortalDownload;
+import mpern.sap.commerce.build.util.Version;
 
 public class HybrisPlugin implements Plugin<Project> {
 
@@ -29,16 +30,19 @@ public class HybrisPlugin implements Plugin<Project> {
 
     @Override
     public void apply(Project project) {
-        HybrisPluginExtension extension = project.getExtensions().create(HYBRIS_EXTENSION, HybrisPluginExtension.class, project);
+        HybrisPluginExtension extension = project.getExtensions().create(HYBRIS_EXTENSION, HybrisPluginExtension.class,
+                project);
 
         extension.getCleanGlob().set("glob:**hybris/bin/{ext-**,platform**,modules**}");
 
         extension.getBootstrapInclude().set(project.provider(() -> Arrays.asList("hybris/**")));
-        //this folder contains some utf-8 filenames that lead to issues on linux
-        extension.getBootstrapExclude().set(project.provider(() -> Arrays.asList("hybris/bin/ext-content/npmancillary/resources/npm/node_modules/http-server/node_modules/ecstatic/test/**")));
+        // this folder contains some utf-8 filenames that lead to issues on linux
+        extension.getBootstrapExclude().set(project.provider(() -> Arrays.asList(
+                "hybris/bin/ext-content/npmancillary/resources/npm/node_modules/http-server/node_modules/ecstatic/test/**")));
 
         final Configuration hybrisPlatform = project.getConfigurations().create(HYBRIS_PLATFORM_CONFIGURATION)
-                .setDescription("Hybris Platform Dependencies. Expects zip files that are unpacked into the project root folder");
+                .setDescription(
+                        "Hybris Platform Dependencies. Expects zip files that are unpacked into the project root folder");
 
         final Configuration dbDrivers = project.getConfigurations().create("dbDriver")
                 .setDescription("JDBC Drivers. Automatically downloaded and configured during bootstrap");
@@ -48,14 +52,15 @@ public class HybrisPlugin implements Plugin<Project> {
                 project.getExtensions().getByName("CCV2");
                 ccv2Plugin = true;
             } catch (UnknownDomainObjectException e) {
-                //ignore
+                // ignore
             }
             if (ccv2Plugin) {
                 return;
             }
             String v = extension.getVersion().get();
             Version version = Version.parseVersion(v);
-            dependencies.add(project.getDependencies().create("de.hybris.platform:hybris-commerce-suite:" + version.getDependencyVersion() + "@zip"));
+            dependencies.add(project.getDependencies()
+                    .create("de.hybris.platform:hybris-commerce-suite:" + version.getDependencyVersion() + "@zip"));
         });
 
         Task bootstrap = project.task("bootstrapPlatform");
@@ -83,7 +88,8 @@ public class HybrisPlugin implements Plugin<Project> {
         unpackPlatform.mustRunAfter(cleanOnVersionChange);
 
         project.afterEvaluate(p -> unpackPlatform.doLast(t -> project.copy(c -> {
-            c.from(project.provider(() -> hybrisPlatform.getFiles().stream().map(project::zipTree).collect(Collectors.toSet())));
+            c.from(project.provider(
+                    () -> hybrisPlatform.getFiles().stream().map(project::zipTree).collect(Collectors.toSet())));
             c.into(t.getProject().getProjectDir());
             c.include(extension.getBootstrapInclude().get());
             c.exclude(extension.getBootstrapExclude().get());
@@ -97,24 +103,23 @@ public class HybrisPlugin implements Plugin<Project> {
         setupDBDriver.mustRunAfter(unpackPlatform);
 
         Task touchDbDriverLastUpdate = project.getTasks().create("touchLastUpdate", t -> t.doLast(a -> {
-                    File driverDir = a.getProject().file("hybris/bin/platform/lib/dbdriver");
-                    File lastUpdate = new File(driverDir, ".lastupdate");
-                    try {
-                        driverDir.mkdirs();
-                        lastUpdate.createNewFile();
-                        lastUpdate.setLastModified(new Date().getTime());
-                    } catch (IOException e) {
-                        throw new TaskExecutionException(a, e);
-                    }
-                }
-        ));
+            File driverDir = a.getProject().file("hybris/bin/platform/lib/dbdriver");
+            File lastUpdate = new File(driverDir, ".lastupdate");
+            try {
+                driverDir.mkdirs();
+                lastUpdate.createNewFile();
+                lastUpdate.setLastModified(new Date().getTime());
+            } catch (IOException e) {
+                throw new TaskExecutionException(a, e);
+            }
+        }));
         touchDbDriverLastUpdate.mustRunAfter(unpackPlatform, setupDBDriver);
 
         bootstrap.dependsOn(cleanOnVersionChange, unpackPlatform, setupDBDriver, touchDbDriverLastUpdate);
 
         project.getTasks().addRule(new HybrisAntRule(project));
 
-        //sensible defaults
+        // sensible defaults
         Task yclean = project.getTasks().getByPath("yclean");
         Task ybuild = project.getTasks().getByPath("ybuild");
         Task yall = project.getTasks().getByPath("yall");
@@ -125,7 +130,8 @@ public class HybrisPlugin implements Plugin<Project> {
         yall.mustRunAfter(yclean, ycustomize);
         yproduction.mustRunAfter(ybuild, yall);
 
-        HybrisAntTask createConfigFolder = project.getTasks().create("createDefaultConfig", HybrisAntTask.class, configTask -> configTask.systemProperty("input.template", "develop"));
+        HybrisAntTask createConfigFolder = project.getTasks().create("createDefaultConfig", HybrisAntTask.class,
+                configTask -> configTask.systemProperty("input.template", "develop"));
         createConfigFolder.onlyIf(t -> {
             boolean configPresent = project.file("hybris/config").exists();
             if (configPresent) {
@@ -134,7 +140,8 @@ public class HybrisPlugin implements Plugin<Project> {
             return !configPresent;
         });
         createConfigFolder.setGroup(HYBRIS_BOOTSTRAP);
-        createConfigFolder.setDescription("Launches hybris build to create the hybris config folder, if no config folder is present");
+        createConfigFolder.setDescription(
+                "Launches hybris build to create the hybris config folder, if no config folder is present");
         createConfigFolder.mustRunAfter(bootstrap);
 
         project.getGradle().getTaskGraph().addTaskExecutionListener(new HybrisAntTask.HybrisAntConfigureAdapter());
@@ -146,7 +153,6 @@ public class HybrisPlugin implements Plugin<Project> {
             TaskCollection<Task> matching = p.getTasks().matching(t -> t instanceof SupportPortalDownload);
             unpackPlatform.dependsOn(matching);
         });
-
     }
 
     private boolean versionMismatch(HybrisPluginExtension extension, Logger logger) {
@@ -171,9 +177,9 @@ public class HybrisPlugin implements Plugin<Project> {
             logger.lifecycle("current version {}; required version: {} -> {}", current, required, "NEAR MATCH");
             logger.lifecycle("required version does not specify patch level; treating as equal");
         } else {
-            logger.lifecycle("current version: {}; required version: {} -> {}", current, required, current.equals(required) ? "MATCH" : "MISMATCH");
+            logger.lifecycle("current version: {}; required version: {} -> {}", current, required,
+                    current.equals(required) ? "MATCH" : "MISMATCH");
         }
         return !(exactMatch || nearMatch);
     }
-
 }

@@ -1,14 +1,15 @@
 package mpern.sap.commerce.build
 
-import org.gradle.testkit.runner.GradleRunner
-import org.junit.Rule
-import org.junit.rules.TemporaryFolder
-import spock.lang.Specification
+import static org.gradle.testkit.runner.TaskOutcome.*
 
 import java.nio.file.Files
 import java.nio.file.Path
 
-import static org.gradle.testkit.runner.TaskOutcome.*
+import org.gradle.testkit.runner.GradleRunner
+import org.junit.Rule
+import org.junit.rules.TemporaryFolder
+
+import spock.lang.Specification
 
 class BootstrapTest extends Specification {
     @Rule
@@ -133,7 +134,6 @@ class BootstrapTest extends Specification {
 
         buildFile.text.contains("version=$providedVersion")
         new File(testProjectDir.getRoot(), "hybris/bin/ext-template/yaccelerator/src/dummy.java").exists()
-
     }
 
     def "boostrap sets up db drivers"() {

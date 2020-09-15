@@ -1,14 +1,14 @@
 package mpern.sap.commerce.ccv2.model;
 
+import static mpern.sap.commerce.ccv2.model.util.ParseUtils.emptyOrSet;
+import static mpern.sap.commerce.ccv2.model.util.ParseUtils.validateNullOrWhitespace;
+
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
-
-import static mpern.sap.commerce.ccv2.model.util.ParseUtils.emptyOrSet;
-import static mpern.sap.commerce.ccv2.model.util.ParseUtils.validateNullOrWhitespace;
 
 public class Manifest {
     public final String commerceSuiteVersion;
@@ -29,7 +29,9 @@ public class Manifest {
 
     public final TestConfiguration webTests;
 
-    public Manifest(String commerceSuiteVersion, boolean useCloudExtensionPack, boolean enableImageProcessingService, List<ExtensionPack> extensionPacks, Set<String> extensions, List<Addon> storefrontAddons, List<Property> properties, List<Aspect> aspects, TestConfiguration tests, TestConfiguration webTests) {
+    public Manifest(String commerceSuiteVersion, boolean useCloudExtensionPack, boolean enableImageProcessingService,
+            List<ExtensionPack> extensionPacks, Set<String> extensions, List<Addon> storefrontAddons,
+            List<Property> properties, List<Aspect> aspects, TestConfiguration tests, TestConfiguration webTests) {
         this.commerceSuiteVersion = commerceSuiteVersion;
         this.useCloudExtensionPack = useCloudExtensionPack;
         this.enableImageProcessingService = enableImageProcessingService;
@@ -43,19 +45,20 @@ public class Manifest {
     }
 
     public static Manifest fromMap(Map<String, Object> jsonMap) {
-        String version = validateNullOrWhitespace((String) jsonMap.get("commerceSuiteVersion"), "Manifest.commerceSuiteVersion must have a value");
+        String version = validateNullOrWhitespace((String) jsonMap.get("commerceSuiteVersion"),
+                "Manifest.commerceSuiteVersion must have a value");
         boolean useExtensionPack = false;
         Object rawBool = jsonMap.get("useCloudExtensionPack");
-        if (rawBool != null ) {
-            if (! (rawBool instanceof Boolean)) {
+        if (rawBool != null) {
+            if (!(rawBool instanceof Boolean)) {
                 throw new IllegalArgumentException("Manifest.useCloudExtensionPack must be a boolean value");
             }
             useExtensionPack = (boolean) rawBool;
         }
         boolean enableImageProcessingService = false;
         rawBool = jsonMap.get("enableImageProcessingService");
-        if (rawBool != null ) {
-            if (! (rawBool instanceof Boolean)) {
+        if (rawBool != null) {
+            if (!(rawBool instanceof Boolean)) {
                 throw new IllegalArgumentException("Manifest.enableImageProcessingService must be a boolean value");
             }
             enableImageProcessingService = (boolean) rawBool;
@@ -69,8 +72,7 @@ public class Manifest {
             extensionPacks = raw.stream().map(ExtensionPack::fromMap).collect(Collectors.toList());
         }
 
-        //TODO: check useConfig
-
+        // TODO: check useConfig
 
         Set<String> extensions = emptyOrSet((List<String>) jsonMap.get("extensions"));
 
@@ -99,23 +101,15 @@ public class Manifest {
         }
 
         Map<String, Object> rawConfig = (Map<String, Object>) jsonMap.get("tests");
-        TestConfiguration tests = Optional.ofNullable(rawConfig).map(TestConfiguration::fromMap).orElse(TestConfiguration.NO_VALUE);
+        TestConfiguration tests = Optional.ofNullable(rawConfig).map(TestConfiguration::fromMap)
+                .orElse(TestConfiguration.NO_VALUE);
 
         rawConfig = (Map<String, Object>) jsonMap.get("webTests");
-        TestConfiguration webTests = Optional.ofNullable(rawConfig).map(TestConfiguration::fromMap).orElse(TestConfiguration.NO_VALUE);
+        TestConfiguration webTests = Optional.ofNullable(rawConfig).map(TestConfiguration::fromMap)
+                .orElse(TestConfiguration.NO_VALUE);
 
-        return new Manifest(
-                version,
-                useExtensionPack,
-                enableImageProcessingService,
-                extensionPacks,
-                extensions,
-                addons,
-                properties,
-                aspects,
-                tests,
-                webTests
-        );
+        return new Manifest(version, useExtensionPack, enableImageProcessingService, extensionPacks, extensions, addons,
+                properties, aspects, tests, webTests);
     }
 
     public List<Property> getProperties() {

@@ -1,16 +1,16 @@
 package mpern.sap.commerce.build.tasks;
 
-import mpern.sap.commerce.build.HybrisPlugin;
-import mpern.sap.commerce.build.HybrisPluginExtension;
-import mpern.sap.commerce.build.util.HybrisPlatform;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.gradle.api.Task;
 import org.gradle.api.execution.TaskExecutionAdapter;
 import org.gradle.api.file.ConfigurableFileTree;
 import org.gradle.api.tasks.JavaExec;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Properties;
+import mpern.sap.commerce.build.HybrisPlugin;
+import mpern.sap.commerce.build.HybrisPluginExtension;
+import mpern.sap.commerce.build.util.HybrisPlatform;
 
 public class HybrisAntTask extends JavaExec {
 
@@ -31,7 +31,8 @@ public class HybrisAntTask extends JavaExec {
                 t.setClasspath(files);
                 t.setMain("org.apache.tools.ant.launch.Launcher");
 
-                HybrisPlatform platform = ((HybrisPluginExtension) t.getProject().getExtensions().getByName(HybrisPlugin.HYBRIS_EXTENSION)).getPlatform();
+                HybrisPlatform platform = ((HybrisPluginExtension) t.getProject().getExtensions()
+                        .getByName(HybrisPlugin.HYBRIS_EXTENSION)).getPlatform();
                 t.systemProperty("ant.home", platform.getAntHome().get().getAsFile());
 
                 t.antProperty("maven.update.dbdrivers", "false");

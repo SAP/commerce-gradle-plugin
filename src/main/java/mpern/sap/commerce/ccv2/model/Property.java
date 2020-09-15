@@ -1,9 +1,9 @@
 package mpern.sap.commerce.ccv2.model;
 
-import java.util.Map;
-
 import static mpern.sap.commerce.ccv2.model.util.ParseUtils.nullToEmpty;
 import static mpern.sap.commerce.ccv2.model.util.ParseUtils.validateNullOrWhitespace;
+
+import java.util.Map;
 
 public class Property {
     public final String key;
@@ -19,11 +19,8 @@ public class Property {
     }
 
     public static Property fromMap(Map<String, Object> jsonMap) {
-        return new Property(
-                validateNullOrWhitespace((String) jsonMap.get("key"), "Property.key must have a value"),
-                nullToEmpty((String) jsonMap.get("value")),
-                nullToEmpty((String) jsonMap.get("persona")),
-                jsonMap.get("secret") != null && (boolean) jsonMap.get("secret")
-        );
+        return new Property(validateNullOrWhitespace((String) jsonMap.get("key"), "Property.key must have a value"),
+                nullToEmpty((String) jsonMap.get("value")), nullToEmpty((String) jsonMap.get("persona")),
+                jsonMap.get("secret") != null && (boolean) jsonMap.get("secret"));
     }
 }

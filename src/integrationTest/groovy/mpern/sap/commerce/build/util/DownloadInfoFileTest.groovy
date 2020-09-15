@@ -1,12 +1,13 @@
 package mpern.sap.commerce.build.util
 
-import groovy.json.JsonSlurper
-import org.junit.Rule
-import org.junit.rules.TemporaryFolder
-import spock.lang.Specification
-
 import java.nio.file.Path
 import java.nio.file.Paths
+
+import org.junit.Rule
+import org.junit.rules.TemporaryFolder
+
+import groovy.json.JsonSlurper
+import spock.lang.Specification
 
 class DownloadInfoFileTest extends Specification {
 
@@ -23,7 +24,6 @@ class DownloadInfoFileTest extends Specification {
         Paths.get("some/folder/file.extension")           || Paths.get("some/folder/file.extension.download-info")
         Paths.get("some/folder/file.extension.extension") || Paths.get("some/folder/file.extension.extension.download-info")
         Paths.get("some/folder/file")                     || Paths.get("some/folder/file.download-info")
-
     }
 
     def "write produces expected output"() {

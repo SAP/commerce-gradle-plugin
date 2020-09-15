@@ -1,15 +1,16 @@
 package mpern.sap.commerce.build
 
-import org.gradle.testkit.runner.GradleRunner
-import org.gradle.testkit.runner.TaskOutcome
-import org.junit.Rule
-import org.junit.rules.TemporaryFolder
-import spock.lang.Specification
-
 import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.Paths
 import java.nio.file.StandardCopyOption
+
+import org.gradle.testkit.runner.GradleRunner
+import org.gradle.testkit.runner.TaskOutcome
+import org.junit.Rule
+import org.junit.rules.TemporaryFolder
+
+import spock.lang.Specification
 
 
 class CCv2Tests extends Specification {

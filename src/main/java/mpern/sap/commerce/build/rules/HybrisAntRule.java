@@ -1,8 +1,9 @@
 package mpern.sap.commerce.build.rules;
 
-import mpern.sap.commerce.build.tasks.HybrisAntTask;
 import org.gradle.api.Project;
 import org.gradle.api.Rule;
+
+import mpern.sap.commerce.build.tasks.HybrisAntTask;
 
 public class HybrisAntRule implements Rule {
 

@@ -1,8 +1,5 @@
 package mpern.sap.commerce.build.util;
 
-import groovy.json.JsonOutput;
-import groovy.json.JsonSlurper;
-
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -10,6 +7,9 @@ import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.util.Map;
 import java.util.stream.Collectors;
+
+import groovy.json.JsonOutput;
+import groovy.json.JsonSlurper;
 
 public class DownloadInfoFile {
     private String eTag = "";
@@ -51,7 +51,7 @@ public class DownloadInfoFile {
             this.setSupportUrl((String) m.getOrDefault("supportUrl", ""));
             this.setContentLength((String) m.getOrDefault("contentLength", ""));
         } catch (Exception e) {
-            //ignore
+            // ignore
             e.printStackTrace();
         }
     }
@@ -115,7 +115,8 @@ public class DownloadInfoFile {
     public void write() throws IOException {
         String s = JsonOutput.prettyPrint(JsonOutput.toJson(this));
         Files.createDirectories(file.getParent());
-        Files.write(file, s.getBytes(StandardCharsets.UTF_8), StandardOpenOption.WRITE, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
+        Files.write(file, s.getBytes(StandardCharsets.UTF_8), StandardOpenOption.WRITE, StandardOpenOption.CREATE,
+                StandardOpenOption.TRUNCATE_EXISTING);
     }
 
     public static DownloadInfoFile getInfoFor(Path p) throws IOException {

@@ -3,6 +3,10 @@
 /out
 /bin
 
+/NOTES.md
+.settings
+.classpath
+.project
 .idea
 *.iml
 *.orig

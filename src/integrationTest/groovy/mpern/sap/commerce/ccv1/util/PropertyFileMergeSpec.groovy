@@ -1,11 +1,12 @@
 package mpern.sap.commerce.ccv1.util
 
+import java.nio.file.Path
+
 import org.junit.ClassRule
 import org.junit.rules.TemporaryFolder
+
 import spock.lang.Shared
 import spock.lang.Specification
-
-import java.nio.file.Path
 
 class PropertyFileMergeSpec extends Specification {
 
@@ -47,10 +48,10 @@ class PropertyFileMergeSpec extends Specification {
         new PropertyFileMerger(files).mergeProperties()['property'] == result
 
         where:
-        files                  || result
-        [first, second, third] || "third"
-        [first, third, second] || "second"
-        [third, second, first] || "first"
+        files                 || result
+        [first, second, third]|| "third"
+        [first, third, second]|| "second"
+        [third, second, first]|| "first"
     }
 
     def "result of merge is a set union of all properties"() {

@@ -1,8 +1,18 @@
+// https://github.com/diffplug/spotless/issues/587
+buildscript {
+    configurations.classpath {
+        resolutionStrategy {
+            force 'org.eclipse.jgit:org.eclipse.jgit:5.7.0.202003110725-r'
+        }
+    }
+}
+
 plugins {
     id "com.gradle.plugin-publish" version "0.12.0"
     id 'pl.allegro.tech.build.axion-release' version '1.12.0'
     id 'java-gradle-plugin'
     id 'groovy'
+    id "com.diffplug.spotless" version "5.5.1"
 }
 
 scmVersion {
@@ -12,9 +22,10 @@ scmVersion {
     }
     hooks {
         pre 'fileUpdate', [
-                file: 'README.md',
-                pattern: {v, c -> /Gradle Plugins for SAP \(Hybris\) Commerce $v/},
-                replacement: {v, c -> "Gradle Plugins for SAP (Hybris) Commerce $v"}
+            file: 'README.md',
+            pattern: {v, c -> /Gradle Plugins for SAP \(Hybris\) Commerce $v/},
+            replacement: {v, c ->
+                "Gradle Plugins for SAP (Hybris) Commerce $v"}
         ]
         pre 'commit'
     }
@@ -25,6 +36,32 @@ scmVersion {
         localOnly = true
     }
     ignoreUncommittedChanges = false
+}
+
+spotless {
+    format 'misc', {
+        // define the files to apply `misc` to
+        target '*.md', '.gitignore'
+
+        // define the steps to apply to those files
+        trimTrailingWhitespace()
+        indentWithSpaces(4)
+        endWithNewline()
+    }
+    groovyGradle {
+        target '*.gradle' // default target of groovyGradle
+        greclipse().configFile('gradle/greclipse.properties')
+    }
+    java {
+        target 'src/*/java/**/*.java'
+        importOrderFile('gradle/spotless.importorder')
+        eclipse().configFile('gradle/spotless.xml')
+    }
+    groovy {
+        target 'src/*/groovy/**/*.groovy'
+        importOrderFile('gradle/spotless.importorder')
+        greclipse().configFile('gradle/greclipse.properties')
+    }
 }
 
 group = 'mpern.sap.commerce'
@@ -71,18 +108,43 @@ pluginBundle {
             from the SAP Support Portal and manage the whole software development lifecycle
             of SAP (Hybris) Commerce inside gradle
             """
-            tags = ['sap commerce', 'sap hybris commerce', 'hybris', 'sap', 'commerce', 'bootstrap', 'build']
+            tags = [
+                'sap commerce',
+                'sap hybris commerce',
+                'hybris',
+                'sap',
+                'commerce',
+                'bootstrap',
+                'build'
+            ]
         }
         hybrisCCv1Packaging {
             displayName = "SAP Hybris CCv1 Packaging Plugin"
             description = """Configure and package your SAP (Hybris) Commerce project
             according to the Deployment Packagaging Guidelines v.2.3.3"""
-            tags = ['sap commerce', 'sap hybris commerce', 'hybris', 'sap', 'commerce', 'ccv1', 'package']
+            tags = [
+                'sap commerce',
+                'sap hybris commerce',
+                'hybris',
+                'sap',
+                'commerce',
+                'ccv1',
+                'package'
+            ]
         }
         ccv2BuildSupport {
             displayName = "SAP Hybris CCv2 Build Support Plugin"
             description = """Use the CCv2 manifest.json to build and configure your local development environmennt"""
-            tags = ['sap commerce', 'sap hybris commerce', 'hybris', 'sap', 'commerce', 'ccv2', 'public cloud', 'manifest']
+            tags = [
+                'sap commerce',
+                'sap hybris commerce',
+                'hybris',
+                'sap',
+                'commerce',
+                'ccv2',
+                'public cloud',
+                'manifest'
+            ]
         }
     }
 }

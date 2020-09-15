@@ -1,9 +1,5 @@
 package mpern.sap.commerce.build.supportportal;
 
-import mpern.sap.commerce.build.util.HttpUtils;
-import org.gradle.api.logging.Logger;
-import org.gradle.api.logging.Logging;
-
 import java.net.CookieManager;
 import java.net.CookiePolicy;
 import java.net.HttpURLConnection;
@@ -13,6 +9,11 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import org.gradle.api.logging.Logger;
+import org.gradle.api.logging.Logging;
+
+import mpern.sap.commerce.build.util.HttpUtils;
 
 public class SSOLogin {
 
@@ -43,7 +44,7 @@ public class SSOLogin {
 
     public CookieManager forResource(URI uri) throws Exception {
 
-        //try to get ressource
+        // try to get ressource
         HttpURLConnection connection = HttpUtils.open(uri, ssoCookies);
         connection.setRequestMethod("GET");
         connection = HttpUtils.connectAndUpdateCookies(connection, ssoCookies);
@@ -51,19 +52,19 @@ public class SSOLogin {
         URI previousRequest = uri;
         connection.disconnect();
 
-        //https://authn.hana.ondemand.com/saml2/sp/mds
+        // https://authn.hana.ondemand.com/saml2/sp/mds
         String action = parsePostAction(body);
         URI nextStep = previousRequest.resolve(action);
         body = performAutoPost(body, nextStep);
         previousRequest = nextStep;
 
-        //https://accounts.sap.com/saml2/idp/sso/accounts.sap.com
+        // https://accounts.sap.com/saml2/idp/sso/accounts.sap.com
         action = parsePostAction(body);
         nextStep = previousRequest.resolve(action);
         body = performAutoPost(body, nextStep);
         previousRequest = nextStep;
 
-        //https://accounts.sap.com/saml2/idp/sso/accounts.sap.com - SSO Login!
+        // https://accounts.sap.com/saml2/idp/sso/accounts.sap.com - SSO Login!
         action = parsePostAction(body);
         nextStep = previousRequest.resolve(action);
         body = submitLogin(body, nextStep);
@@ -71,12 +72,13 @@ public class SSOLogin {
 
         validateSuccessfulLogin(body);
 
-        //SAML Response + redirect to target
+        // SAML Response + redirect to target
         action = parsePostAction(body);
         nextStep = previousRequest.resolve(action);
         body = performAutoPost(body, nextStep);
 
-        //and one final redirect to the originally requested resource. Now we are logged in
+        // and one final redirect to the originally requested resource. Now we are
+        // logged in
         action = parsePostAction(body);
         nextStep = previousRequest.resolve(action);
         body = performAutoPost(body, nextStep);
@@ -101,7 +103,8 @@ public class SSOLogin {
 
     private void validateFinishedFlow(String body) {
         if (body.contains("https://authn.hana.ondemand.com/saml2")) {
-            throw new IllegalStateException("Was not able to log in, final redirect to resource restarted SAML flow :(");
+            throw new IllegalStateException(
+                    "Was not able to log in, final redirect to resource restarted SAML flow :(");
         }
     }
 
@@ -163,5 +166,4 @@ public class SSOLogin {
             throw new IllegalStateException("could not find <form> tag!");
         }
     }
-
 }

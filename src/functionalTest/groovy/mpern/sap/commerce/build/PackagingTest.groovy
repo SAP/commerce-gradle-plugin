@@ -1,12 +1,13 @@
 package mpern.sap.commerce.build
 
+import java.nio.file.*
+import java.nio.file.attribute.BasicFileAttributes
+
 import org.gradle.testkit.runner.GradleRunner
 import org.junit.Rule
 import org.junit.rules.TemporaryFolder
-import spock.lang.Specification
 
-import java.nio.file.*
-import java.nio.file.attribute.BasicFileAttributes
+import spock.lang.Specification
 
 class PackagingTest extends Specification {
     @Rule
@@ -138,7 +139,6 @@ class PackagingTest extends Specification {
         Files.exists(packageRoot.resolve("hybris/config/dev/customer.adm.properties"))
         Files.exists(packageRoot.resolve("hybris/config/stag/customer.app.properties"))
         Files.exists(packageRoot.resolve("hybris/config/stag/customer.adm.properties"))
-
     }
 
     def "md5 hash is created for package"() {
@@ -160,12 +160,12 @@ class PackagingTest extends Specification {
 
     private void dumpDir(Path p) {
         Files.walkFileTree(p, new SimpleFileVisitor<Path>() {
-            @Override
-            FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
-                println(file)
-                return super.visitFile(file, attrs)
-            }
-        })
+                    @Override
+                    FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+                        println(file)
+                        return super.visitFile(file, attrs)
+                    }
+                })
     }
 
     def "datahub included with required filename if datahub enabled for CCV1 package"() {
@@ -315,7 +315,6 @@ class PackagingTest extends Specification {
         packageRoot.resolve("hybris/config/stag/localextensions.app.xml").text == "stag app"
         packageRoot.resolve("hybris/config/prod/localextensions.adm.xml").text == "common"
         packageRoot.resolve("hybris/config/prod/localextensions.app.xml").text == "common"
-
     }
 
     def "misc folder is included in package"() {

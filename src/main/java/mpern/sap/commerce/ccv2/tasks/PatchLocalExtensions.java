@@ -1,5 +1,15 @@
 package mpern.sap.commerce.ccv2.tasks;
 
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
 
 import org.gradle.api.DefaultTask;
 import org.gradle.api.GradleException;
@@ -14,21 +24,10 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.w3c.dom.Text;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-
 public class PatchLocalExtensions extends DefaultTask {
 
     private final RegularFileProperty target;
     private final DirectoryProperty cepFolder;
-
 
     public PatchLocalExtensions() {
         this.target = getProject().getObjects().fileProperty();
@@ -63,7 +62,7 @@ public class PatchLocalExtensions extends DefaultTask {
 
         int platformIndex = -1;
         int cepIndex = -1;
-        for(int i = 0; i < paths.getLength(); i++) {
+        for (int i = 0; i < paths.getLength(); i++) {
             Node item = paths.item(i);
             String dir = item.getAttributes().getNamedItem("dir").getNodeValue();
             if ("${HYBRIS_BIN_DIR}".equalsIgnoreCase(dir)) {
@@ -89,7 +88,8 @@ public class PatchLocalExtensions extends DefaultTask {
             paths.item(0).getParentNode().insertBefore(textNode, paths.item(1));
 
         } else if (cepIndex > platformIndex) {
-            throw new GradleException(String.format("%s: <path dir='%s'> must be before <path='${HYBRIS_BIN_DIR}'>", getProject().getRootDir().toPath().relativize(localExtensions), cepPathString));
+            throw new GradleException(String.format("%s: <path dir='%s'> must be before <path='${HYBRIS_BIN_DIR}'>",
+                    getProject().getRootDir().toPath().relativize(localExtensions), cepPathString));
         }
 
         Transformer transformer = TransformerFactory.newInstance().newTransformer();

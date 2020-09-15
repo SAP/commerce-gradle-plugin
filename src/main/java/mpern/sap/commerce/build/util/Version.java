@@ -8,10 +8,10 @@ import java.util.regex.Pattern;
 public class Version implements Comparable<Version> {
     private static final Pattern NEW_VERSION = Pattern.compile("(\\d\\d)(\\d\\d)(\\.([1-9]?\\d))?");
     private static final Pattern OLD_VERSION = Pattern.compile("(\\d)\\.(\\d)\\.(\\d)(\\.([1-9]?\\d))?");
-    public static final Version UNDEFINED = new Version(Integer.MAX_VALUE, Integer.MAX_VALUE, Integer.MAX_VALUE, Integer.MAX_VALUE, "<undefined>");
+    public static final Version UNDEFINED = new Version(Integer.MAX_VALUE, Integer.MAX_VALUE, Integer.MAX_VALUE,
+            Integer.MAX_VALUE, "<undefined>");
     public static final Comparator<Version> VERSION_COMPARATOR = Comparator.comparingInt(Version::getMajor)
-            .thenComparingInt(Version::getMinor)
-            .thenComparingInt(Version::getRelease)
+            .thenComparingInt(Version::getMinor).thenComparingInt(Version::getRelease)
             .thenComparingInt(Version::getPatch);
 
     private final int major;
@@ -46,22 +46,24 @@ public class Version implements Comparable<Version> {
             if (oldV.groupCount() > 4 && oldV.group(5) != null) {
                 patch = Integer.parseInt(oldV.group(5));
             }
-            return new Version(Integer.parseInt(oldV.group(1)), Integer.parseInt(oldV.group(2)), Integer.parseInt(oldV.group(3)), patch, v);
+            return new Version(Integer.parseInt(oldV.group(1)), Integer.parseInt(oldV.group(2)),
+                    Integer.parseInt(oldV.group(3)), patch, v);
         }
         String[] split = v.split("\\.");
-        int major = Integer.MAX_VALUE, minor = Integer.MAX_VALUE, release = Integer.MAX_VALUE, patch = Integer.MAX_VALUE;
+        int major = Integer.MAX_VALUE, minor = Integer.MAX_VALUE, release = Integer.MAX_VALUE,
+                patch = Integer.MAX_VALUE;
         switch (split.length) {
-            case 4:
-                patch = Integer.parseInt(split[3]);
-            case 3:
-                release = Integer.parseInt(split[2]);
-            case 2:
-                minor = Integer.parseInt(split[1]);
-            case 1:
-                major = Integer.parseInt(split[0]);
-                break;
-            default:
-                throw new IllegalArgumentException("Could not parse " + v);
+        case 4:
+            patch = Integer.parseInt(split[3]);
+        case 3:
+            release = Integer.parseInt(split[2]);
+        case 2:
+            minor = Integer.parseInt(split[1]);
+        case 1:
+            major = Integer.parseInt(split[0]);
+            break;
+        default:
+            throw new IllegalArgumentException("Could not parse " + v);
         }
         return new Version(major, minor, release, patch, v);
     }
@@ -72,23 +74,22 @@ public class Version implements Comparable<Version> {
     }
 
     public boolean equalsIgnorePatch(Version o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o)
+            return true;
+        if (o == null || getClass() != o.getClass())
+            return false;
         Version version = (Version) o;
-        return major == version.major &&
-                minor == version.minor &&
-                release == version.release;
+        return major == version.major && minor == version.minor && release == version.release;
     }
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o)
+            return true;
+        if (o == null || getClass() != o.getClass())
+            return false;
         Version version = (Version) o;
-        return major == version.major &&
-                minor == version.minor &&
-                release == version.release &&
-                patch == version.patch;
+        return major == version.major && minor == version.minor && release == version.release && patch == version.patch;
     }
 
     @Override

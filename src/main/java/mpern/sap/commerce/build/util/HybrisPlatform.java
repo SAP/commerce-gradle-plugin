@@ -1,11 +1,5 @@
 package mpern.sap.commerce.build.util;
 
-import org.gradle.api.Project;
-import org.gradle.api.file.Directory;
-import org.gradle.api.logging.Logger;
-import org.gradle.api.logging.Logging;
-import org.gradle.api.provider.Provider;
-
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
@@ -19,6 +13,12 @@ import java.nio.file.attribute.BasicFileAttributes;
 import java.util.Optional;
 import java.util.Properties;
 
+import org.gradle.api.Project;
+import org.gradle.api.file.Directory;
+import org.gradle.api.logging.Logger;
+import org.gradle.api.logging.Logging;
+import org.gradle.api.provider.Provider;
+
 public class HybrisPlatform {
     private static final Logger LOG = Logging.getLogger(HybrisPlatform.class);
 
@@ -29,7 +29,6 @@ public class HybrisPlatform {
     private final Provider<String> platformVersion;
 
     private final Provider<Directory> antHome;
-
 
     @javax.inject.Inject
     public HybrisPlatform(Project project) {
@@ -68,7 +67,7 @@ public class HybrisPlatform {
             LOG.debug("could not open build.number", e);
         }
         String bootstrappedVersion = properties.getProperty("version", "NONE");
-//        LOG.lifecycle("found hybris platform version: {}", bootstrappedVersion);
+        // LOG.lifecycle("found hybris platform version: {}", bootstrappedVersion);
         return bootstrappedVersion;
     }
 
@@ -77,9 +76,8 @@ public class HybrisPlatform {
             AntPathVisitor visitor = new AntPathVisitor();
             Path platformPath = platformDir.get().getAsFile().toPath();
             Files.walkFileTree(platformPath, visitor);
-            Path antHome = visitor
-                    .getAntHome()
-                    .orElseThrow(() -> new IllegalStateException("could not find hybris platform ant in hybris/bin/platform/apache-ant*"));
+            Path antHome = visitor.getAntHome().orElseThrow(() -> new IllegalStateException(
+                    "could not find hybris platform ant in hybris/bin/platform/apache-ant*"));
             return antHome.toString();
         } catch (IOException e) {
             throw new IllegalStateException("could not find hybris platform ant", e);

@@ -14,7 +14,6 @@ class VersionTest extends Specification {
         v.release == 0
         v.patch == 2
         v.toString() == "1905.2"
-
     }
 
     def "version without patch parsed correctly"() {

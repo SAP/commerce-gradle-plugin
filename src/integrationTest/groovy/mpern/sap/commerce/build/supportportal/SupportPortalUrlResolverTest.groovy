@@ -1,8 +1,8 @@
 package mpern.sap.commerce.build.supportportal
 
-import spock.lang.Specification
-
 import static org.junit.Assume.assumeTrue
+
+import spock.lang.Specification
 
 class SupportPortalUrlResolverTest extends Specification {
 
@@ -30,7 +30,7 @@ class SupportPortalUrlResolverTest extends Specification {
 
         //CX COMMERCE 1905 (SUPPORT PACKAGES AND PATCHES)
         //https://launchpad.support.sap.com/ -> search for "CX COMM" in "Downloads"
-       def source = new URI("https://launchpad.support.sap.com/#/softwarecenter/template/products/%20_APP=00200682500000001943&_EVENT=DISPHIER&HEADER=Y&FUNCTIONBAR=N&EVENT=TREE&NE=NAVIGATE&ENR=73555000100200010345&V=MAINT&TA=ACTUAL&PAGE=SEARCH/CX%20COMMERCE%201905")
+        def source = new URI("https://launchpad.support.sap.com/#/softwarecenter/template/products/%20_APP=00200682500000001943&_EVENT=DISPHIER&HEADER=Y&FUNCTIONBAR=N&EVENT=TREE&NE=NAVIGATE&ENR=73555000100200010345&V=MAINT&TA=ACTUAL&PAGE=SEARCH/CX%20COMMERCE%201905")
 
         when:
         CookieManager ssoCookies = SSOLogin.withCredentails(username, password).forResource(SupportPortalUrlResolver.SUPPORT_PORTAL_API)

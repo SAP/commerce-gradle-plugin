@@ -1,40 +1,26 @@
 package mpern.sap.commerce.ccv2;
 
-import groovy.json.JsonSlurper;
-import groovy.lang.Tuple2;
-import mpern.sap.commerce.build.HybrisPlugin;
-import mpern.sap.commerce.build.HybrisPluginExtension;
-import mpern.sap.commerce.build.tasks.HybrisAntTask;
-import mpern.sap.commerce.build.util.Version;
-import mpern.sap.commerce.ccv2.model.Addon;
-import mpern.sap.commerce.ccv2.model.Aspect;
-import mpern.sap.commerce.ccv2.model.Manifest;
-import mpern.sap.commerce.ccv2.model.Property;
-import mpern.sap.commerce.ccv2.model.TestConfiguration;
-import mpern.sap.commerce.ccv2.model.Webapp;
-import mpern.sap.commerce.ccv2.tasks.GenerateLocalextensions;
-import mpern.sap.commerce.ccv2.tasks.PatchLocalExtensions;
-import org.gradle.api.Action;
-import org.gradle.api.InvalidUserDataException;
-import org.gradle.api.Plugin;
-import org.gradle.api.Project;
-import org.gradle.api.Task;
+import java.io.File;
+import java.time.Instant;
+import java.util.*;
+import java.util.stream.Collectors;
+
+import org.gradle.api.*;
 import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.tasks.Copy;
 import org.gradle.api.tasks.Delete;
 import org.gradle.api.tasks.WriteProperties;
 
-import java.io.File;
-import java.time.Instant;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeMap;
-import java.util.stream.Collectors;
+import groovy.json.JsonSlurper;
+import groovy.lang.Tuple2;
+
+import mpern.sap.commerce.build.HybrisPlugin;
+import mpern.sap.commerce.build.HybrisPluginExtension;
+import mpern.sap.commerce.build.tasks.HybrisAntTask;
+import mpern.sap.commerce.build.util.Version;
+import mpern.sap.commerce.ccv2.model.*;
+import mpern.sap.commerce.ccv2.tasks.GenerateLocalextensions;
+import mpern.sap.commerce.ccv2.tasks.PatchLocalExtensions;
 
 public class CloudV2Plugin implements Plugin<Project> {
 
@@ -61,13 +47,13 @@ public class CloudV2Plugin implements Plugin<Project> {
 
         final Configuration extensionPack = project.getConfigurations().create(EXTENSION_PACK);
         extensionPack.defaultDependencies(deps -> {
-            //de/hybris/platform/hybris-cloud-extension-pack/1905.06/
+            // de/hybris/platform/hybris-cloud-extension-pack/1905.06/
             String commerceSuiteVersion = manifest.commerceSuiteVersion;
             String cepVersion = commerceSuiteVersion.replaceAll("(.+)(\\.\\d\\d)?", "$1.+");
 
-            deps.add(project.getDependencies().create("de.hybris.platform:hybris-cloud-extension-pack:" + cepVersion + "@zip"));
+            deps.add(project.getDependencies()
+                    .create("de.hybris.platform:hybris-cloud-extension-pack:" + cepVersion + "@zip"));
         });
-
 
         project.getPlugins().withType(HybrisPlugin.class, hybrisPlugin -> {
             Object byName = project.getExtensions().getByName(HybrisPlugin.HYBRIS_EXTENSION);
@@ -85,11 +71,13 @@ public class CloudV2Plugin implements Plugin<Project> {
 
     private void configureDefaultDependencies(HybrisPluginExtension extension, Project project, Manifest manifest) {
         extension.getVersion().set(project.provider(() -> manifest.commerceSuiteVersion));
-        final Configuration hybrisPlatform = project.getConfigurations().getByName(HybrisPlugin.HYBRIS_PLATFORM_CONFIGURATION);
+        final Configuration hybrisPlatform = project.getConfigurations()
+                .getByName(HybrisPlugin.HYBRIS_PLATFORM_CONFIGURATION);
         hybrisPlatform.defaultDependencies(dependencies -> {
             String v = extension.getVersion().get();
             Version version = Version.parseVersion(v);
-            dependencies.add(project.getDependencies().create("de.hybris.platform:hybris-commerce-suite:" + version.getDependencyVersion() + "@zip"));
+            dependencies.add(project.getDependencies()
+                    .create("de.hybris.platform:hybris-commerce-suite:" + version.getDependencyVersion() + "@zip"));
             manifest.extensionPacks.forEach(p -> {
                 if (!p.artifact.isEmpty()) {
                     dependencies.add(project.getDependencies().create(p.artifact));
@@ -97,7 +85,8 @@ public class CloudV2Plugin implements Plugin<Project> {
                     System.out.println(p.artifact);
                     System.out.println(p.version);
                     Version parseVersion = Version.parseVersion(p.version);
-                    dependencies.add(project.getDependencies().create(String.format("de.hybris.platform:%s:%s@zip", p.name, parseVersion.getDependencyVersion())));
+                    dependencies.add(project.getDependencies().create(String.format("de.hybris.platform:%s:%s@zip",
+                            p.name, parseVersion.getDependencyVersion())));
                 }
             });
         });
@@ -122,11 +111,11 @@ public class CloudV2Plugin implements Plugin<Project> {
             Set<String> addons = tuple2SetEntry.getValue();
             HybrisAntTask install = project.getTasks().create(
                     String.format("addonInstall_%s_%s", templateStorefront.getFirst(), templateStorefront.getSecond()),
-                    HybrisAntTask.class,
-                    t -> {
+                    HybrisAntTask.class, t -> {
                         t.args("addoninstall");
                         t.antProperty("addonnames", String.join(",", addons));
-                        t.antProperty("addonStorefront." + templateStorefront.getFirst(), templateStorefront.getSecond());
+                        t.antProperty("addonStorefront." + templateStorefront.getFirst(),
+                                templateStorefront.getSecond());
                     });
             installManifestAddons.dependsOn(install);
         }
@@ -146,7 +135,8 @@ public class CloudV2Plugin implements Plugin<Project> {
         if (test == TestConfiguration.NO_VALUE) {
             return;
         }
-        HybrisAntTask allWebTests = project.getTasks().create("cloudWebTests", HybrisAntTask.class, configureTest(test));
+        HybrisAntTask allWebTests = project.getTasks().create("cloudWebTests", HybrisAntTask.class,
+                configureTest(test));
         allWebTests.setArgs(Collections.singletonList("allwebtests"));
         allWebTests.setGroup(GROUP);
         allWebTests.setDescription("run ant allwebtests with manifest configuration");
@@ -161,17 +151,10 @@ public class CloudV2Plugin implements Plugin<Project> {
         });
         Copy unpackCep = project.getTasks().create("unpackCloudExtensionPack", Copy.class, c -> {
             c.dependsOn(cleanCep);
-            c.from(project.provider(() -> project.getConfigurations()
-                            .getByName(EXTENSION_PACK)
-                            .getFiles()
-                            .stream()
-                            .map(project::zipTree)
-                            .collect(Collectors.toSet())
-                    )
-            );
+            c.from(project.provider(() -> project.getConfigurations().getByName(EXTENSION_PACK).getFiles().stream()
+                    .map(project::zipTree).collect(Collectors.toSet())));
             c.into(extension.getCloudExtensionPackFolder().getAsFile());
-            c.doLast(a -> project.getConfigurations().getByName(EXTENSION_PACK)
-                    .getResolvedConfiguration()
+            c.doLast(a -> project.getConfigurations().getByName(EXTENSION_PACK).getResolvedConfiguration()
                     .getFirstLevelModuleDependencies()
                     .forEach(r -> a.getLogger().lifecycle("Using Cloud Extension Pack: {}", r.getModuleVersion())));
         });
@@ -186,10 +169,11 @@ public class CloudV2Plugin implements Plugin<Project> {
             c.into(project.file(reservedTypeCodes).getParent());
         });
         bootstrapPlatform.dependsOn(copyTypeCodes);
-        PatchLocalExtensions patch = project.getTasks().create("patchLocalExtensions", PatchLocalExtensions.class, p -> {
-            p.getTarget().set(project.file("hybris/config/localextensions.xml"));
-            p.getCepFolder().set(extension.getCloudExtensionPackFolder());
-        });
+        PatchLocalExtensions patch = project.getTasks().create("patchLocalExtensions", PatchLocalExtensions.class,
+                p -> {
+                    p.getTarget().set(project.file("hybris/config/localextensions.xml"));
+                    p.getCepFolder().set(extension.getCloudExtensionPackFolder());
+                });
         bootstrapPlatform.dependsOn(patch);
     }
 
@@ -197,16 +181,19 @@ public class CloudV2Plugin implements Plugin<Project> {
 
         Map<String, Map<String, Object>> allProps = new TreeMap<>();
         for (Property property : manifest.properties) {
-            Map<String, Object> props = allProps.computeIfAbsent(propertyFileKey("common", property.persona), k -> new LinkedHashMap<>());
+            Map<String, Object> props = allProps.computeIfAbsent(propertyFileKey("common", property.persona),
+                    k -> new LinkedHashMap<>());
             props.put(property.key, property.value);
         }
         for (Aspect aspect : manifest.aspects) {
             for (Property property : aspect.properties) {
-                Map<String, Object> props = allProps.computeIfAbsent(propertyFileKey(aspect.name, property.persona), k -> new LinkedHashMap<>());
+                Map<String, Object> props = allProps.computeIfAbsent(propertyFileKey(aspect.name, property.persona),
+                        k -> new LinkedHashMap<>());
                 props.put(property.key, property.value);
             }
             for (Webapp webapp : aspect.webapps) {
-                Map<String, Object> props = allProps.computeIfAbsent(propertyFileKey(aspect.name, ""), k -> new LinkedHashMap<>());
+                Map<String, Object> props = allProps.computeIfAbsent(propertyFileKey(aspect.name, ""),
+                        k -> new LinkedHashMap<>());
                 props.put(webapp.name + ".webroot", webapp.contextPath);
             }
         }

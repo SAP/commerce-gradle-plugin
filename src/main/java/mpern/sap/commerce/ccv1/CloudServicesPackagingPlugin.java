@@ -1,20 +1,5 @@
 package mpern.sap.commerce.ccv1;
 
-import mpern.sap.commerce.build.HybrisPlugin;
-import mpern.sap.commerce.ccv1.tasks.MergePropertyFiles;
-import org.gradle.api.GradleException;
-import org.gradle.api.Plugin;
-import org.gradle.api.Project;
-import org.gradle.api.Task;
-import org.gradle.api.file.DuplicatesStrategy;
-import org.gradle.api.logging.Logger;
-import org.gradle.api.logging.Logging;
-import org.gradle.api.tasks.Copy;
-import org.gradle.api.tasks.Delete;
-import org.gradle.api.tasks.StopExecutionException;
-import org.gradle.api.tasks.WriteProperties;
-import org.gradle.api.tasks.bundling.Zip;
-
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -25,20 +10,37 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import org.gradle.api.GradleException;
+import org.gradle.api.Plugin;
+import org.gradle.api.Project;
+import org.gradle.api.Task;
+import org.gradle.api.file.DuplicatesStrategy;
+import org.gradle.api.tasks.Copy;
+import org.gradle.api.tasks.Delete;
+import org.gradle.api.tasks.StopExecutionException;
+import org.gradle.api.tasks.WriteProperties;
+import org.gradle.api.tasks.bundling.Zip;
+
+import mpern.sap.commerce.build.HybrisPlugin;
+import mpern.sap.commerce.ccv1.tasks.MergePropertyFiles;
+
 public class CloudServicesPackagingPlugin implements Plugin<Project> {
 
     public static final String EXTENSION = "CCV1";
     public static final String COMMON_CONFIG = "common";
     public static final String GROUP = "CCV1 Packaging";
-    public static final String[] HYBRIS_CONFIG_EXCLUDE = {"**/hybrislicence.jar", "solr/**", "tomcat/**", "customer*.properties", "localextensions.xml"};
-    public static final String[] DATAHUB_CONFIG_EXCLUDE = {"**/local.properties", "**/logback.xml", "customer*.properties"};
+    public static final String[] HYBRIS_CONFIG_EXCLUDE = { "**/hybrislicence.jar", "solr/**", "tomcat/**",
+            "customer*.properties", "localextensions.xml" };
+    public static final String[] DATAHUB_CONFIG_EXCLUDE = { "**/local.properties", "**/logback.xml",
+            "customer*.properties" };
     public static final String[] SOLR_CONFIG_EXCLUDE = {};
 
     @Override
     public void apply(Project project) {
         PackagingExtension extension = project.getExtensions().create(EXTENSION, PackagingExtension.class, project);
         extension.getPlatformZip().set(project.file("hybris/temp/hybris/hybrisServer/hybrisServer-Platform.zip"));
-        extension.getAllExtensionsZip().set(project.file("hybris/temp/hybris/hybrisServer/hybrisServer-AllExtensions.zip"));
+        extension.getAllExtensionsZip()
+                .set(project.file("hybris/temp/hybris/hybrisServer/hybrisServer-AllExtensions.zip"));
         extension.getEnvironments().set(project.provider(() -> new HashSet<>(Arrays.asList("dev", "stag", "prod"))));
         extension.getPreProductionEnvironment().set("stag");
         extension.getProjectID().set(project.provider(project::getName));
@@ -46,7 +48,6 @@ public class CloudServicesPackagingPlugin implements Plugin<Project> {
         extension.getConfigurationFolder().set(project.file("ccv1-configuration"));
         extension.getDistributionFolder().set(project.file("dist"));
         extension.getTempFolder().set(project.file("temp"));
-
 
         Task bootstrap = project.getTasks().create("bootstrapCCV1Config");
         bootstrap.setGroup(GROUP);
@@ -65,7 +66,7 @@ public class CloudServicesPackagingPlugin implements Plugin<Project> {
         project.afterEvaluate(p -> setupPackaging(p, buildPackage, extension));
 
         project.getPlugins().withType(HybrisPlugin.class, hybrisPlugin -> {
-            //sensible defaults
+            // sensible defaults
             buildPackage.mustRunAfter(project.getTasks().getByPath("yproduction"));
         });
     }
@@ -139,7 +140,6 @@ public class CloudServicesPackagingPlugin implements Plugin<Project> {
         buildPackage.getInputs().file(extension.getAllExtensionsZip());
         buildPackage.getInputs().file(extension.getPlatformZip());
 
-
         if (extension.getDatahub().getOrElse(Boolean.FALSE)) {
             setupDatahubPackaging(p, extension, packageFolder, zipPackage, cleanTargetFolder);
             buildPackage.getInputs().file(extension.getDatahubWar());
@@ -150,14 +150,14 @@ public class CloudServicesPackagingPlugin implements Plugin<Project> {
         }
 
         Task md5Sum = p.getTasks().create("md5Sum", t -> {
-
             Path packagePath = zipPackage.getArchivePath().toPath();
 
             t.getInputs().file(packagePath);
 
             String archiveName = zipPackage.getArchiveName();
             Path resolve = packagePath.getParent().resolve(archiveName + ".MD5");
-            Path target = packagePath.getParent().resolve(archiveName.substring(0, archiveName.lastIndexOf('.')) + ".md5");
+            Path target = packagePath.getParent()
+                    .resolve(archiveName.substring(0, archiveName.lastIndexOf('.')) + ".md5");
 
             t.getOutputs().file(target);
             buildPackage.getOutputs().file(target);
@@ -171,7 +171,7 @@ public class CloudServicesPackagingPlugin implements Plugin<Project> {
                 try {
                     Files.delete(target);
                 } catch (IOException e) {
-                    //we dont care
+                    // we dont care
                 }
                 try {
                     Files.move(resolve, target);
@@ -183,10 +183,10 @@ public class CloudServicesPackagingPlugin implements Plugin<Project> {
         md5Sum.dependsOn(zipPackage);
 
         buildPackage.dependsOn(md5Sum);
-
     }
 
-    private void setupPlatformPackaging(Project p, PackagingExtension extension, Path packageFolder, Task zipPackageFolder, Task cleanTargetFolder) {
+    private void setupPlatformPackaging(Project p, PackagingExtension extension, Path packageFolder,
+            Task zipPackageFolder, Task cleanTargetFolder) {
         Path hybrisBin = packageFolder.resolve("hybris/bin");
 
         Copy copyPlatform = p.getTasks().create("copyPlatform", Copy.class, t -> {
@@ -201,7 +201,6 @@ public class CloudServicesPackagingPlugin implements Plugin<Project> {
         });
         copyPlatform.dependsOn(cleanTargetFolder);
         zipPackageFolder.dependsOn(copyPlatform);
-
 
         Copy copyAllExtensions = p.getTasks().create("copyAllExtensions", Copy.class, t -> {
             t.from(extension.getAllExtensionsZip());
@@ -225,12 +224,13 @@ public class CloudServicesPackagingPlugin implements Plugin<Project> {
             Path environmentFolder = configurationFolder.resolve(environment).resolve("hybris");
             Path targetFolder = packageFolder.resolve("hybris/config/" + environment);
 
-            Copy copyCommonHybrisConfigToTarget = p.getTasks().create("copyCommonHybris_" + environment, Copy.class, t -> {
-                t.from(commonFolder);
-                t.into(targetFolder);
-                t.setDuplicatesStrategy(DuplicatesStrategy.INCLUDE);
-                t.exclude(HYBRIS_CONFIG_EXCLUDE);
-            });
+            Copy copyCommonHybrisConfigToTarget = p.getTasks().create("copyCommonHybris_" + environment, Copy.class,
+                    t -> {
+                        t.from(commonFolder);
+                        t.into(targetFolder);
+                        t.setDuplicatesStrategy(DuplicatesStrategy.INCLUDE);
+                        t.exclude(HYBRIS_CONFIG_EXCLUDE);
+                    });
             copyCommonHybrisConfigToTarget.dependsOn(cleanTargetFolder);
 
             Copy copyEnvHyrisConfigToTarget = p.getTasks().create("copyEnvHybris_" + environment, Copy.class, t -> {
@@ -242,40 +242,45 @@ public class CloudServicesPackagingPlugin implements Plugin<Project> {
             copyEnvHyrisConfigToTarget.dependsOn(copyCommonHybrisConfigToTarget);
 
             for (String mergeProperty : Arrays.asList("customer.adm.properties", "customer.app.properties")) {
-                Task mergeCustomerProperties = p.getTasks().create(String.format("mergeCustomerProperties_%s_%s", environment, mergeProperty), MergePropertyFiles.class, t -> {
-                    t.getInputFiles().setFrom(Arrays.asList(
-                            commonFolder.resolve("customer.properties"),
-                            commonFolder.resolve(mergeProperty),
-                            environmentFolder.resolve("customer.properties"),
-                            environmentFolder.resolve(mergeProperty)
-                    ));
-                    t.setOutputFile(targetFolder.resolve(mergeProperty));
-                    t.setComment("Generated " + Instant.now().toString());
-                });
+                Task mergeCustomerProperties = p.getTasks().create(
+                        String.format("mergeCustomerProperties_%s_%s", environment, mergeProperty),
+                        MergePropertyFiles.class, t -> {
+                            t.getInputFiles()
+                                    .setFrom(Arrays.asList(commonFolder.resolve("customer.properties"),
+                                            commonFolder.resolve(mergeProperty),
+                                            environmentFolder.resolve("customer.properties"),
+                                            environmentFolder.resolve(mergeProperty)));
+                            t.setOutputFile(targetFolder.resolve(mergeProperty));
+                            t.setComment("Generated " + Instant.now().toString());
+                        });
                 mergeCustomerProperties.dependsOn(copyEnvHyrisConfigToTarget);
                 zipPackageFolder.dependsOn(mergeCustomerProperties);
             }
 
-            for (Path localExtension : Arrays.asList(targetFolder.resolve("localextensions.app.xml"), targetFolder.resolve("localextensions.adm.xml"))) {
-                Task copyLocalExtensionsFromEnv = p.getTasks().create("copyLocalExtensions" + environment + "_" + localExtension.getFileName(), Copy.class, t -> {
-                    t.onlyIf(tsk -> {
-                        Path local = environmentFolder.resolve("localextensions.xml");
-                        return Files.exists(local) && !(Files.exists(localExtension));
-                    });
-                    t.from(environmentFolder.resolve("localextensions.xml"));
-                    t.into(targetFolder);
-                    t.rename(".*", localExtension.getFileName().toString());
-                });
+            for (Path localExtension : Arrays.asList(targetFolder.resolve("localextensions.app.xml"),
+                    targetFolder.resolve("localextensions.adm.xml"))) {
+                Task copyLocalExtensionsFromEnv = p.getTasks().create(
+                        "copyLocalExtensions" + environment + "_" + localExtension.getFileName(), Copy.class, t -> {
+                            t.onlyIf(tsk -> {
+                                Path local = environmentFolder.resolve("localextensions.xml");
+                                return Files.exists(local) && !(Files.exists(localExtension));
+                            });
+                            t.from(environmentFolder.resolve("localextensions.xml"));
+                            t.into(targetFolder);
+                            t.rename(".*", localExtension.getFileName().toString());
+                        });
                 copyLocalExtensionsFromEnv.dependsOn(copyEnvHyrisConfigToTarget);
-                Task copyLocalExtensionsFromCommon = p.getTasks().create("copyLocalExtensions_common_" + environment + "_" + localExtension.getFileName(), Copy.class, t -> {
-                    t.onlyIf(tsk -> {
-                        Path local = commonFolder.resolve("localextensions.xml");
-                        return Files.exists(local) && !(Files.exists(localExtension));
-                    });
-                    t.from(commonFolder.resolve("localextensions.xml"));
-                    t.into(targetFolder);
-                    t.rename(".*", localExtension.getFileName().toString());
-                });
+                Task copyLocalExtensionsFromCommon = p.getTasks().create(
+                        "copyLocalExtensions_common_" + environment + "_" + localExtension.getFileName(), Copy.class,
+                        t -> {
+                            t.onlyIf(tsk -> {
+                                Path local = commonFolder.resolve("localextensions.xml");
+                                return Files.exists(local) && !(Files.exists(localExtension));
+                            });
+                            t.from(commonFolder.resolve("localextensions.xml"));
+                            t.into(targetFolder);
+                            t.rename(".*", localExtension.getFileName().toString());
+                        });
                 copyLocalExtensionsFromCommon.dependsOn(copyLocalExtensionsFromEnv);
                 zipPackageFolder.dependsOn(copyLocalExtensionsFromCommon);
             }
@@ -302,7 +307,8 @@ public class CloudServicesPackagingPlugin implements Plugin<Project> {
         }
     }
 
-    private void setupDatahubPackaging(Project p, PackagingExtension extension, Path packageFolder, Zip zipPackage, Task cleanTargetFolder) {
+    private void setupDatahubPackaging(Project p, PackagingExtension extension, Path packageFolder, Zip zipPackage,
+            Task cleanTargetFolder) {
         Copy copyDataHubWar = p.getTasks().create("copyDataHubWar", Copy.class, t -> {
             t.from(extension.getDatahubWar(), s -> s.rename(".*", "datahub-webapp.war"));
             t.into(packageFolder.resolve("datahub/bin"));
@@ -339,20 +345,20 @@ public class CloudServicesPackagingPlugin implements Plugin<Project> {
             });
             copyDatahubConfig.dependsOn(copyCommonConfig);
 
-            MergePropertyFiles mergeProperties = p.getTasks().create("mergeDatahub_customer.properties_" + environment, MergePropertyFiles.class, t -> {
-                t.getInputFiles().setFrom(Arrays.asList(
-                        commonFolder.resolve("customer.properties"),
-                        sourceFolder.resolve("customer.properties")
-                ));
-                t.setOutputFile(targetFolder.resolve("customer.properties"));
-            });
+            MergePropertyFiles mergeProperties = p.getTasks().create("mergeDatahub_customer.properties_" + environment,
+                    MergePropertyFiles.class, t -> {
+                        t.getInputFiles().setFrom(Arrays.asList(commonFolder.resolve("customer.properties"),
+                                sourceFolder.resolve("customer.properties")));
+                        t.setOutputFile(targetFolder.resolve("customer.properties"));
+                    });
             mergeProperties.dependsOn(copyDatahubConfig);
 
             zipPackage.dependsOn(mergeProperties);
         }
     }
 
-    private void setupSolrPackaging(Project p, PackagingExtension extension, Path packageFolder, Zip zipPackage, Task cleanTargetFolder) {
+    private void setupSolrPackaging(Project p, PackagingExtension extension, Path packageFolder, Zip zipPackage,
+            Task cleanTargetFolder) {
         // FIXME This is only POC for Solr configuration only.
         Set<String> environments = extension.getEnvironments().get();
         Path configurationFolder = extension.getConfigurationFolder().getAsFile().get().toPath();
@@ -381,4 +387,3 @@ public class CloudServicesPackagingPlugin implements Plugin<Project> {
         }
     }
 }
-

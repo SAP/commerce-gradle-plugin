@@ -1,7 +1,5 @@
 package mpern.sap.commerce.build.supportportal;
 
-import mpern.sap.commerce.build.util.HttpUtils;
-
 import java.net.CookieManager;
 import java.net.HttpURLConnection;
 import java.net.URI;
@@ -13,6 +11,8 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import mpern.sap.commerce.build.util.HttpUtils;
 
 public class SupportPortalUrlResolver {
 
@@ -89,11 +89,10 @@ public class SupportPortalUrlResolver {
         try {
             String body = HttpUtils.readResponseBody(connection);
             List<Map<String, String>> entries = parseODataEntries(body);
-            Optional<String> listEvent = entries.stream()
-                    .map(e -> e.getOrDefault("ListEvent", ""))
-                    .filter(l -> !l.isEmpty())
-                    .findFirst();
-            String listingParams = listEvent.orElseThrow(() -> new IllegalStateException("Could not determine DownloadItemSet for " + newUri));
+            Optional<String> listEvent = entries.stream().map(e -> e.getOrDefault("ListEvent", ""))
+                    .filter(l -> !l.isEmpty()).findFirst();
+            String listingParams = listEvent
+                    .orElseThrow(() -> new IllegalStateException("Could not determine DownloadItemSet for " + newUri));
             listingParams = listingParams.replaceAll("&amp;", "&");
 
             URI itemSets = new URI(DOWNLOAD_ITEM_SET.getScheme(), DOWNLOAD_ITEM_SET.getAuthority(),
@@ -105,8 +104,11 @@ public class SupportPortalUrlResolver {
     }
 
     private void validateUrl(URI source) {
-        if (!source.getHost().equals("launchpad.support.sap.com") || !source.getFragment().startsWith("/softwarecenter/template/products/")) {
-            throw new IllegalArgumentException(String.format("can not reslove %s. URI must be of following pattern: https://launchpad.support.sap.com/#/softwarecenter/template/products/...", source));
+        if (!source.getHost().equals("launchpad.support.sap.com")
+                || !source.getFragment().startsWith("/softwarecenter/template/products/")) {
+            throw new IllegalArgumentException(String.format(
+                    "can not reslove %s. URI must be of following pattern: https://launchpad.support.sap.com/#/softwarecenter/template/products/...",
+                    source));
         }
     }
 

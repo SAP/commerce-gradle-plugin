@@ -1,8 +1,8 @@
 package mpern.sap.commerce.ccv2.model;
 
-import java.util.Map;
-
 import static mpern.sap.commerce.ccv2.model.util.ParseUtils.validateNullOrWhitespace;
+
+import java.util.Map;
 
 public class Addon {
 
@@ -17,10 +17,8 @@ public class Addon {
     }
 
     public static Addon fromMap(Map<String, Object> jsonMap) {
-        return new Addon(
-                validateNullOrWhitespace((String) jsonMap.get("addon"), "Addon.addon must have a value"),
+        return new Addon(validateNullOrWhitespace((String) jsonMap.get("addon"), "Addon.addon must have a value"),
                 validateNullOrWhitespace((String) jsonMap.get("storefront"), "Addon.storefront must have a value"),
-                validateNullOrWhitespace((String) jsonMap.get("template"), "Addon.template must have a value")
-        );
+                validateNullOrWhitespace((String) jsonMap.get("template"), "Addon.template must have a value"));
     }
 }

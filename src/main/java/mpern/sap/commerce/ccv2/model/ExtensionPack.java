@@ -1,8 +1,8 @@
 package mpern.sap.commerce.ccv2.model;
 
-import java.util.Map;
-
 import static mpern.sap.commerce.ccv2.model.util.ParseUtils.toEmpty;
+
+import java.util.Map;
 
 public class ExtensionPack {
     public final String name;

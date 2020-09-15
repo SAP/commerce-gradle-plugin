@@ -1,10 +1,10 @@
 package mpern.sap.commerce.build.supportportal
 
-import spock.lang.Specification
+import static org.junit.Assume.assumeTrue
 
 import java.util.stream.Collectors
 
-import static org.junit.Assume.assumeTrue
+import spock.lang.Specification
 
 class SSOLoginTests extends Specification {
 

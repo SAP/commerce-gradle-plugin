@@ -1,13 +1,13 @@
 package mpern.sap.commerce.ccv1;
 
+import javax.inject.Inject;
+
 import org.gradle.api.Project;
 import org.gradle.api.file.DirectoryProperty;
 import org.gradle.api.file.RegularFileProperty;
 import org.gradle.api.provider.Property;
 import org.gradle.api.provider.Provider;
 import org.gradle.api.provider.SetProperty;
-
-import javax.inject.Inject;
 
 public class PackagingExtension {
     private final Property<Boolean> datahub;
@@ -105,6 +105,7 @@ public class PackagingExtension {
 
     private String buildPackageName(Project project) {
         String customerId = customerID.getOrElse("");
-        return (customerId.isEmpty() ? "" : customerId + "-") + projectID.get() + "_v" + project.getVersion().toString();
+        return (customerId.isEmpty() ? "" : customerId + "-") + projectID.get() + "_v"
+                + project.getVersion().toString();
     }
 }

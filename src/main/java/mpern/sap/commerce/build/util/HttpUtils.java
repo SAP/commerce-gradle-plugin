@@ -18,11 +18,13 @@ import java.util.stream.Collectors;
 
 public class HttpUtils {
 
-    public static HttpURLConnection connectAndUpdateCookies(HttpURLConnection connection, CookieManager cookies) throws Exception {
+    public static HttpURLConnection connectAndUpdateCookies(HttpURLConnection connection, CookieManager cookies)
+            throws Exception {
         return connectAndUpdateCookies(connection, cookies, Collections.emptyMap());
     }
 
-    public static HttpURLConnection connectAndUpdateCookies(HttpURLConnection connection, CookieManager cookies, Map<String, List<String>> headers) throws Exception {
+    public static HttpURLConnection connectAndUpdateCookies(HttpURLConnection connection, CookieManager cookies,
+            Map<String, List<String>> headers) throws Exception {
         connection.connect();
         URI uri = connection.getURL().toURI();
         cookies.put(uri, connection.getHeaderFields());
@@ -31,18 +33,20 @@ public class HttpUtils {
             cookies.put(connection.getURL().toURI(), connection.getHeaderFields());
         }
         if (connection.getResponseCode() > 400) {
-            throw new IllegalStateException("error connecting to " + connection.getURL() + "HTTP Status: " + connection.getResponseCode());
+            throw new IllegalStateException(
+                    "error connecting to " + connection.getURL() + "HTTP Status: " + connection.getResponseCode());
         }
         return connection;
     }
 
     private static boolean isRedirect(HttpURLConnection connection) throws Exception {
-        return connection.getResponseCode() == HttpURLConnection.HTTP_MOVED_PERM ||
-                connection.getResponseCode() == HttpURLConnection.HTTP_MOVED_TEMP ||
-                connection.getResponseCode() == HttpURLConnection.HTTP_SEE_OTHER;
+        return connection.getResponseCode() == HttpURLConnection.HTTP_MOVED_PERM
+                || connection.getResponseCode() == HttpURLConnection.HTTP_MOVED_TEMP
+                || connection.getResponseCode() == HttpURLConnection.HTTP_SEE_OTHER;
     }
 
-    private static HttpURLConnection followRedirect(final HttpURLConnection connection, CookieManager cookies, Map<String, List<String>> headers) throws Exception {
+    private static HttpURLConnection followRedirect(final HttpURLConnection connection, CookieManager cookies,
+            Map<String, List<String>> headers) throws Exception {
         String location = connection.getHeaderField("Location");
         URI newUri = connection.getURL().toURI().resolve(location);
         HttpURLConnection newConnection = open(newUri, cookies);
@@ -79,14 +83,13 @@ public class HttpUtils {
     }
 
     public static String urlFormEncode(Map<String, String> params) {
-        return params.entrySet().stream()
-                .map(e -> {
-                    try {
-                        return URLEncoder.encode(e.getKey(), "UTF-8") + "=" + URLEncoder.encode(e.getValue(), "UTF-8");
-                    } catch (UnsupportedEncodingException e1) {
-                        throw new RuntimeException(e1);
-                    }
-                }).collect(Collectors.joining("&"));
+        return params.entrySet().stream().map(e -> {
+            try {
+                return URLEncoder.encode(e.getKey(), "UTF-8") + "=" + URLEncoder.encode(e.getValue(), "UTF-8");
+            } catch (UnsupportedEncodingException e1) {
+                throw new RuntimeException(e1);
+            }
+        }).collect(Collectors.joining("&"));
     }
 
     public static void postFormData(String formEncoded, HttpURLConnection next) throws IOException {
