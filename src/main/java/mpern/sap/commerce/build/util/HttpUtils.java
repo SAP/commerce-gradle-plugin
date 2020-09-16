@@ -34,7 +34,7 @@ public class HttpUtils {
         }
         if (connection.getResponseCode() > 400) {
             throw new IllegalStateException(
-                    "error connecting to " + connection.getURL() + "HTTP Status: " + connection.getResponseCode());
+                    "error connecting to " + connection.getURL() + " HTTP Status: " + connection.getResponseCode());
         }
         return connection;
     }
