@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+\<TBD\>
+
 ## [2.1.0] - 2020-06-16
 
 ### Added
@@ -44,9 +46,13 @@ The plugin unpacks all resolved dependencies into the project root folder. (the 
 
 ### Fixed
 
-- Change the file format of the deployment package checksum file to follow the latest packaging guidelines. (#15)
+- Change the file format of the deployment package checksum file to follow the latest packaging guidelines. ([#15])
 
-A big "thank you" to @I048752 for providing the fix!
+[#15]: https://github.com/sap-staging/commerce-gradle-plugin/pull/15
+
+A big "thank you" to [@I048752] for providing the fix!
+
+[@I048752]: https://github.com/I048752
 
 ## [1.5.0] - 2019-08-09
 
@@ -54,10 +60,11 @@ A big "thank you" to @I048752 for providing the fix!
 
 - CCv2 Plugin: Cloud Extension Pack support
 
-If the cloud extension pack is [enabled][enable] in your `manifest.json`, the `bootstrapPlatform` task will automatically:
+If the cloud extension pack is enabled in your `manifest.json` (`"useCloudExtensionPack": true`), the `bootstrapPlatform` task will automatically:
 
-- download and unpack the extension pack (artifact coordinates: `de.hybris.platform:hybris-cloud-extension-pack:<commerce-version-without-patch>.+`) into `cloud-extension-pack`
+- download and unpack the extension pack (artifact coordinates: `de.hybris.platform:hybris-cloud-extension-pack:<commerce-version-without-patch>.+`) into the folder `cloud-extension-pack`
 - patch `localextensions.xml` to load the extensions from the cloud extension pack, if necessary
+
 
 ### Changed
 
@@ -68,25 +75,33 @@ If the cloud extension pack is [enabled][enable] in your `manifest.json`, the `b
 
 ### Added
 
-- Task `buildCCV1Package` now declares task outputs - you can now easily (post)process the generated package (#12)
+- Task `buildCCV1Package` now declares task outputs - you can now easily (post)process the generated package ([#12])
+
+[#12]: https://github.com/sap-staging/commerce-gradle-plugin/issues/12
 
 ## [1.3.3] - 2019-03-29
 
 ### Fixed
 
-- Ensure correct ccv1 deployment package name (#11)
+- Ensure correct ccv1 deployment package name ([#11])
+
+[#11]: https://github.com/sap-staging/commerce-gradle-plugin/issues/11
 
 ## [1.3.2] - 2019-03-18
 
 ### Fixed
 
-- Fix calling ant targets on the SAP JVM (#10)
+- Fix calling ant targets on the SAP JVM ([#10])
+
+[#10]: https://github.com/sap-staging/commerce-gradle-plugin/issues/10
 
 ## [1.3.1] - 2019-03-07
 
 ### Fixed
 
--  CCv2 plugin correctly parses a minimal `manifest.json` (#9)
+-  CCv2 plugin correctly parses a minimal `manifest.json` ([#9])
+
+[#9]: https://github.com/sap-staging/commerce-gradle-plugin/issues/9
 
 ## [1.3.0] - 2019-01-18
 
@@ -111,21 +126,28 @@ If the cloud extension pack is [enabled][enable] in your `manifest.json`, the `b
 
 - Improve platform version detection
 
-This should take care of #8
+This should take care of [#8]
+
+[#8]: https://github.com/sap-staging/commerce-gradle-plugin/issues/8
 
 ## [1.2.1] - 2018-12-14
 
 ### Fixed
 
-- Keep case of ant target (#5)
+- Keep case of ant target ([#5])
+
+[#5]: https://github.com/sap-staging/commerce-gradle-plugin/issues/5
 
 ## [1.2.0] - 2018-10-26
 
 ### Added
 
-- Include Solr customization in a CCv2 package (PR #3)
+- Include Solr customization in a CCv2 package (PR [#3])
 
-Thanks you @karol-szczecinski-sap for implementing the feature!
+A big "thank you" to [@karol-szczecinski-sap] for implementing the feature!
+
+[#3]: https://github.com/sap-staging/commerce-gradle-plugin/pull/3
+[@karol-szczecinski-sap]: https://github.com/karol-szczecinski-sap
 
 ## [1.1.1] - 2018-09-24
 
@@ -154,9 +176,12 @@ Thanks you @karol-szczecinski-sap for implementing the feature!
 
 ### Fixed
 
-- Fixed ccv1 package generation on Linux (see PR #1)
+- Fixed ccv1 package generation on Linux (see PR [#1])
 
-Shout out to @corneleberle for providing the fix.
+Shout out to [@corneleberle] for providing the fix.
+
+[#1]: https://github.com/sap-staging/commerce-gradle-plugin/pull/1
+[@corneleberle]: https://github.com/corneleberle
 
 ## [1.0.1] - 2018-06-29
 
@@ -181,7 +206,7 @@ Shout out to @corneleberle for providing the fix.
 [1.2.2]: https://github.com/SAP-staging/commerce-gradle-plugin/compare/v1.2.1...v1.2.2
 [1.2.1]: https://github.com/SAP-staging/commerce-gradle-plugin/compare/v1.2.0...v1.2.1
 [1.2.0]: https://github.com/SAP-staging/commerce-gradle-plugin/compare/v1.1.1...v1.2.0
-[1.1.0]: https://github.com/SAP-staging/commerce-gradle-plugin/compare/v1.1.0...v1.1.1
+[1.1.1]: https://github.com/SAP-staging/commerce-gradle-plugin/compare/v1.1.0...v1.1.1
 [1.1.0]: https://github.com/SAP-staging/commerce-gradle-plugin/compare/v1.0.2...v1.1.0
 [1.0.2]: https://github.com/SAP-staging/commerce-gradle-plugin/compare/v1.0.1...v1.0.2
 [1.0.1]: https://github.com/SAP-staging/commerce-gradle-plugin/compare/v1.0.0...v1.0.1
