@@ -18,9 +18,9 @@ There are also various examples available in [sap-commerce-tools][tools], check 
 This project uses [Semantic Versioning 2.0.0](https://semver.org/spec/v2.0.0.html)
 
 [build]: https://plugins.gradle.org/plugin/mpern.sap.commerce.build
-[build-doc]: https://github.com/sap-commerce-tools/commerce-gradle-plugin/wiki/Plugin-mpern.sap.commerce.build
+[build-doc]: docs/Plugin-mpern.sap.commerce.build.md
 [package]: https://plugins.gradle.org/plugin/mpern.sap.commerce.ccv1.package
-[package-doc]: https://github.com/sap-commerce-tools/commerce-gradle-plugin/wiki/Plugin-mpern.sap.commerce.ccv1.package
+[package-doc]: docs/Plugin-mpern.sap.commerce.ccv1.package.md
 [ccv2]: https://plugins.gradle.org/plugin/mpern.sap.commerce.build.ccv2
-[ccv2-doc]: https://github.com/sap-commerce-tools/commerce-gradle-plugin/wiki/Plugin-mpern.sap.commerce.build.ccv2
+[ccv2-doc]: docs/Plugin-mpern.sap.commerce.build.ccv2.md
 [tools]:https://github.com/sap-commerce-tools
