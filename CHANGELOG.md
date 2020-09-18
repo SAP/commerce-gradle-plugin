@@ -48,7 +48,7 @@ The plugin unpacks all resolved dependencies into the project root folder. (the 
 
 - Change the file format of the deployment package checksum file to follow the latest packaging guidelines. ([#15])
 
-[#15]: https://github.com/sap-staging/commerce-gradle-plugin/pull/15
+[#15]: https://github.com/SAP/commerce-gradle-plugin/pull/15
 
 A big "thank you" to [@I048752] for providing the fix!
 
@@ -77,7 +77,7 @@ If the cloud extension pack is enabled in your `manifest.json` (`"useCloudExtens
 
 - Task `buildCCV1Package` now declares task outputs - you can now easily (post)process the generated package ([#12])
 
-[#12]: https://github.com/sap-staging/commerce-gradle-plugin/issues/12
+[#12]: https://github.com/SAP/commerce-gradle-plugin/issues/12
 
 ## [1.3.3] - 2019-03-29
 
@@ -85,7 +85,7 @@ If the cloud extension pack is enabled in your `manifest.json` (`"useCloudExtens
 
 - Ensure correct ccv1 deployment package name ([#11])
 
-[#11]: https://github.com/sap-staging/commerce-gradle-plugin/issues/11
+[#11]: https://github.com/SAP/commerce-gradle-plugin/issues/11
 
 ## [1.3.2] - 2019-03-18
 
@@ -93,7 +93,7 @@ If the cloud extension pack is enabled in your `manifest.json` (`"useCloudExtens
 
 - Fix calling ant targets on the SAP JVM ([#10])
 
-[#10]: https://github.com/sap-staging/commerce-gradle-plugin/issues/10
+[#10]: https://github.com/SAP/commerce-gradle-plugin/issues/10
 
 ## [1.3.1] - 2019-03-07
 
@@ -101,7 +101,7 @@ If the cloud extension pack is enabled in your `manifest.json` (`"useCloudExtens
 
 -  CCv2 plugin correctly parses a minimal `manifest.json` ([#9])
 
-[#9]: https://github.com/sap-staging/commerce-gradle-plugin/issues/9
+[#9]: https://github.com/SAP/commerce-gradle-plugin/issues/9
 
 ## [1.3.0] - 2019-01-18
 
@@ -112,8 +112,8 @@ If the cloud extension pack is enabled in your `manifest.json` (`"useCloudExtens
 
 - New property `sha256Sum` for `SupportPortalDownloadTask` to support checksums available on launchpad.support.sap.com (More details in the [documentation][doc] and the [FAQ][faq])
 
-[doc]: https://github.com/SAP-staging/commerce-gradle-plugin/wiki/Plugin-mpern.sap.commerce.build#mpernsapcommercebuildtaskssupportportaldownload
-[faq]: https://github.com/SAP-staging/commerce-gradle-plugin/wiki/FAQ#where-do-i-find-the-sha256sum-value-for-a-sap-commerce-distribution-in-the-sap-support-portal
+[doc]: https://github.com/SAP/commerce-gradle-plugin/wiki/Plugin-mpern.sap.commerce.build#mpernsapcommercebuildtaskssupportportaldownload
+[faq]: https://github.com/SAP/commerce-gradle-plugin/wiki/FAQ#where-do-i-find-the-sha256sum-value-for-a-sap-commerce-distribution-in-the-sap-support-portal
 [example]: https://github.com/sap-commerce-tools/kotlin-dsl-example
 
 ## [1.2.2] - 2019-01-17
@@ -128,7 +128,7 @@ If the cloud extension pack is enabled in your `manifest.json` (`"useCloudExtens
 
 This should take care of [#8]
 
-[#8]: https://github.com/sap-staging/commerce-gradle-plugin/issues/8
+[#8]: https://github.com/SAP/commerce-gradle-plugin/issues/8
 
 ## [1.2.1] - 2018-12-14
 
@@ -136,7 +136,7 @@ This should take care of [#8]
 
 - Keep case of ant target ([#5])
 
-[#5]: https://github.com/sap-staging/commerce-gradle-plugin/issues/5
+[#5]: https://github.com/SAP/commerce-gradle-plugin/issues/5
 
 ## [1.2.0] - 2018-10-26
 
@@ -146,7 +146,7 @@ This should take care of [#8]
 
 A big "thank you" to [@karol-szczecinski-sap] for implementing the feature!
 
-[#3]: https://github.com/sap-staging/commerce-gradle-plugin/pull/3
+[#3]: https://github.com/SAP/commerce-gradle-plugin/pull/3
 [@karol-szczecinski-sap]: https://github.com/karol-szczecinski-sap
 
 ## [1.1.1] - 2018-09-24
@@ -163,7 +163,7 @@ A big "thank you" to [@karol-szczecinski-sap] for implementing the feature!
   Configure your local build using a `manifest.json` file using the new CCV2 build plugin.\
   Details can be found in the [wiki][ccv2.build]!
 
-[ccv2.build]:https://github.com/SAP-staging/commerce-gradle-plugin/wiki/Plugin-mpern.sap.commerce.build.ccv2
+[ccv2.build]:https://github.com/SAP/commerce-gradle-plugin/wiki/Plugin-mpern.sap.commerce.build.ccv2
 
 ### Changed
 
@@ -180,7 +180,7 @@ A big "thank you" to [@karol-szczecinski-sap] for implementing the feature!
 
 Shout out to [@corneleberle] for providing the fix.
 
-[#1]: https://github.com/sap-staging/commerce-gradle-plugin/pull/1
+[#1]: https://github.com/SAP/commerce-gradle-plugin/pull/1
 [@corneleberle]: https://github.com/corneleberle
 
 ## [1.0.1] - 2018-06-29
@@ -193,21 +193,21 @@ Shout out to [@corneleberle] for providing the fix.
 
 :tada: Initial release :tada:
 
-[Unreleased]: https://github.com/SAP-staging/commerce-gradle-plugin/compare/v2.1.0...HEAD
-[2.1.0]: https://github.com/SAP-staging/commerce-gradle-plugin/compare/v2.0.0...v2.1.0
-[2.0.0]: https://github.com/SAP-staging/commerce-gradle-plugin/compare/v1.5.1...v2.0.0
-[1.5.1]: https://github.com/SAP-staging/commerce-gradle-plugin/compare/v1.5.0...v1.5.1
-[1.5.0]: https://github.com/SAP-staging/commerce-gradle-plugin/compare/v1.4.0...v1.5.0
-[1.4.0]: https://github.com/SAP-staging/commerce-gradle-plugin/compare/v1.3.3...v1.4.0
-[1.3.3]: https://github.com/SAP-staging/commerce-gradle-plugin/compare/v1.3.2...v1.3.3
-[1.3.2]: https://github.com/SAP-staging/commerce-gradle-plugin/compare/v1.3.1...v1.3.2
-[1.3.1]: https://github.com/SAP-staging/commerce-gradle-plugin/compare/v1.3.0...v1.3.1
-[1.3.0]: https://github.com/SAP-staging/commerce-gradle-plugin/compare/v1.2.2...v1.3.0
-[1.2.2]: https://github.com/SAP-staging/commerce-gradle-plugin/compare/v1.2.1...v1.2.2
-[1.2.1]: https://github.com/SAP-staging/commerce-gradle-plugin/compare/v1.2.0...v1.2.1
-[1.2.0]: https://github.com/SAP-staging/commerce-gradle-plugin/compare/v1.1.1...v1.2.0
-[1.1.1]: https://github.com/SAP-staging/commerce-gradle-plugin/compare/v1.1.0...v1.1.1
-[1.1.0]: https://github.com/SAP-staging/commerce-gradle-plugin/compare/v1.0.2...v1.1.0
-[1.0.2]: https://github.com/SAP-staging/commerce-gradle-plugin/compare/v1.0.1...v1.0.2
-[1.0.1]: https://github.com/SAP-staging/commerce-gradle-plugin/compare/v1.0.0...v1.0.1
-[1.0.0]: https://github.com/SAP-staging/commerce-gradle-plugin/releases/tag/v1.0.0
+[Unreleased]: https://github.com/SAP/commerce-gradle-plugin/compare/v2.1.0...HEAD
+[2.1.0]: https://github.com/SAP/commerce-gradle-plugin/compare/v2.0.0...v2.1.0
+[2.0.0]: https://github.com/SAP/commerce-gradle-plugin/compare/v1.5.1...v2.0.0
+[1.5.1]: https://github.com/SAP/commerce-gradle-plugin/compare/v1.5.0...v1.5.1
+[1.5.0]: https://github.com/SAP/commerce-gradle-plugin/compare/v1.4.0...v1.5.0
+[1.4.0]: https://github.com/SAP/commerce-gradle-plugin/compare/v1.3.3...v1.4.0
+[1.3.3]: https://github.com/SAP/commerce-gradle-plugin/compare/v1.3.2...v1.3.3
+[1.3.2]: https://github.com/SAP/commerce-gradle-plugin/compare/v1.3.1...v1.3.2
+[1.3.1]: https://github.com/SAP/commerce-gradle-plugin/compare/v1.3.0...v1.3.1
+[1.3.0]: https://github.com/SAP/commerce-gradle-plugin/compare/v1.2.2...v1.3.0
+[1.2.2]: https://github.com/SAP/commerce-gradle-plugin/compare/v1.2.1...v1.2.2
+[1.2.1]: https://github.com/SAP/commerce-gradle-plugin/compare/v1.2.0...v1.2.1
+[1.2.0]: https://github.com/SAP/commerce-gradle-plugin/compare/v1.1.1...v1.2.0
+[1.1.1]: https://github.com/SAP/commerce-gradle-plugin/compare/v1.1.0...v1.1.1
+[1.1.0]: https://github.com/SAP/commerce-gradle-plugin/compare/v1.0.2...v1.1.0
+[1.0.2]: https://github.com/SAP/commerce-gradle-plugin/compare/v1.0.1...v1.0.2
+[1.0.1]: https://github.com/SAP/commerce-gradle-plugin/compare/v1.0.0...v1.0.1
+[1.0.0]: https://github.com/SAP/commerce-gradle-plugin/releases/tag/v1.0.0

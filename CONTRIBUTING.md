@@ -10,8 +10,8 @@ If you have found a new bug, please make sure to provide as much detail as you c
 
 As you probably know, reproducing bugs can be very hard. The faster we can reproduce the bug, the faster it will get fixed.
 
-[latest]: https://github.com/sap-staging/commerce-gradle-plugin/releases
-[issues]: https://github.com/sap-staging/commerce-gradle-plugin/issues
+[latest]: https://github.com/SAP/commerce-gradle-plugin/releases
+[issues]: https://github.com/SAP/commerce-gradle-plugin/issues
 
 ## Feature Requests
 
