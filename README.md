@@ -1,6 +1,7 @@
 # Gradle Plugins for SAP (Hybris) Commerce 2.1.0
 
 [![Actions Status](https://github.com/sap-commerce-tools/commerce-gradle-plugin/workflows/Gradle%20CI/badge.svg)](https://github.com/sap-commerce-tools/commerce-gradle-plugin/actions)
+[![REUSE status](https://api.reuse.software/badge/github.com/SAP/commerce-gradle-plugin)](https://api.reuse.software/info/github.com/SAP/commerce-gradle-plugin)
 
 Bootstrap, configure and build your SAP Commerce (Hybris) project using Gradle 5+.
 
