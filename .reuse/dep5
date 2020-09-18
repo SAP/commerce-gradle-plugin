@@ -23,7 +23,7 @@ Disclaimer: The code in this project may include calls to APIs (“API Calls”)
  you any rights to use or access any SAP External Product, or provide any third
  parties the right to use of access any SAP External Product, through API Calls.
 
-Files: .gitignore README.md .java-version *.gradle gradle/* .github/*
+Files: .gitignore README.md CHANGELOG.md CONTRIBUTING.md .java-version *.gradle gradle/* .github/* docs/* manualTest/*
 Copyright: 2020 SAP SE or an SAP affiliate company and commerce-gradle-plugin contributors
 License: CC0-1.0
 
