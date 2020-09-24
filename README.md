@@ -18,6 +18,17 @@ There are also various examples available in [sap-commerce-tools][tools], check 
 
 This project uses [Semantic Versioning 2.0.0](https://semver.org/spec/v2.0.0.html)
 
+## Support
+
+Please raise an [issue] in this project, following the guidelines outlined in [CONTRIBUTING.md]
+
+## Contributing
+
+Please refer to [CONTRIBUTING.md]()
+
+[CONTRIBUTING.md]: CONTRIBUTING.md
+[issue]: https://github.com/SAP/commerce-gradle-plugin/issues
+
 [build]: https://plugins.gradle.org/plugin/mpern.sap.commerce.build
 [build-doc]: docs/Plugin-mpern.sap.commerce.build.md
 [package]: https://plugins.gradle.org/plugin/mpern.sap.commerce.ccv1.package
