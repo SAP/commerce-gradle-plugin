@@ -30,6 +30,8 @@ jobs:
     steps:
     - uses: actions/checkout@v2.0.0
     - run: git fetch --prune --unshallow
+    - name: REUSE Compliance Check
+      uses: fsfe/reuse-action@v1
     - name: Setup Java JDK
       uses: actions/setup-java@v1.3.0
       with:
