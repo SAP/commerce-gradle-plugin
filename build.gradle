@@ -98,8 +98,8 @@ gradlePlugin {
     }
 }
 pluginBundle {
-    website = 'https://github.com/sap-commerce-tools/commerce-gradle-plugin/wiki'
-    vcsUrl = 'https://github.com/sap-commerce-tools/commerce-gradle-plugin'
+    website = 'https://github.com/SAP/commerce-gradle-plugin/wiki'
+    vcsUrl = 'https://github.com/SAP/commerce-gradle-plugin'
 
     plugins {
         hybrisPlugin {
