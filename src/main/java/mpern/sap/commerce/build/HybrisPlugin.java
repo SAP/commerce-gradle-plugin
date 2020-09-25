@@ -13,13 +13,11 @@ import org.gradle.api.UnknownDomainObjectException;
 import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.logging.Logger;
 import org.gradle.api.tasks.Copy;
-import org.gradle.api.tasks.TaskCollection;
 import org.gradle.api.tasks.TaskExecutionException;
 
 import mpern.sap.commerce.build.rules.HybrisAntRule;
 import mpern.sap.commerce.build.tasks.GlobClean;
 import mpern.sap.commerce.build.tasks.HybrisAntTask;
-import mpern.sap.commerce.build.tasks.SupportPortalDownload;
 import mpern.sap.commerce.build.util.Version;
 
 public class HybrisPlugin implements Plugin<Project> {
@@ -145,14 +143,6 @@ public class HybrisPlugin implements Plugin<Project> {
         createConfigFolder.mustRunAfter(bootstrap);
 
         project.getGradle().getTaskGraph().addTaskExecutionListener(new HybrisAntTask.HybrisAntConfigureAdapter());
-
-        SupportPortalDownload.ConfigureSupportPortalDownload configureSupportPortalDownload = new SupportPortalDownload.ConfigureSupportPortalDownload();
-        project.getGradle().getTaskGraph().addTaskExecutionGraphListener(configureSupportPortalDownload);
-
-        project.afterEvaluate(p -> {
-            TaskCollection<Task> matching = p.getTasks().matching(t -> t instanceof SupportPortalDownload);
-            unpackPlatform.dependsOn(matching);
-        });
     }
 
     private boolean versionMismatch(HybrisPluginExtension extension, Logger logger) {

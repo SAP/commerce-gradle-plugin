@@ -95,7 +95,7 @@ task unitTests(type: mpern.sap.commerce.build.tasks.HybrisAntTask) {
 
 ### `mpern.sap.commerce.build.tasks.SupportPortalDownload`
 
-**Deprecated**
+**Deprecated with v2.1.1; Removed with v3.0.0**
 
 Downloads hybris commerce files from the SAP Support Portal.
 
