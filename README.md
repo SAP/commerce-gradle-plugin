@@ -1,4 +1,4 @@
-# Gradle Plugins for SAP (Hybris) Commerce 2.1.0
+# Gradle Plugins for SAP (Hybris) Commerce 2.1.1
 
 [![Actions Status](https://github.com/SAP/commerce-gradle-plugin/workflows/Gradle%20CI/badge.svg)](https://github.com/SAP/commerce-gradle-plugin/actions)
 [![REUSE status](https://api.reuse.software/badge/github.com/SAP/commerce-gradle-plugin)](https://api.reuse.software/info/github.com/SAP/commerce-gradle-plugin)
