@@ -69,7 +69,7 @@ public class SupportPortalDownload extends DefaultTask {
             if (md5HashOrNull == null && sha256SumOrNull == null) {
                 throw new StopExecutionException("Please define either md5Hash or sha256Sum");
             }
-
+            getLogger().warn("SupportPortalDownload is deprecated and will be removed in the next major release.");
             try {
                 Path target = targetFile.get().getAsFile().toPath();
                 if (!Files.exists(target)) {

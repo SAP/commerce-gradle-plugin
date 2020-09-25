@@ -7,7 +7,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-\<TBD\>
+## [2.1.1] - 2020-09-25
+
+### Deprecated
+
+- **Plugin Coordinates**\
+  Since the plugin recently moved to the SAP open source organization, the plugin will soon be updated to reflect this change
+
+  |Old|New|
+  |---|---|
+  |`mpern.sap.commerce.build`|`sap.commerce.build`|
+  |`mpern.sap.commerce.build.ccv2`|`sap.commerce.build.ccv2`|
+  |`mpern.sap.commerce.ccv1.package`|`sap.commerce.ccv1.package`|
+
+- Task Type `SupportPortalDownload`\
+  The logic to determine the download link for an artifact is quite complex and brittle,
+  and there are easier ways to do achieve the same outcome.\
+  Check the [FAQ](docs/FAQ.md) for more information
+
 
 ## [2.1.0] - 2020-06-16
 
@@ -193,7 +210,8 @@ Shout out to [@corneleberle] for providing the fix.
 
 :tada: Initial release :tada:
 
-[Unreleased]: https://github.com/SAP/commerce-gradle-plugin/compare/v2.1.0...HEAD
+[Unreleased]: https://github.com/SAP/commerce-gradle-plugin/compare/v2.1.1...HEAD
+[2.1.1]: https://github.com/SAP/commerce-gradle-plugin/compare/v2.1.0...v2.1.1
 [2.1.0]: https://github.com/SAP/commerce-gradle-plugin/compare/v2.0.0...v2.1.0
 [2.0.0]: https://github.com/SAP/commerce-gradle-plugin/compare/v1.5.1...v2.0.0
 [1.5.1]: https://github.com/SAP/commerce-gradle-plugin/compare/v1.5.0...v1.5.1

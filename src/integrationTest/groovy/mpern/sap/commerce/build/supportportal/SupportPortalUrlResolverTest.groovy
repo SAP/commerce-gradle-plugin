@@ -23,7 +23,6 @@ class SupportPortalUrlResolverTest extends Specification {
         }
     }
 
-
     def "resolve should find URI for softwaredownloads.sap.com"() {
         given:
         assumeTrue(username != null && !(username.isBlank()) && password != null && !password.isBlank())

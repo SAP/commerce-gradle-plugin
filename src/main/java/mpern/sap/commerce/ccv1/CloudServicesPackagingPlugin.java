@@ -131,6 +131,7 @@ public class CloudServicesPackagingPlugin implements Plugin<Project> {
             z.setVersion("");
             z.setClassifier("");
             z.setDestinationDir(extension.getDistributionFolder().getAsFile().get());
+            z.setDuplicatesStrategy(DuplicatesStrategy.EXCLUDE);
         });
         zipPackage.dependsOn(writeProps);
         buildPackage.getOutputs().file(zipPackage.getArchivePath());
