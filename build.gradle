@@ -23,9 +23,9 @@ scmVersion {
     hooks {
         pre 'fileUpdate', [
             file: 'README.md',
-            pattern: {v, c -> /Gradle Plugins for SAP \(Hybris\) Commerce $v/},
+            pattern: {v, c -> /Gradle Plugins for SAP Commerce $v/},
             replacement: {v, c ->
-                "Gradle Plugins for SAP (Hybris) Commerce $v"}
+                "Gradle Plugins for SAP Commerce $v"}
         ]
         pre 'commit'
     }
