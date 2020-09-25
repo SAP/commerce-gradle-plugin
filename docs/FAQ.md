@@ -15,11 +15,10 @@ Let's say you want to download the Commere platform version 2005.
    Use the last part of the URL (after `object/`) of this page to construct the download URL:
    ```
    https://launchpad.support.sap.com/#/softwarecenter/object/0020000001554412020
-                                                             ^^^^^^^^^^^^^^^^^^^
-   ---becomes-->
- 
+                                                             ─────────┬─────────
+   ---becomes-->                                   ┌──────────────────┘
+                                                   v
    https://softwaredownloads.sap.com/file/0020000001554412020
-                                          ^^^^^^^^^^^^^^^^^^^
    ```
 1. Voila, you now have the download URL. Provide the S-User and its password using HTTP Basic authentication, and you are done.
 
