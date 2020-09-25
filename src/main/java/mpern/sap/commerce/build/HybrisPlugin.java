@@ -30,7 +30,6 @@ public class HybrisPlugin implements Plugin<Project> {
 
     @Override
     public void apply(Project project) {
-        project.getLogger().warn("Please use the new plugin ID \"sap.commerce.build\"");
         HybrisPluginExtension extension = project.getExtensions().create(HYBRIS_EXTENSION, HybrisPluginExtension.class,
                 project);
 

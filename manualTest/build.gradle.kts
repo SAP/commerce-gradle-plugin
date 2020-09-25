@@ -1,6 +1,6 @@
 plugins {
-    id("mpern.sap.commerce.build") version("SNAPSHOT")
-    id("mpern.sap.commerce.build.ccv2") version("SNAPSHOT")
+    id("sap.commerce.build") version("SNAPSHOT")
+    id("sap.commerce.build.ccv2") version("SNAPSHOT")
 }
 
 val repositoryURL: String by project

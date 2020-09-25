@@ -37,7 +37,6 @@ public class CloudServicesPackagingPlugin implements Plugin<Project> {
 
     @Override
     public void apply(Project project) {
-        project.getLogger().warn("Please use the new plugin ID \"sap.commerce.ccv1.package\"");
         PackagingExtension extension = project.getExtensions().create(EXTENSION, PackagingExtension.class, project);
         extension.getPlatformZip().set(project.file("hybris/temp/hybris/hybrisServer/hybrisServer-Platform.zip"));
         extension.getAllExtensionsZip()

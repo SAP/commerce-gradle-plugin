@@ -31,7 +31,6 @@ public class CloudV2Plugin implements Plugin<Project> {
 
     @Override
     public void apply(Project project) {
-        project.getLogger().warn("Please use the new plugin ID \"sap.commerce.build.ccv2\"");
         File manifestFile = project.file(MANIFEST_PATH);
 
         if (!manifestFile.exists()) {

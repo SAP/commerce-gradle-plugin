@@ -36,7 +36,7 @@ class PackagingTest extends Specification {
         buildFile = testProjectDir.newFile('build.gradle')
         buildFile << """
             plugins {
-                id 'mpern.sap.commerce.ccv1.package'
+                id 'sap.commerce.ccv1.package'
                 //add java plugin to setup defaults for all packaging tasks
                 //those defaults could potentially break the CCv1 packaging
                 id 'base'

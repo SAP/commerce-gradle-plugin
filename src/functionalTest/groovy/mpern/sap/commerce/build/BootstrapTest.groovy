@@ -25,7 +25,7 @@ class BootstrapTest extends Specification {
 
         buildFile << """
             plugins {
-                id 'mpern.sap.commerce.build'
+                id 'sap.commerce.build'
             }
             repositories {
                 flatDir {

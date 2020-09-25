@@ -42,8 +42,8 @@ class CCv2Tests extends Specification {
 
         buildFile << """
             plugins {
-                id 'mpern.sap.commerce.build'
-                id 'mpern.sap.commerce.build.ccv2'
+                id 'sap.commerce.build'
+                id 'sap.commerce.build.ccv2'
             }
             repositories {
                 flatDir {
