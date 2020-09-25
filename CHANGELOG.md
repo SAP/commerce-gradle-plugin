@@ -7,11 +7,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [3.0.0] - 2020-09-25
+
+## Changed
+
+- **Plugin IDs**\
+  The new plugin IDs are:
+  - `sap.commerce.build`
+  - `sap.commerce.build.ccv2`
+  - `sap.commerce.ccv1.package`
+
+## Removed
+
+- Removed `SupportPortalDownload`
+
 ## [2.1.1] - 2020-09-25
 
 ### Deprecated
 
-- **Plugin Coordinates**\
+- **Plugin IDs**\
   Since the plugin recently moved to the SAP open source organization, the plugin will soon be updated to reflect this change
 
   |Old|New|
@@ -210,7 +224,8 @@ Shout out to [@corneleberle] for providing the fix.
 
 :tada: Initial release :tada:
 
-[Unreleased]: https://github.com/SAP/commerce-gradle-plugin/compare/v2.1.1...HEAD
+[Unreleased]: https://github.com/SAP/commerce-gradle-plugin/compare/v3.0.0...HEAD
+[3.0.0]: https://github.com/SAP/commerce-gradle-plugin/compare/v2.1.1...v3.0.0
 [2.1.1]: https://github.com/SAP/commerce-gradle-plugin/compare/v2.1.0...v2.1.1
 [2.1.0]: https://github.com/SAP/commerce-gradle-plugin/compare/v2.0.0...v2.1.0
 [2.0.0]: https://github.com/SAP/commerce-gradle-plugin/compare/v1.5.1...v2.0.0
