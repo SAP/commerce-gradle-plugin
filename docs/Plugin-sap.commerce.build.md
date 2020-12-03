@@ -29,7 +29,7 @@ dependencies {
     //Hybris Platform Dependencies. Expects zip files that are unpacked into the project root folder
     //you can define more than one zip file to unpack
     //bootstrapInclude and bootstrapExclude define what is unpacked
-    hybrisPlatform "de.hybris.platform:hybris-commerce-suite:${hybris.version}@zip"
+    hybrisPlatform "de.hybris.platform:hybris-commerce-suite:${hybris.version.get()}@zip"
     
     //JDBC Drivers. Automatically downloaded and configured during bootstrap, if a dependency is configured
     //the plugin does not provide defaults!
