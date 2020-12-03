@@ -98,7 +98,7 @@ gradlePlugin {
     }
 }
 pluginBundle {
-    website = 'https://github.com/SAP/commerce-gradle-plugin/wiki'
+    website = 'https://github.com/SAP/commerce-gradle-plugin'
     vcsUrl = 'https://github.com/SAP/commerce-gradle-plugin'
 
     plugins {
