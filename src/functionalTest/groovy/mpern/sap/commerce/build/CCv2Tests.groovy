@@ -57,9 +57,10 @@ class CCv2Tests extends Specification {
 
         runner = GradleRunner.create()
                 .withProjectDir(testProjectDir.root)
-        def testVersion = System.getenv("GRADLE_VERSION")
-        if (testVersion) {
-            runner.withGradleVersion(testVersion)
+        def gradleVersion = System.getenv("GRADLE_VERSION")
+        if (gradleVersion) {
+            println "Using Gradle ${gradleVersion}"
+            runner.withGradleVersion(gradleVersion)
         }
         runner.withPluginClasspath()
     }
