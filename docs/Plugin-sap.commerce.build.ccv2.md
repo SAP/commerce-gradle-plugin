@@ -61,7 +61,7 @@ Runs `ant alltests` preconfigured with the values of the [`tests`][tests] object
 
 ### `cloudWebTests`
 
-**Only available if the build also uses `ap.commerce.build`**
+**Only available if the build also uses `sap.commerce.build`**
 
 Runs `ant webtests` preconfigured with the values of the [`webTests`][webtests] object of the manifest
 

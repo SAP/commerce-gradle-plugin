@@ -8,7 +8,7 @@ Here you can find the full documentation for the plugins.
 
   Manage your CCv1 Configuration and build valid Deployment Packages
 
-- [CCv2 Build Plugin](Plugin-   sap.commerce.build.ccv2.md)
+- [CCv2 Build Plugin](Plugin-sap.commerce.build.ccv2.md)
 
   Use `manifest.json` to build and configure your commerce project locally
 
