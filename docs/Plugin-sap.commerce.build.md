@@ -1,6 +1,6 @@
-# Plugin `mpern.sap.commerce.build`
+# Plugin `sap.commerce.build`
 
-The goal for this plugin is to automate the most common steps when setting up a SAP (Hybris) Commerce development environment and allows you to call the platform ant build as a gradle task (in your script, or from the command line).
+The goal for this plugin is to automate the most common steps when setting up a SAP Commerce development environment and allows you to call the platform ant build as a gradle task (in your script, or from the command line).
 
 It also allows you to automate the download of the distribution zip files from the SAP Support Portal.
 

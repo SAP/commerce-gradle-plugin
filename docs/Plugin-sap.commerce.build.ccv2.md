@@ -1,8 +1,8 @@
-# Plugin `mpern.sap.commerce.build.ccv2`
+# Plugin `sap.commerce.build.ccv2`
 
 This plugins parses Commerce Cloud v2 [`manifest.json`][manifest] file and provides it to the gradle build script.
 
-If you also use the `mpern.sap.commerce.build` plugin, it adds various tasks to
+If you also use the `sap.commerce.build` plugin, it adds various tasks to
 your build which are configured based on `manifest.json`
 
 [manifest]: https://help.sap.com/viewer/1be46286b36a4aa48205be5a96240672/latest/en-US/2be55790d99e4a1dad4caa7a1fc1738f.html
@@ -23,7 +23,7 @@ CCV2 {
 
 ```
 
-If you also use `mpern.sap.commerce.build` in your build, the `hybris.version` is
+If you also use `sap.commerce.build` in your build, the `hybris.version` is
 preconfigured with `commerceSuiteVersion` of the manifest.
 
 
@@ -47,13 +47,13 @@ the `extensions` list in the manifest.
 
 ### `installManifestAddons`
 
-**Only available if the build also uses `mpern.sap.commerce.build`**
+**Only available if the build also uses `sap.commerce.build`**
 
 Runs `ant addonistall` for all addons defined in `storefrontAddons` of the manifest.
 
 ### `cloudTests`
 
-**Only available if the build also uses `mpern.sap.commerce.build`**
+**Only available if the build also uses `sap.commerce.build`**
 
 Runs `ant alltests` preconfigured with the values of the [`tests`][tests] object of the manifest
 
@@ -61,7 +61,7 @@ Runs `ant alltests` preconfigured with the values of the [`tests`][tests] object
 
 ### `cloudWebTests`
 
-**Only available if the build also uses `mpern.sap.commerce.build`**
+**Only available if the build also uses `ap.commerce.build`**
 
 Runs `ant webtests` preconfigured with the values of the [`webTests`][webtests] object of the manifest
 

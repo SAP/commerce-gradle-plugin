@@ -1,4 +1,4 @@
-# Plugin `mpern.sap.commerce.ccv1.package`
+# Plugin `sap.commerce.ccv1.package`
 
 The plugin builds hybris cloud services compliant packages and uses a convention-over-configuration directory layout to
 keep the config files as required by the CCV1 packaging guidelines.
