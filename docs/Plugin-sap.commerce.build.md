@@ -93,7 +93,7 @@ task unitTests(type: mpern.sap.commerce.build.tasks.HybrisAntTask) {
 }
 ```
 
-### `mpern.sap.commerce.build.tasks.SupportPortalDownload`
+### ~~`mpern.sap.commerce.build.tasks.SupportPortalDownload`~~
 
 **Deprecated with v2.1.1; Removed with v3.0.0**
 
