@@ -26,6 +26,27 @@ CCV2 {
 If you also use `sap.commerce.build` in your build, the `hybris.version` is
 preconfigured with `commerceSuiteVersion` of the manifest.
 
+### `extenionsPacks` Support
+
+All artifacts configured as additional `extensionPacks` in your `manifest.json` will also be unpacked into the root of your repository during [`bootstrapPlatform`][bootstrap].
+This allows you e.g. to use the "Integration Extension Pack" locally.
+
+See also:
+
+- ["Deploying the Integrations Pack on SAP Commerce Cloud"][pack]
+- ["Extension Packs"][packs]
+
+**How are `extensionPacks` resolved as Maven artifacts?**
+
+- `name` / `version` :\
+    `de.hybris.platform:${name}:${version}@zip`
+- `artifact`:\
+    `${artifact}` (as is, without any changes)\
+    If `artifact` is configured, `name` and `version` are ignored (as specified in the docs)
+
+[bootstrap]: /docs/Plugin-sap.commerce.build.md#bootstrapplatform
+[pack]: https://help.sap.com/viewer/2f43049ad8e443249e1981575adddb5d/LATEST/en-US/19bacaecbdd34cc8bd58bdd8daf428c5.html
+[packs]: https://help.sap.com/viewer/1be46286b36a4aa48205be5a96240672/LATEST/en-US/ad98c976ab3d433e935b4b5c89303dd5.html
 
 ## Tasks
 
