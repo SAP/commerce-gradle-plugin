@@ -1,14 +1,14 @@
 Here you can find the full documentation for the plugins.
 
-- [Commerce Build Plugin](Plugin-mpern.sap.commerce.build.md)
+- [Commerce Build Plugin](Plugin-sap.commerce.build.md)
 
-  Download, bootstrap, build, test, ... your SAP Hybris Commerce project using Gradle
+  Download, bootstrap, build, test, ... your SAP Commerce project using Gradle
 
-- [CCv1 Package Plugin](Plugin-mpern.sap.commerce.ccv1.package.md)
+- [CCv1 Package Plugin](Plugin-sap.commerce.ccv1.package.md)
 
   Manage your CCv1 Configuration and build valid Deployment Packages
 
-- [CCv2 Build Plugin](Plugin-mpern.sap.commerce.build.ccv2.md)
+- [CCv2 Build Plugin](Plugin-sap.commerce.build.ccv2.md)
 
   Use `manifest.json` to build and configure your commerce project locally
 
