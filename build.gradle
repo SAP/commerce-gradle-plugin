@@ -26,7 +26,7 @@ scmVersion {
             file: 'README.md',
             pattern: {v, c -> /SAP Commerce Gradle Plugins $v/},
             replacement: {v, c ->
-                "Gradle Plugins for SAP Commerce $v"}
+                "SAP Commerce Gradle Plugins $v"}
         ]
         pre 'commit'
     }
