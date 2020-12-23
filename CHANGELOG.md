@@ -7,9 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+TBD
+
+## [3.1.0] - 2020-12-23
+
+### Added
+
+- `removeUnusedExtensions` - remove all extensions that the project doesn't use (to save disk space)
+
 ## [3.0.0] - 2020-09-25
 
-## Changed
+### Changed
 
 - **Plugin IDs**\
   The new plugin IDs are:
@@ -17,7 +25,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `sap.commerce.build.ccv2`
   - `sap.commerce.ccv1.package`
 
-## Removed
+### Removed
 
 - Removed `SupportPortalDownload`
 
@@ -224,7 +232,8 @@ Shout out to [@corneleberle] for providing the fix.
 
 :tada: Initial release :tada:
 
-[Unreleased]: https://github.com/SAP/commerce-gradle-plugin/compare/v3.0.0...HEAD
+[Unreleased]: https://github.com/SAP/commerce-gradle-plugin/compare/v3.1.0...HEAD
+[3.1.0]: https://github.com/SAP/commerce-gradle-plugin/compare/v3.0.0...v3.1.0
 [3.0.0]: https://github.com/SAP/commerce-gradle-plugin/compare/v2.1.1...v3.0.0
 [2.1.1]: https://github.com/SAP/commerce-gradle-plugin/compare/v2.1.0...v2.1.1
 [2.1.0]: https://github.com/SAP/commerce-gradle-plugin/compare/v2.0.0...v2.1.0
