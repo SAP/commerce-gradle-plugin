@@ -66,6 +66,12 @@ Deletes the hybris platform folders (all files/folders matching `hybris.cleanGlo
 
 Launches hybris build to create the standard developer config folder, if no config folder is present
 
+### `removeUnusedExtensions`
+
+Removes all extensions that are not used by the current project, either directly or indirectly.
+
+Custom extensions (i.e. extensions in `hybris/bin/custom`) are never removed
+
 ## Task Types
 
 The plugin defines a custom task type you can use in your build script to interact with the normal hybris build
