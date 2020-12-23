@@ -3,12 +3,7 @@ package mpern.sap.commerce.build.util;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
-import java.nio.file.FileSystems;
-import java.nio.file.FileVisitResult;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.PathMatcher;
-import java.nio.file.SimpleFileVisitor;
+import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.Optional;
 import java.util.Properties;
@@ -22,8 +17,6 @@ import org.gradle.api.provider.Provider;
 public class HybrisPlatform {
     private static final Logger LOG = Logging.getLogger(HybrisPlatform.class);
 
-    private final Path projectRoot;
-
     private final Provider<Directory> platformDir;
 
     private final Provider<String> platformVersion;
@@ -32,7 +25,6 @@ public class HybrisPlatform {
 
     @javax.inject.Inject
     public HybrisPlatform(Project project) {
-        projectRoot = project.getProjectDir().toPath();
         platformDir = project.provider(() -> project.getLayout().getProjectDirectory().dir("hybris/bin/platform"));
 
         platformVersion = project.provider(this::readVersion);

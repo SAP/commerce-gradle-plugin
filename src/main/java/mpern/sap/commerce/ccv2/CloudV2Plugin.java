@@ -9,6 +9,7 @@ import org.gradle.api.*;
 import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.tasks.Copy;
 import org.gradle.api.tasks.Delete;
+import org.gradle.api.tasks.TaskProvider;
 import org.gradle.api.tasks.WriteProperties;
 
 import groovy.json.JsonSlurper;
@@ -92,9 +93,10 @@ public class CloudV2Plugin implements Plugin<Project> {
     }
 
     private void configureAddonInstall(Project project, List<Addon> storefrontAddons) {
-        Task installManifestAddons = project.getTasks().create("installManifestAddons");
-        installManifestAddons.setGroup(GROUP);
-        installManifestAddons.setDescription("runs ant addoninstall for all addons configured in manifest.json");
+        TaskProvider<Task> installManifestAddons = project.getTasks().register("installManifestAddons", t -> {
+            t.setGroup(GROUP);
+            t.setDescription("runs ant addoninstall for all addons configured in manifest.json");
+        });
 
         if (storefrontAddons.isEmpty()) {
             return;
@@ -108,7 +110,7 @@ public class CloudV2Plugin implements Plugin<Project> {
         for (Map.Entry<Tuple2<String, String>, Set<String>> tuple2SetEntry : addonsPerStorefront.entrySet()) {
             Tuple2<String, String> templateStorefront = tuple2SetEntry.getKey();
             Set<String> addons = tuple2SetEntry.getValue();
-            HybrisAntTask install = project.getTasks().create(
+            TaskProvider<HybrisAntTask> install = project.getTasks().register(
                     String.format("addonInstall_%s_%s", templateStorefront.getFirst(), templateStorefront.getSecond()),
                     HybrisAntTask.class, t -> {
                         t.args("addoninstall");
@@ -116,39 +118,53 @@ public class CloudV2Plugin implements Plugin<Project> {
                         t.antProperty("addonStorefront." + templateStorefront.getFirst(),
                                 templateStorefront.getSecond());
                     });
-            installManifestAddons.dependsOn(install);
+            installManifestAddons.configure(t -> t.dependsOn(install));
         }
     }
 
     private void configureTests(Project project, TestConfiguration tests) {
         if (tests == TestConfiguration.NO_VALUE) {
+            project.getTasks().register("cloudTests", t -> {
+                t.setGroup(GROUP);
+                t.setDescription("run ant alltests with manifest configuration");
+            });
             return;
         }
-        HybrisAntTask allTests = project.getTasks().create("cloudTests", HybrisAntTask.class, configureTest(tests));
-        allTests.setArgs(Collections.singletonList("alltests"));
-        allTests.setGroup(GROUP);
-        allTests.setDescription("run ant alltests with manifest configuration");
+        TaskProvider<HybrisAntTask> allTests = project.getTasks().register("cloudTests", HybrisAntTask.class, t -> {
+            t.setGroup(GROUP);
+            t.setDescription("run ant alltests with manifest configuration");
+
+            t.setArgs(Collections.singletonList("alltests"));
+        });
+        allTests.configure(configureTest(tests));
     }
 
     private void configureWebTests(Project project, TestConfiguration test) {
         if (test == TestConfiguration.NO_VALUE) {
+            project.getTasks().register("cloudWebTests", t -> {
+                t.setGroup(GROUP);
+                t.setDescription("run ant allwebtests with manifest configuration");
+            });
             return;
         }
-        HybrisAntTask allWebTests = project.getTasks().create("cloudWebTests", HybrisAntTask.class,
-                configureTest(test));
-        allWebTests.setArgs(Collections.singletonList("allwebtests"));
-        allWebTests.setGroup(GROUP);
-        allWebTests.setDescription("run ant allwebtests with manifest configuration");
+        TaskProvider<HybrisAntTask> allWebTests = project.getTasks().register("cloudWebTests", HybrisAntTask.class,
+                t -> {
+                    t.setGroup(GROUP);
+                    t.setDescription("run ant allwebtests with manifest configuration");
+
+                    t.setArgs(Collections.singletonList("allwebtests"));
+                });
+        allWebTests.configure(configureTest(test));
     }
 
     private void configureCloudExtensionPackBootstrap(Project project, boolean useCloudExtensionPack) {
         if (!useCloudExtensionPack) {
             return;
         }
-        Task cleanCep = project.getTasks().create("cleanCloudExtensionPack", Delete.class, d -> {
+        TaskProvider<Delete> cleanCep = project.getTasks().register("cleanCloudExtensionPack", Delete.class, d -> {
             d.delete(extension.getCloudExtensionPackFolder().getAsFile());
         });
-        Copy unpackCep = project.getTasks().create("unpackCloudExtensionPack", Copy.class, c -> {
+        TaskProvider<Copy> unpackCep = project.getTasks().register("unpackCloudExtensionPack", Copy.class, c -> {
             c.dependsOn(cleanCep);
             c.from(project.provider(() -> project.getConfigurations().getByName(EXTENSION_PACK).getFiles().stream()
                     .map(project::zipTree).collect(Collectors.toSet())));
@@ -158,22 +174,23 @@ public class CloudV2Plugin implements Plugin<Project> {
                     .forEach(r -> a.getLogger().lifecycle("Using Cloud Extension Pack: {}", r.getModuleVersion())));
         });
 
-        Task bootstrapPlatform = project.getTasks().getByName("bootstrapPlatform");
-        bootstrapPlatform.dependsOn(unpackCep);
+        TaskProvider<Task> bootstrapPlatform = project.getTasks().named("bootstrapPlatform");
+        bootstrapPlatform.configure(t -> t.dependsOn(unpackCep));
+
         String reservedTypeCodes = "hybris/bin/platform/ext/core/resources/core/unittest/reservedTypecodes.txt";
-        Copy copyTypeCodes = project.getTasks().create("copyCEPTypeCode", Copy.class, c -> {
+        TaskProvider<Copy> copyTypeCodes = project.getTasks().register("copyCEPTypeCode", Copy.class, c -> {
             c.mustRunAfter(unpackCep);
             c.mustRunAfter("unpackPlatform");
             c.from(extension.getCloudExtensionPackFolder().file(reservedTypeCodes));
             c.into(project.file(reservedTypeCodes).getParent());
         });
-        bootstrapPlatform.dependsOn(copyTypeCodes);
-        PatchLocalExtensions patch = project.getTasks().create("patchLocalExtensions", PatchLocalExtensions.class,
-                p -> {
+        bootstrapPlatform.configure(t -> t.dependsOn(copyTypeCodes));
+        TaskProvider<PatchLocalExtensions> patch = project.getTasks().register("patchLocalExtensions",
+                PatchLocalExtensions.class, p -> {
                     p.getTarget().set(project.file("hybris/config/localextensions.xml"));
                     p.getCepFolder().set(extension.getCloudExtensionPackFolder());
                 });
-        bootstrapPlatform.dependsOn(patch);
+        bootstrapPlatform.configure(t -> t.dependsOn(patch));
     }
 
     private void configurePropertyFileGeneration(Project project, Manifest manifest) {
@@ -196,23 +213,26 @@ public class CloudV2Plugin implements Plugin<Project> {
                 props.put(webapp.name + ".webroot", webapp.contextPath);
             }
         }
-        Task generateCloudProperties = project.getTasks().create("generateCloudProperties");
-        generateCloudProperties.setGroup(GROUP);
-        generateCloudProperties.setDescription("generate property files per aspect and persona");
+        TaskProvider<Task> generateCloudProperties = project.getTasks().register("generateCloudProperties", t -> {
+            t.setGroup(GROUP);
+            t.setDescription("generate property files per aspect and persona");
+        });
         for (Map.Entry<String, Map<String, Object>> properties : allProps.entrySet()) {
-            WriteProperties w = project.getTasks().create("write_" + properties.getKey(), WriteProperties.class, t -> {
-                t.setEncoding("UTF-8");
-                t.setOutputFile(extension.getGeneratedConfiguration().file(properties.getKey() + ".properties"));
-                t.setProperties(properties.getValue());
-                t.getInputs().file(project.file(MANIFEST_PATH));
-                t.setComment(String.format("GENERATED by task %s at %s", t.getName(), Instant.now()));
-            });
-            generateCloudProperties.dependsOn(w);
+            TaskProvider<WriteProperties> w = project.getTasks().register("write_" + properties.getKey(),
+                    WriteProperties.class, t -> {
+                        t.setEncoding("UTF-8");
+                        t.setOutputFile(
+                                extension.getGeneratedConfiguration().file(properties.getKey() + ".properties"));
+                        t.setProperties(properties.getValue());
+                        t.getInputs().file(project.file(MANIFEST_PATH));
+                        t.setComment(String.format("GENERATED by task %s at %s", t.getName(), Instant.now()));
+                    });
+            generateCloudProperties.configure(t -> t.dependsOn(w));
         }
     }
 
     private void configureExtensionGeneration(Project project, Manifest manifest) {
-        project.getTasks().create("generateCloudLocalextensions", GenerateLocalextensions.class, t -> {
+        project.getTasks().register("generateCloudLocalextensions", GenerateLocalextensions.class, t -> {
             t.setGroup(GROUP);
             t.setDescription("generate localextensions.xml based on manifest");
 
