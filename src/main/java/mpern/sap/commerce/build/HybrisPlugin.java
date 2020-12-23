@@ -2,29 +2,45 @@ package mpern.sap.commerce.build;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.*;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 import java.util.stream.Collectors;
 
+import org.apache.tools.ant.DirectoryScanner;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
 import org.gradle.api.Task;
 import org.gradle.api.UnknownDomainObjectException;
 import org.gradle.api.artifacts.Configuration;
+import org.gradle.api.file.ConfigurableFileTree;
 import org.gradle.api.logging.Logger;
 import org.gradle.api.tasks.Copy;
 import org.gradle.api.tasks.TaskExecutionException;
+import org.gradle.api.tasks.TaskProvider;
 
 import mpern.sap.commerce.build.rules.HybrisAntRule;
 import mpern.sap.commerce.build.tasks.GlobClean;
 import mpern.sap.commerce.build.tasks.HybrisAntTask;
+import mpern.sap.commerce.build.util.Extension;
+import mpern.sap.commerce.build.util.PlatformResolver;
 import mpern.sap.commerce.build.util.Version;
 
 public class HybrisPlugin implements Plugin<Project> {
 
     public static final String HYBRIS_EXTENSION = "hybris";
-    public static final String HYBRIS_BOOTSTRAP = "Hybris Platform Bootstrap";
+    public static final String HYBRIS_BOOTSTRAP = "SAP Commerce Bootstrap";
     public static final String HYBRIS_PLATFORM_CONFIGURATION = "hybrisPlatform";
+
+    private static boolean isDirEmpty(final Path directory) {
+        try (DirectoryStream<Path> dirStream = Files.newDirectoryStream(directory)) {
+            return !dirStream.iterator().hasNext();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     @Override
     public void apply(Project project) {
@@ -67,25 +83,27 @@ public class HybrisPlugin implements Plugin<Project> {
 
         File hybrisBin = project.file("hybris/bin");
 
-        Task cleanPlatform = project.getTasks().create("cleanPlatform", GlobClean.class, t -> {
+        project.getTasks().register("cleanPlatform", GlobClean.class, t -> {
+            t.setGroup(HYBRIS_BOOTSTRAP);
+            t.setDescription("Cleans all hybris platform artifacts");
+
             t.getBaseFolder().set(hybrisBin);
             t.getGlob().set(extension.getCleanGlob());
         });
-        cleanPlatform.setGroup(HYBRIS_BOOTSTRAP);
-        cleanPlatform.setDescription("Cleans all hybris platform artifacts");
 
-        Task cleanOnVersionChange = project.getTasks().create("cleanPlatformIfVersionChanged", GlobClean.class, t -> {
-            t.getBaseFolder().set(hybrisBin);
-            t.getGlob().set(extension.getCleanGlob());
+        TaskProvider<GlobClean> cleanOnVersionChange = project.getTasks().register("cleanPlatformIfVersionChanged",
+                GlobClean.class, t -> {
+                    t.getBaseFolder().set(hybrisBin);
+                    t.getGlob().set(extension.getCleanGlob());
+                    t.onlyIf(o -> versionMismatch(extension, t.getLogger()));
+                });
+
+        TaskProvider<Task> unpackPlatform = project.getTasks().register("unpackPlatform", t -> {
             t.onlyIf(o -> versionMismatch(extension, t.getLogger()));
+            t.mustRunAfter(cleanOnVersionChange);
         });
 
-        Task unpackPlatform = project.getTasks().create("unpackPlatform", t -> {
-            t.onlyIf(o -> versionMismatch(extension, t.getLogger()));
-        });
-        unpackPlatform.mustRunAfter(cleanOnVersionChange);
-
-        project.afterEvaluate(p -> unpackPlatform.doLast(t -> project.copy(c -> {
+        project.afterEvaluate(p -> unpackPlatform.get().doLast(t -> project.copy(c -> {
             c.from(project.provider(
                     () -> hybrisPlatform.getFiles().stream().map(project::zipTree).collect(Collectors.toSet())));
             c.into(t.getProject().getProjectDir());
@@ -93,25 +111,27 @@ public class HybrisPlugin implements Plugin<Project> {
             c.exclude(extension.getBootstrapExclude().get());
         })));
 
-        Task setupDBDriver = project.getTasks().create("setupDbDriver", Copy.class, t -> {
+        TaskProvider<Copy> setupDBDriver = project.getTasks().register("setupDbDriver", Copy.class, t -> {
             File driverDir = t.getProject().file("hybris/bin/platform/lib/dbdriver");
             t.from(dbDrivers);
             t.into(driverDir);
+            t.mustRunAfter(unpackPlatform);
         });
-        setupDBDriver.mustRunAfter(unpackPlatform);
 
-        Task touchDbDriverLastUpdate = project.getTasks().create("touchLastUpdate", t -> t.doLast(a -> {
-            File driverDir = a.getProject().file("hybris/bin/platform/lib/dbdriver");
-            File lastUpdate = new File(driverDir, ".lastupdate");
-            try {
-                driverDir.mkdirs();
-                lastUpdate.createNewFile();
-                lastUpdate.setLastModified(new Date().getTime());
-            } catch (IOException e) {
-                throw new TaskExecutionException(a, e);
-            }
-        }));
-        touchDbDriverLastUpdate.mustRunAfter(unpackPlatform, setupDBDriver);
+        TaskProvider<Task> touchDbDriverLastUpdate = project.getTasks().register("touchLastUpdate", t -> {
+            t.mustRunAfter(unpackPlatform, setupDBDriver);
+            t.doLast(a -> {
+                File driverDir = a.getProject().file("hybris/bin/platform/lib/dbdriver");
+                File lastUpdate = new File(driverDir, ".lastupdate");
+                try {
+                    driverDir.mkdirs();
+                    lastUpdate.createNewFile();
+                    lastUpdate.setLastModified(new Date().getTime());
+                } catch (IOException e) {
+                    throw new TaskExecutionException(a, e);
+                }
+            });
+        });
 
         bootstrap.dependsOn(cleanOnVersionChange, unpackPlatform, setupDBDriver, touchDbDriverLastUpdate);
 
@@ -128,20 +148,74 @@ public class HybrisPlugin implements Plugin<Project> {
         yall.mustRunAfter(yclean, ycustomize);
         yproduction.mustRunAfter(ybuild, yall);
 
-        HybrisAntTask createConfigFolder = project.getTasks().create("createDefaultConfig", HybrisAntTask.class,
-                configTask -> configTask.systemProperty("input.template", "develop"));
-        createConfigFolder.onlyIf(t -> {
-            boolean configPresent = project.file("hybris/config").exists();
-            if (configPresent) {
-                t.getLogger().lifecycle("hybris/config folder found, nothing to do");
-            }
-            return !configPresent;
-        });
-        createConfigFolder.setGroup(HYBRIS_BOOTSTRAP);
-        createConfigFolder.setDescription(
-                "Launches hybris build to create the hybris config folder, if no config folder is present");
-        createConfigFolder.mustRunAfter(bootstrap);
+        TaskProvider<HybrisAntTask> createConfigFolder = project.getTasks().register("createDefaultConfig",
+                HybrisAntTask.class, t -> {
+                    t.setGroup(HYBRIS_BOOTSTRAP);
+                    t.setDescription(
+                            "Launches hybris build to create the hybris config folder, if no config folder is present");
+                    t.mustRunAfter(bootstrap);
 
+                    t.antProperty("input.template", "develop");
+                    t.onlyIf(s -> {
+                        boolean configPresent = project.file("hybris/config").exists();
+                        if (configPresent) {
+                            t.getLogger().lifecycle("hybris/config folder found, nothing to do");
+                        }
+                        return !configPresent;
+                    });
+                });
+
+        project.getTasks().register("removeUnusedExtensions", t -> {
+            t.setGroup(HYBRIS_BOOTSTRAP);
+            t.setDescription("Remove unused extensions; helps save disk space if you work on multiple projects");
+
+            t.doFirst(a -> {
+                for (String defaultExclude : DirectoryScanner.getDefaultExcludes()) {
+                    DirectoryScanner.removeDefaultExclude(defaultExclude);
+                }
+            });
+            t.doLast(a -> {
+                PlatformResolver resolver = new PlatformResolver(
+                        extension.getPlatform().getPlatformHome().get().getAsFile().toPath());
+                List<Extension> configured;
+                try {
+                    configured = resolver.getConfiguredExtensions();
+                } catch (Exception e) {
+                    return;
+                }
+                if (configured.isEmpty()) {
+                    return;
+                }
+                Path bin = project.file("hybris/bin").toPath();
+                ConfigurableFileTree files = project.fileTree(bin);
+                files.exclude("platform/");
+                files.exclude("custom/");
+                // @formatter:off
+                configured.stream()
+                        .map(e -> e.directory)
+                        .map(bin::relativize)
+                        .map(p -> p + "/")
+                        .filter(p -> !p.startsWith("platform/"))
+                        .filter(p -> !p.startsWith("custom/"))
+                        .forEach(files::exclude);
+                // @formatter:on
+                project.delete(files);
+                try {
+                    Files.walkFileTree(bin, new SimpleFileVisitor<Path>() {
+                        @Override
+                        public FileVisitResult postVisitDirectory(Path dir, IOException exc) throws IOException {
+                            if (isDirEmpty(dir)) {
+                                Files.delete(dir);
+                            }
+                            return FileVisitResult.CONTINUE;
+                        }
+                    });
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+                DirectoryScanner.resetDefaultExcludes();
+            });
+        });
         project.getGradle().getTaskGraph().addTaskExecutionListener(new HybrisAntTask.HybrisAntConfigureAdapter());
     }
 

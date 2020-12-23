@@ -24,7 +24,7 @@ scmVersion {
     hooks {
         pre 'fileUpdate', [
             file: 'README.md',
-            pattern: {v, c -> /Gradle Plugins for SAP Commerce $v/},
+            pattern: {v, c -> /SAP Commerce Gradle Plugins $v/},
             replacement: {v, c ->
                 "Gradle Plugins for SAP Commerce $v"}
         ]

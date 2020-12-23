@@ -2,6 +2,7 @@ package mpern.sap.commerce.build.rules;
 
 import org.gradle.api.Project;
 import org.gradle.api.Rule;
+import org.gradle.api.tasks.TaskProvider;
 
 import mpern.sap.commerce.build.tasks.HybrisAntTask;
 
@@ -23,8 +24,9 @@ public class HybrisAntRule implements Rule {
     public void apply(String taskName) {
         if (taskName.startsWith(PREFIX)) {
             String antTarget = taskName.substring(PREFIX.length());
-            HybrisAntTask javaExec = project.getTasks().create(taskName, HybrisAntTask.class);
-            javaExec.args(antTarget);
+            project.getTasks().create(taskName, HybrisAntTask.class, t -> {
+                t.args(antTarget);
+            });
         }
     }
 }
