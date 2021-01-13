@@ -2,7 +2,6 @@ package mpern.sap.commerce.build.rules;
 
 import org.gradle.api.Project;
 import org.gradle.api.Rule;
-import org.gradle.api.tasks.TaskProvider;
 
 import mpern.sap.commerce.build.tasks.HybrisAntTask;
 

@@ -1,0 +1,23 @@
+{
+  "commerceSuiteVersion": "2005",
+  "useConfig": {
+    "properties": [
+      {
+        "location": "dummy.properties",
+        "persona": "development"
+      },
+      {
+        "location": "dummy.properties",
+        "persona": "invalid"
+      },
+      {
+        "location": "dummy.properties",
+        "aspect": "backoffice"
+      },
+      {
+        "location": "dummy.properties",
+        "aspect": "invalid"
+      }
+    ]
+  }
+}

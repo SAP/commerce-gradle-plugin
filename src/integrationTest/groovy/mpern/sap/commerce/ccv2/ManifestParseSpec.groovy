@@ -26,7 +26,52 @@ class ManifestParseSpec extends Specification {
                 "yacceleratorstorefront",
                 "backoffice"
             ] as Set<String>
-
+            troubleshootingModeEnabled == false
+            disableImageReuse == true
+            with(useConfig) {
+                with(properties.get(0)) {
+                    location == "config/local.properties"
+                    persona == ""
+                    aspect == ""
+                }
+                with(properties.get(1)) {
+                    location == "config/local-dev.properties"
+                    persona == "development"
+                    aspect == ""
+                }
+                with(properties.get(2)) {
+                    location == "config/local-stage.properties"
+                    persona == "staging"
+                    aspect == ""
+                }
+                with(properties.get(3)) {
+                    location == "config/local-prod.properties"
+                    persona == "production"
+                    aspect == ""
+                }
+                with(properties.get(4)) {
+                    location == "config/local-backoffice-prod.properties"
+                    persona == "production"
+                    aspect == "backoffice"
+                }
+                with(properties.get(5)) {
+                    location == "config/local-backoffice.properties"
+                    persona == ""
+                    aspect == "backoffice"
+                }
+                with(extensions) {
+                    location == "config/localextensions.xml"
+                    exclude == [
+                        "backoffice"
+                    ] as Set<String>
+                }
+                with(solr) {
+                    location == "solr/custom"
+                }
+                with(languages) {
+                    location == "_LANGUAGES_"
+                }
+            }
             with(properties.get(0)) {
                 key == "test.property.1"
                 value == "test.property.1.value"

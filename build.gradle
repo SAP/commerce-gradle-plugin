@@ -55,6 +55,7 @@ spotless {
     }
     java {
         target 'src/*/java/**/*.java'
+        removeUnusedImports()
         importOrderFile('gradle/spotless.importorder')
         eclipse().configFile('gradle/spotless.xml')
     }

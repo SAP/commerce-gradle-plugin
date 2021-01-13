@@ -25,11 +25,29 @@ public class ParseUtils {
         }
     }
 
+    public static List<String> emptyOrList(List<String> list) {
+        if (list == null || list.isEmpty()) {
+            return Collections.emptyList();
+        } else {
+            return Collections.unmodifiableList(list);
+        }
+    }
+
     public static String toEmpty(String input) {
         if (input == null) {
             return "";
         } else {
             return input.trim();
         }
+    }
+
+    public static boolean parseBoolean(Object input, String fieldName) {
+        if (input != null) {
+            if (!(input instanceof Boolean)) {
+                throw new IllegalArgumentException(String.format("Field %s must be a boolean value", fieldName));
+            }
+            return (boolean) input;
+        }
+        return false;
     }
 }

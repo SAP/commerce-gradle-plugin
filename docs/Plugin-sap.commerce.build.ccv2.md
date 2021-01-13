@@ -63,19 +63,31 @@ If the cloud extension pack is enabled in your `manifest.json` (`useCloudExtensi
 
 The plugin defines the following tasks
 
-### `generateCloudProperties`
+### `validateManifest`
 
-Generates `*.properties` files in `CCV2.generatedConfiguration` per aspect and persona as defined in `manifest.json`.
+Validate `manifest.json` for common errors. If errors are detected, the task fails. Warnings are logged, but do not cause
+the task to fail.
 
-Filename schema: `<aspect>_<persona>.properties`.
+Every reported issue includes a link to the relevant documentation.
 
-The aspect `common` is used for the properties that are defined independent of any
-aspect.
+#### Checks
 
-### `generateCloudLocalextensions`
+- `properties` - Check if the `persona` is supported
+- `properties` - Warn if it is a managed property
+- `storefrontAddons` - Check that `addon` / `storefront` extensions are part of the configured extensions \
+  (check only available with a full local development setup)
+- `aspects` - Check if it is a supported aspect
+- `aspects` - `admin` does not support `webapps`
+- `aspects.webapps` - Check for duplicate configuration of either the extension (`name`) or `contextPath`
+- `aspects.webapps` - Check if the extension (`name`) is part of the configured extensions\
+  (check only available with a full local development setup)
+- `aspects.properties` - Check if the `persona` is supported
+- `aspects.properties` - Warn if it is a managed property
+- `useConfig.properties` - Check if `location` is valid, `persona` is supported and `aspect` is supported
+- `useConfig.extensions` - Check if `location` is a valid `localextensions.xml` file and contains supported `<extension>` tags
+- `useConfig.solr` - Check that `location` exists and contains the required folder structure
+- `useCloudExtensionPack` - Check if `commerceSuiteVersion` is compatible with the Cloud Extension Pack
 
-Generates a `localextensions.xml` file in `CCV2.generatedConfiguration` based on
-the `extensions` list in the manifest.
 
 ### `installManifestAddons`
 
@@ -98,3 +110,17 @@ Runs `ant alltests` preconfigured with the values of the [`tests`][tests] object
 Runs `ant webtests` preconfigured with the values of the [`webTests`][webtests] object of the manifest
 
 [webtests]: https://help.sap.com/viewer/1be46286b36a4aa48205be5a96240672/latest/en-US/e978c15cad464c9eabb67bd868154377.html
+
+### `generateCloudProperties`
+
+Generates `*.properties` files in `CCV2.generatedConfiguration` per aspect and persona as defined in `manifest.json`.
+
+Filename schema: `<aspect>_<persona>.properties`.
+
+The aspect `common` is used for the properties that are defined independent of any
+aspect.
+
+### `generateCloudLocalextensions`
+
+Generates a `localextensions.xml` file in `CCV2.generatedConfiguration` based on
+the `extensions` list in the manifest.

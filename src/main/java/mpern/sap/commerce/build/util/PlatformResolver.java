@@ -1,5 +1,7 @@
 package mpern.sap.commerce.build.util;
 
+import java.io.OutputStream;
+import java.io.PrintStream;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -8,15 +10,19 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
+import java.util.concurrent.Callable;
 import java.util.stream.Collectors;
 
 import groovy.lang.Tuple2;
 
 public class PlatformResolver {
+    private static final PrintStream DEV_NULL = new PrintStream(new OutputStream() {
+        public void write(int b) {
+            // DO NOTHING
+        }
+    });
+
     private final Path platformHome;
 
     public PlatformResolver(Path platformHome) {
@@ -64,33 +70,50 @@ public class PlatformResolver {
         return new Tuple2<>(platformConfigClass, config);
     }
 
-    public List<Extension> getAllAvailableExtensions() throws Exception {
-        Optional<URLClassLoader> urlClassLoader = bootstrapClassLoader();
-        if (urlClassLoader.isPresent()) {
-            try {
-                System.setProperty("platform.extensions", "*");
-                Tuple2<Class<?>, Object> platformConfig = platformConfig(urlClassLoader.get());
-                List<?> extensions = (List<?>) platformConfig.getFirst()
-                        .getDeclaredMethod("getExtensionInfosInBuildOrder").invoke(platformConfig.getSecond());
-                return convertToExtensionInfo(urlClassLoader.get(), extensions);
-            } finally {
-                System.clearProperty("platform.extensions");
+    public List<Extension> loadListOfExtensions(Collection<String> extensionNames) throws Exception {
+        return silent(() -> {
+            Optional<URLClassLoader> urlClassLoader = bootstrapClassLoader();
+            if (urlClassLoader.isPresent()) {
+                try {
+                    System.setProperty("platform.extensions", String.join(",", extensionNames));
+                    Tuple2<Class<?>, Object> platformConfig = platformConfig(urlClassLoader.get());
+                    List<?> extensions = (List<?>) platformConfig.getFirst()
+                            .getDeclaredMethod("getExtensionInfosInBuildOrder").invoke(platformConfig.getSecond());
+                    return convertToExtensionInfo(urlClassLoader.get(), extensions);
+                } finally {
+                    System.clearProperty("platform.extensions");
+                }
+            } else {
+                return Collections.emptyList();
             }
-        } else {
-            return Collections.emptyList();
+        });
+    }
+
+    private <T> T silent(Callable<T> supplier) throws Exception {
+        PrintStream out = System.out;
+        PrintStream err = System.err;
+        try {
+            System.setOut(DEV_NULL);
+            System.setErr(DEV_NULL);
+            return supplier.call();
+        } finally {
+            System.setOut(out);
+            System.setErr(err);
         }
     }
 
     public List<Extension> getConfiguredExtensions() throws Exception {
-        Optional<URLClassLoader> urlClassLoader = bootstrapClassLoader();
-        if (urlClassLoader.isPresent()) {
-            Tuple2<Class<?>, Object> platformConfig = platformConfig(urlClassLoader.get());
-            List<?> extensions = (List<?>) platformConfig.getFirst().getDeclaredMethod("getExtensionInfosInBuildOrder")
-                    .invoke(platformConfig.getSecond());
-            return convertToExtensionInfo(urlClassLoader.get(), extensions);
-        } else {
-            return Collections.emptyList();
-        }
+        return silent(() -> {
+            Optional<URLClassLoader> urlClassLoader = bootstrapClassLoader();
+            if (urlClassLoader.isPresent()) {
+                Tuple2<Class<?>, Object> platformConfig = platformConfig(urlClassLoader.get());
+                List<?> extensions = (List<?>) platformConfig.getFirst()
+                        .getDeclaredMethod("getExtensionInfosInBuildOrder").invoke(platformConfig.getSecond());
+                return convertToExtensionInfo(urlClassLoader.get(), extensions);
+            } else {
+                return Collections.emptyList();
+            }
+        });
     }
 
     private List<Extension> convertToExtensionInfo(URLClassLoader classLoader, List<?> raw) throws Exception {

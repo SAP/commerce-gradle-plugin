@@ -1,5 +1,6 @@
 {
   "commerceSuiteVersion": "6.7.0.1",
+  "disableImageReuse": true,
   "extensions": [
     "modeltacceleratorservices",
     "electronicsstore",
@@ -24,6 +25,46 @@
       "persona": "production"
     }
   ],
+  "useConfig": {
+    "properties": [
+      {
+        "location": "config/local.properties"
+      },
+      {
+        "location": "config/local-dev.properties",
+        "persona": "development"
+      },
+      {
+        "location": "config/local-stage.properties",
+        "persona": "staging"
+      },
+      {
+        "location": "config/local-prod.properties",
+        "persona": "production"
+      },
+      {
+        "location": "config/local-backoffice-prod.properties",
+        "persona": "production",
+        "aspect": "backoffice"
+      },
+      {
+        "location": "config/local-backoffice.properties",
+        "aspect": "backoffice"
+      }
+    ],
+    "extensions": {
+      "location": "config/localextensions.xml",
+      "exclude": [
+        "backoffice"
+      ]
+    },
+    "solr": {
+      "location": "solr/custom"
+    },
+    "languages": {
+      "location": "_LANGUAGES_"
+    }
+  },
   "storefrontAddons": [
     {
       "addon": "privacyoverlayeraddon",
