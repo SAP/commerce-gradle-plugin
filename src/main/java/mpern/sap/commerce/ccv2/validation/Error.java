@@ -6,13 +6,13 @@ public class Error {
     public final Level level;
     public final String location;
     public final String message;
-    public final String link;
+    public final String code;
 
-    private Error(Level level, String location, String message, String link) {
+    private Error(Level level, String location, String message, String code) {
         this.level = level;
         this.location = location;
         this.message = message;
-        this.link = link;
+        this.code = code;
     }
 
     public Level getLevel() {
@@ -27,14 +27,14 @@ public class Error {
         return message;
     }
 
-    public String getLink() {
-        return link;
+    public String getCode() {
+        return code;
     }
 
     @Override
     public String toString() {
         return new StringJoiner(", ", Error.class.getSimpleName() + "[", "]").add("level=" + level)
-                .add("location='" + location + "'").add("message='" + message + "'").add("link='" + link + "'")
+                .add("location='" + location + "'").add("message='" + message + "'").add("code='" + code + "'")
                 .toString();
     }
 
@@ -42,7 +42,7 @@ public class Error {
         private Level level = Level.ERROR;
         private String location;
         private String message;
-        private String link;
+        private String code;
 
         public Builder setLevel(Level level) {
             this.level = level;
@@ -59,13 +59,13 @@ public class Error {
             return this;
         }
 
-        public Builder setLink(String link) {
-            this.link = link;
+        public Builder setCode(String code) {
+            this.code = code;
             return this;
         }
 
         public Error createError() {
-            return new Error(level, location, message, link);
+            return new Error(level, location, message, code);
         }
     }
 }

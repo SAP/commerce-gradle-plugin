@@ -23,27 +23,21 @@ public class AspectValidator implements Validator {
             Aspect aspect = manifest.aspects.get(aspectIndex);
             if (!Aspect.ALLOWED_ASPECTS.contains(aspect.name)) {
                 errors.add(new Error.Builder().setLocation("aspects[?name == '%s']", aspect.name)
-                        .setMessage("Aspect `%s` not supported", aspect.name)
-                        .setLink(
-                                "https://help.sap.com/viewer/1be46286b36a4aa48205be5a96240672/LATEST/en-US/8f494fb9617346188ddf21a971db84fc.html")
-                        .createError());
+                        .setMessage("Aspect `%s` not supported", aspect.name).setCode("E-002").createError());
             } else {
                 Integer previous = seenAspects.put(aspect.name, aspectIndex);
                 if (previous != null) {
                     errors.add(new Error.Builder().setLocation("aspects[%d]", aspectIndex)
                             .setMessage("Aspect `%s` configured more than once. Previous location: `aspects[%d]",
                                     aspect.name, previous)
-                            .createError());
+                            .setCode("E-003").createError());
                 }
                 errors.addAll(new SharedPropertyValidator(String.format("aspects[?name == '%s'].", aspect.name))
                         .validateProperties(aspect.properties));
                 if (ADMIN_ASPECT.equals(aspect.name)) {
                     if (!aspect.webapps.isEmpty()) {
                         errors.add(new Error.Builder().setLocation("aspects[?name == '%s']", aspect.name)
-                                .setMessage("Webapps are not allowed for aspect `admin`")
-                                .setLink(
-                                        "https://help.sap.com/viewer/1be46286b36a4aa48205be5a96240672/LATEST/en-US/8f494fb9617346188ddf21a971db84fc.html")
-                                .createError());
+                                .setMessage("Webapps not allowed for aspect `admin`").setCode("E-007").createError());
                     }
                 } else {
                     Map<String, Integer> loadedExtensions = new HashMap<>();
@@ -57,9 +51,7 @@ public class AspectValidator implements Validator {
                                     .setMessage(
                                             "Extension `%s` configured more than once. Previous location: `aspects[?name == '%s'].webapps[%d]`",
                                             w.name, aspect.name, previous)
-                                    .setLink(
-                                            "https://help.sap.com/viewer/1be46286b36a4aa48205be5a96240672/LATEST/en-US/8f494fb9617346188ddf21a971db84fc.html")
-                                    .createError());
+                                    .setCode("E-004").createError());
                         }
                         previous = webroots.put(w.contextPath, j);
                         if (previous != null) {
@@ -68,16 +60,12 @@ public class AspectValidator implements Validator {
                                     .setMessage(
                                             "Context path `%s` configured more than once! Previous location: `aspects[?name == '%s'].webapps[%d]`",
                                             w.contextPath, aspect.name, previous)
-                                    .setLink(
-                                            "https://help.sap.com/viewer/1be46286b36a4aa48205be5a96240672/LATEST/en-US/8f494fb9617346188ddf21a971db84fc.html")
-                                    .createError());
+                                    .setCode("E-005").createError());
                         }
                         if (!w.contextPath.isEmpty() && !w.contextPath.startsWith("/")) {
                             errors.add(new Error.Builder()
                                     .setLocation("aspects[?name == '%s'].webapps[%d]", aspect.name, j)
-                                    .setMessage("contextPath `%s` must start with `/`", w.contextPath)
-                                    .setLink(
-                                            "https://help.sap.com/viewer/1be46286b36a4aa48205be5a96240672/LATEST/en-US/8f494fb9617346188ddf21a971db84fc.html")
+                                    .setMessage("contextPath `%s` must start with `/`", w.contextPath).setCode("E-006")
                                     .createError());
                         }
                     }

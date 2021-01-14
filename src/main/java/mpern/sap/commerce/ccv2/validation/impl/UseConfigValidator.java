@@ -5,6 +5,8 @@ import static mpern.sap.commerce.ccv2.model.Property.ALLOWED_PERSONAS;
 import static mpern.sap.commerce.ccv2.validation.ValidationUtils.validateAndNormalizePath;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -25,6 +27,7 @@ import groovy.lang.Tuple2;
 import mpern.sap.commerce.ccv2.model.Manifest;
 import mpern.sap.commerce.ccv2.model.useconfig.Properties;
 import mpern.sap.commerce.ccv2.validation.Error;
+import mpern.sap.commerce.ccv2.validation.Level;
 import mpern.sap.commerce.ccv2.validation.Validator;
 
 public class UseConfigValidator implements Validator {
@@ -53,17 +56,36 @@ public class UseConfigValidator implements Validator {
             errors.addAll(result.getSecond());
             if (!properties.aspect.isEmpty() && !ALLOWED_ASPECTS.contains(properties.aspect)) {
                 errors.add(new Error.Builder().setLocation("useConfig.properties[%d]", i)
-                        .setMessage("Aspect `%s` not supported", properties.aspect)
-                        .setLink(
-                                "https://help.sap.com/viewer/1be46286b36a4aa48205be5a96240672/LATEST/en-US/2311d89eef9344fc81ef168ac9668307.html")
-                        .createError());
+                        .setMessage("Aspect `%s` not supported", properties.aspect).setCode("E-002").createError());
             }
             if (!properties.persona.isEmpty() && !ALLOWED_PERSONAS.contains(properties.persona)) {
                 errors.add(new Error.Builder().setLocation("useConfig.properties[%d]", i)
-                        .setMessage("Persona `%s` not supported", properties.persona)
-                        .setLink(
-                                "https://help.sap.com/viewer/1be46286b36a4aa48205be5a96240672/LATEST/en-US/2311d89eef9344fc81ef168ac9668307.html")
-                        .createError());
+                        .setMessage("Persona `%s` not supported", properties.persona).setCode("E-008").createError());
+            }
+            if (result.getFirst() != null) {
+                try (InputStream stream = Files.newInputStream(result.getFirst())) {
+                    new java.util.Properties().load(stream);
+                } catch (Exception e) {
+                    errors.add(new Error.Builder().setLocation("useConfig.properties[%d]", i)
+                            .setMessage("`%s` is not a valid Java properties file", properties.location)
+                            .setCode("E-010").createError());
+                }
+                try {
+                    // ref. java doc of java.util.Properties.load(InputStream)
+                    String defaultCharset = String.join("\n",
+                            Files.readAllLines(result.getFirst(), StandardCharsets.ISO_8859_1));
+                    String utf8 = String.join("\n", Files.readAllLines(result.getFirst(), StandardCharsets.UTF_8));
+                    if (!defaultCharset.equals(utf8)) {
+                        errors.add(new Error.Builder().setLocation("useConfig.properties[%d]", i)
+                                .setLevel(Level.WARNING)
+                                .setMessage(
+                                        "`%s` seems to use a different charset than ISO 8859-1. This might lead to corrupted properties after build and deployment.",
+                                        properties.location)
+                                .setCode("W-002").createError());
+                    }
+                } catch (IOException e) {
+                    // shouldn't happen
+                }
             }
         }
         return errors;
@@ -85,9 +107,7 @@ public class UseConfigValidator implements Validator {
                         errors.add(new Error.Builder().setLocation("useConfig.extensions.location")
                                 .setMessage("File `%s` is not a valid localextensions.xml file",
                                         localExtensionsLocation)
-                                .setLink(
-                                        "https://help.sap.com/viewer/1be46286b36a4aa48205be5a96240672/v2011/en-US/2311d89eef9344fc81ef168ac9668307.html")
-                                .createError());
+                                .setCode("E-011").createError());
                     } else {
                         NodeList extensions = doc.getDocumentElement().getElementsByTagName("extension");
                         for (int i = 0; i < extensions.getLength(); i++) {
@@ -95,20 +115,15 @@ public class UseConfigValidator implements Validator {
                             if (extension.getAttributes().getNamedItem("dir") != null) {
                                 errors.add(new Error.Builder().setLocation("useConfig.extensions.location").setMessage(
                                         "`%s`: Attribute `extension.dir` is not supported. Only use `extension.name` to declare extensions.",
-                                        localExtensionsLocation)
-                                        .setLink(
-                                                "https://help.sap.com/viewer/1be46286b36a4aa48205be5a96240672/LATEST/en-US/2311d89eef9344fc81ef168ac9668307.html")
-                                        .createError());
+                                        localExtensionsLocation).setCode("E-012").createError());
                                 break;
                             }
                         }
                     }
                 } catch (SAXException | IOException e) {
                     errors.add(new Error.Builder().setLocation("useConfig.extensions.location")
-                            .setMessage("File `%s` is not a valid localextensions.xml file", localExtensionsLocation)
-                            .setLink(
-                                    "https://help.sap.com/viewer/1be46286b36a4aa48205be5a96240672/v2011/en-US/2311d89eef9344fc81ef168ac9668307.html")
-                            .createError());
+                            .setMessage("File `%s` is not a valid extensions.xml file", localExtensionsLocation)
+                            .setCode("E-011").createError());
                 } catch (ParserConfigurationException e) {
                     throw new RuntimeException(e);
                 }
@@ -129,10 +144,7 @@ public class UseConfigValidator implements Validator {
                 if (!Files.exists(expected)) {
                     errors.add(new Error.Builder().setLocation("useConfig.solr.location").setMessage(
                             "Location `%s` does not contain the required folder structure `server/solr/configsets/default/conf`",
-                            solrCustom)
-                            .setLink(
-                                    "https://help.sap.com/viewer/b2f400d4c0414461a4bb7e115dccd779/LATEST/en-US/f7251d5a1d6848489b1ce7ba46300fe6.html")
-                            .createError());
+                            solrCustom).setCode("E-013").createError());
                 }
             }
         }

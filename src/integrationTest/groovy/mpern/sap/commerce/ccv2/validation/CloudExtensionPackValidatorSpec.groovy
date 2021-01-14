@@ -16,12 +16,9 @@ class CloudExtensionPackValidatorSpec extends Specification {
         validator = new CloudExtensionPackValidator()
     }
 
-    def "cep validation"() {
+    def "CEP validation"() {
         when:
         List<Error> errors = validator.validate(manifest)
-        errors.forEach{
-            System.out.println(it)
-        }
 
         then:
         errors.size() == 1

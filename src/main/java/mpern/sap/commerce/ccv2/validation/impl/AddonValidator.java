@@ -31,12 +31,11 @@ public class AddonValidator extends ExtensionValidator {
             }
             for (String s : storefronts) {
                 if (!extensionNames.contains(s)) {
-                    errors.add(new Error.Builder().setLocation("storefrontAddons[%d]", i)
-                            .setMessage("Storefront extension `%s` not available.\n%s", s,
-                                    formatLocations(effectiveExtensions.locations))
-                            .setLink(
-                                    "https://help.sap.com/viewer/1be46286b36a4aa48205be5a96240672/LATEST/en-US/9a3ab7d08c704fccb7fd899e876d41d6.html")
-                            .createError());
+                    errors.add(
+                            new Error.Builder().setLocation("storefrontAddons[%d]", i)
+                                    .setMessage("Storefront extension `%s` not available.\n%s", s,
+                                            formatLocations(effectiveExtensions.locations))
+                                    .setCode("E-001").createError());
                 }
             }
             List<String> addons = new ArrayList<>(addon.addons);
@@ -45,12 +44,11 @@ public class AddonValidator extends ExtensionValidator {
             }
             for (String a : addons) {
                 if (!extensionNames.contains(a)) {
-                    errors.add(new Error.Builder().setLocation("storefrontAddons[%d]", i)
-                            .setMessage("Addon `%s` not available.\n%s", a,
-                                    formatLocations(effectiveExtensions.locations))
-                            .setLink(
-                                    "https://help.sap.com/viewer/1be46286b36a4aa48205be5a96240672/LATEST/en-US/9a3ab7d08c704fccb7fd899e876d41d6.html")
-                            .createError());
+                    errors.add(
+                            new Error.Builder().setLocation("storefrontAddons[%d]", i)
+                                    .setMessage("Addon `%s` not available.\n%s", a,
+                                            formatLocations(effectiveExtensions.locations))
+                                    .setCode("E-001").createError());
                 }
             }
         }

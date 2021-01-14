@@ -93,6 +93,27 @@ class UseConfigValidatorSpec extends Specification {
         errors.any{ it.location == "useConfig.properties[3]" && it.message.contains('`invalid`')}
     }
 
+    def "properties must by a valid Java properties file"() {
+        given:
+        Map<String, Object> rawManifest = new JsonSlurper().parse(this.getClass().getResource('/validator/useconfig-properties-encoding-manifest.json'))
+        Manifest m = Manifest.fromMap(rawManifest)
+        testProjectDir.newFile("non-latin1.properties").text = '''\
+        non.latin1=fööbaß$\\{}
+        foo=bar
+        '''.stripIndent()
+        testProjectDir.newFile("latin1.properties").text = '''\
+        latin1=foobar$\\{}
+        foo=bar
+        '''.stripIndent()
+
+        when:
+        List<Error> errors = validator.validate(m)
+
+        then:
+        errors.size() == 1
+        errors.any{ it.location == "useConfig.properties[0]" && it.message.contains('charset')}
+    }
+
     def "solr customization must have required folder structure"() {
         given:
         Map<String, Object> rawManifest = new JsonSlurper().parse(this.getClass().getResource('/validator/useconfig-solr-manifest.json'))

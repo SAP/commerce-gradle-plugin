@@ -18,26 +18,19 @@ public class ValidationUtils {
         if (!matcher.matches()) {
             return new Tuple2<>(null, Collections.singletonList(new Error.Builder().setLocation(location).setMessage(
                     "Location `%s` is invalid. Must be a plain Unix-style path without any shell expansion, non-ASCII characters etc.",
-                    input)
-                    .setLink(
-                            "https://help.sap.com/viewer/1be46286b36a4aa48205be5a96240672/LATEST/en-US/6b40de5762694346bf3b1e9494b2256b.html")
-                    .createError()));
+                    input).setCode("E-009").createError()));
         } else {
             List<Error> errors = new ArrayList<>();
             Path inputPath = Paths.get(input);
             if (inputPath.isAbsolute()) {
                 errors.add(new Error.Builder().setLocation(location)
-                        .setMessage("Location `%s` is absolute (starts with `/`).", input)
-                        .setLink(
-                                "https://help.sap.com/viewer/1be46286b36a4aa48205be5a96240672/LATEST/en-US/6b40de5762694346bf3b1e9494b2256b.html")
+                        .setMessage("Location `%s` is absolute (starts with `/`).", input).setCode("E-009")
                         .createError());
             }
             for (Path component : inputPath) {
                 if (".".equals(component.toString()) || "..".equals(component.toString())) {
                     errors.add(new Error.Builder().setLocation(location)
-                            .setMessage("Location `%s` is relative (uses `.` or `..`).", input)
-                            .setLink(
-                                    "https://help.sap.com/viewer/1be46286b36a4aa48205be5a96240672/LATEST/en-US/6b40de5762694346bf3b1e9494b2256b.html")
+                            .setMessage("Location `%s` is relative (uses `.` or `..`).", input).setCode("E-009")
                             .createError());
                 }
             }
@@ -46,10 +39,8 @@ public class ValidationUtils {
                 resolved = projectRoot.resolve(inputPath);
                 if (!Files.exists(resolved)) {
                     errors.add(new Error.Builder().setLocation(location)
-                            .setMessage("Location `%s` does not exist", input)
-                            .setLink(
-                                    "https://help.sap.com/viewer/1be46286b36a4aa48205be5a96240672/LATEST/en-US/6b40de5762694346bf3b1e9494b2256b.html")
-                            .createError());
+                            .setMessage("Location `%s` does not exist", input).setCode("E-009").createError());
+                    resolved = null;
                 }
             }
             return new Tuple2<>(resolved, errors);

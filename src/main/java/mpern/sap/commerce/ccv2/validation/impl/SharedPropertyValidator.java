@@ -116,19 +116,14 @@ public class SharedPropertyValidator {
             String location = String.format(locationPrefix + "properties[%d]", index);
             if (!ALLOWED_PERSONAS.contains(property.persona)) {
                 errors.add(new Error.Builder().setLocation(location)
-                        .setMessage("Persona `%s` not supported", property.persona)
-                        .setLink(
-                                "https://help.sap.com/viewer/1be46286b36a4aa48205be5a96240672/LATEST/en-US/d6794b766aea4783b829988dc587f978.html")
-                        .createError());
+                        .setMessage("Persona `%s` not supported", property.persona).setCode("E-008").createError());
             }
             if (MANAGED_PROPERTIES.contains(property.key)
                     || (location.contains("backoffice") && BACKOFFICE_MANAGED_PROPERTIES.contains(property.key))) {
                 errors.add(new Error.Builder().setLevel(Level.WARNING).setLocation(location)
                         .setMessage("Property `%s` is a managed property. Are you sure you need to modify it?",
                                 property.key)
-                        .setLink(
-                                "https://help.sap.com/viewer/1be46286b36a4aa48205be5a96240672/LATEST/en-US/a30160b786b545959184898b51c737fa.html")
-                        .createError());
+                        .setCode("W-001").createError());
             }
             index += 1;
         }

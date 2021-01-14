@@ -33,12 +33,11 @@ public class AspectWebappValidator extends ExtensionValidator {
                 Webapp w = aspect.webapps.get(j);
                 // extension does not exist / not loaded
                 if (!extensionNames.contains(w.name)) {
-                    errors.add(new Error.Builder().setLocation("aspects[?name == '%s'].webapps[%d]", aspect.name, i)
-                            .setMessage("Extension `%s` not loaded.\n%s", w.name,
-                                    formatLocations(effectiveExtensions.locations))
-                            .setLink(
-                                    "https://help.sap.com/viewer/1be46286b36a4aa48205be5a96240672/LATEST/en-US/8f494fb9617346188ddf21a971db84fc.html")
-                            .createError());
+                    errors.add(
+                            new Error.Builder().setLocation("aspects[?name == '%s'].webapps[%d]", aspect.name, i)
+                                    .setMessage("Extension `%s` not available.\n%s", w.name,
+                                            formatLocations(effectiveExtensions.locations))
+                                    .setCode("E-001").createError());
                 }
             }
 

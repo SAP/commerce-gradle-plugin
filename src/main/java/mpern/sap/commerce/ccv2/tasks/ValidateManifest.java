@@ -7,6 +7,7 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Locale;
 
 import javax.inject.Inject;
 
@@ -40,11 +41,11 @@ public class ValidateManifest extends DefaultTask {
         validators.add(new CloudExtensionPackValidator());
         validators.add(new PropertyValidator());
         validators.add(new UseConfigValidator(projectDir));
-
+        ManifestExtensionsResolver resolver = new ManifestExtensionsResolver(projectDir);
+        validators.add(new CloudHotfolderValidator(projectDir, resolver));
         boolean deepInspection = false;
         if (Files.exists(projectDir.resolve("hybris/bin/platform"))) {
             deepInspection = true;
-            ManifestExtensionsResolver resolver = new ManifestExtensionsResolver(projectDir);
             validators.add(new AddonValidator(resolver));
             validators.add(new AspectWebappValidator(resolver));
         }
@@ -60,21 +61,21 @@ public class ValidateManifest extends DefaultTask {
         StyledTextOutput statusOut = styledTextOutputFactory.create(ValidateManifest.class);
         statusOut.withStyle(StyledTextOutput.Style.Header).println("--- Manifest Validation Results ---");
         if (errors.isEmpty()) {
-            statusOut.withStyle(StyledTextOutput.Style.Success).println("No errors detected");
+            statusOut.withStyle(StyledTextOutput.Style.Success).println("No issues detected");
         }
         for (Error error : errors) {
             switch (error.level) {
             case WARNING:
-                statusOut.withStyle(StyledTextOutput.Style.Description).format("%s %s\n", error.level, error.location);
+                statusOut.withStyle(StyledTextOutput.Style.Description).format("%s %s @ %s\n", error.level, error.code, error.location);
                 statusOut.withStyle(StyledTextOutput.Style.Description).println(error.message);
-                statusOut.formatln("<%s>", error.link);
+                statusOut.formatln(toLink(error.code));
                 statusOut.println();
                 break;
             case ERROR:
-                statusOut.withStyle(StyledTextOutput.Style.FailureHeader).format("%s %s\n", error.level,
+                statusOut.withStyle(StyledTextOutput.Style.FailureHeader).format("%s %s @ %s\n", error.level, error.code,
                         error.location);
                 statusOut.withStyle(StyledTextOutput.Style.Failure).println(error.message);
-                statusOut.formatln("<%s>", error.link);
+                statusOut.formatln(toLink(error.code));
                 statusOut.println();
                 break;
             }
@@ -101,5 +102,11 @@ public class ValidateManifest extends DefaultTask {
         if (numErrors > 0) {
             throw new InvalidUserDataException(String.format("Found %d errors in manifest.json", numErrors));
         }
+    }
+
+    private String toLink(String code) {
+        code = code.toLowerCase();
+        code = code.replaceAll("-", "");
+        return "https://github.com/SAP/commerce-gradle-plugin/blob/master/docs/ccv2-validation.md#" + code;
     }
 }

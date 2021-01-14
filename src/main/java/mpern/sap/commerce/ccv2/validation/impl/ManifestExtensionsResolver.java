@@ -38,6 +38,28 @@ public class ManifestExtensionsResolver implements ExtensionsResolver {
 
     @Override
     public Result determineEffectiveExtensions(Manifest manifest) {
+        Tuple2<Set<String>, List<String>> listing = listAllConfiguredExtensions(manifest);
+        Set<String> extensionNames = listing.getFirst();
+        Set<String> configuredCloudOnly = new LinkedHashSet<>(extensionNames);
+        configuredCloudOnly.retainAll(CLOUD_ONLY_EXTENSIONS);
+        extensionNames.removeAll(CLOUD_ONLY_EXTENSIONS);
+        // try to load
+        try {
+            PlatformResolver resolver = new PlatformResolver(
+                    this.projectRoot.resolve(Paths.get("hybris/bin/platform")));
+            List<Extension> extensions = resolver.loadListOfExtensions(extensionNames);
+            for (String cloudOnly : configuredCloudOnly) {
+                extensions.add(new Extension(cloudOnly, Paths.get("dummy", cloudOnly)));
+            }
+            return new Result(extensions, listing.getSecond());
+        } catch (Exception e) {
+            // ignore
+        }
+        return Result.NO_RESULT;
+    }
+
+    @Override
+    public Tuple2<Set<String>, List<String>> listAllConfiguredExtensions(Manifest manifest) {
         Set<String> extensionNames = new LinkedHashSet<>();
         List<String> locations = new ArrayList<>();
         String extensionsLocation = manifest.useConfig.extensions.location;
@@ -53,22 +75,7 @@ public class ManifestExtensionsResolver implements ExtensionsResolver {
             locations.add("extensions");
             extensionNames.addAll(manifest.extensions);
         }
-        Set<String> configuredCloudOnly = new LinkedHashSet<>(extensionNames);
-        configuredCloudOnly.retainAll(CLOUD_ONLY_EXTENSIONS);
-        extensionNames.removeAll(CLOUD_ONLY_EXTENSIONS);
-        // try to load
-        try {
-            PlatformResolver resolver = new PlatformResolver(
-                    this.projectRoot.resolve(Paths.get("hybris/bin/platform")));
-            List<Extension> extensions = resolver.loadListOfExtensions(extensionNames);
-            for (String cloudOnly : configuredCloudOnly) {
-                extensions.add(new Extension(cloudOnly, Paths.get("dummy", cloudOnly)));
-            }
-            return new Result(extensions, locations);
-        } catch (Exception e) {
-            // ignore
-        }
-        return Result.NO_RESULT;
+        return new Tuple2<>(extensionNames, locations);
     }
 
     private Set<String> loadExtensionNamesFromExtensionsXML(Path file) {

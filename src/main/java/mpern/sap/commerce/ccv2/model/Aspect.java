@@ -9,8 +9,9 @@ public class Aspect {
 
     // https://help.sap.com/viewer/1be46286b36a4aa48205be5a96240672/v2011/en-US/8f494fb9617346188ddf21a971db84fc.html
     public static final String ADMIN_ASPECT = "admin";
+    public static final String BACKGROUND_ASPECT = "backgroundProcessing";
     public static final Set<String> ALLOWED_ASPECTS = new HashSet<>(
-            Arrays.asList("accstorefront", "backoffice", "backgroundProcessing", ADMIN_ASPECT, "api"));
+            Arrays.asList("accstorefront", "backoffice", BACKGROUND_ASPECT, ADMIN_ASPECT, "api"));
 
     public final String name;
     public final List<Property> properties;

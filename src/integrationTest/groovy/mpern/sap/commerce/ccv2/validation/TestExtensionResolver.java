@@ -1,12 +1,12 @@
 package mpern.sap.commerce.ccv2.validation;
 
+import groovy.lang.Tuple2;
 import mpern.sap.commerce.build.util.Extension;
 import mpern.sap.commerce.ccv2.model.Manifest;
 
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class TestExtensionResolver implements ExtensionsResolver {
     private List<Extension> extensions = new ArrayList<>();
@@ -14,6 +14,11 @@ public class TestExtensionResolver implements ExtensionsResolver {
     @Override
     public Result determineEffectiveExtensions(Manifest manifest) {
         return new Result(extensions, Collections.singletonList("test.extensions"));
+    }
+
+    @Override
+    public Tuple2<Set<String>, List<String>> listAllConfiguredExtensions(Manifest manifest) {
+        return new Tuple2<>(extensions.stream().map(e -> e.name).collect(Collectors.toSet()), Collections.singletonList("test.extensions"));
     }
 
     public void addExtension(String name) {
