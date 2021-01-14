@@ -22,8 +22,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - CCv2: Task `installManifestAddons`\
-  Aligned calls to `ant addoninstall` with the CCv2 build. In other words, the addons are now installed exactly the same way
-  as they are in the cloud build.
+  Addons are now installed exactly in the same way as they are in the cloud build.
 
 ## [3.1.0] - 2020-12-23
 

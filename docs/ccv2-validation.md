@@ -5,19 +5,19 @@ Here you can detail information for the errors and warnings reported by `validat
 ## <a id="e001"></a>E-001 `<extension>` not available
 
 All extensions (remember, addons are also extensions) referenced in the `manifest.json` 
-must be part of the extensions loaded by the platform.
+must be part of the extensions loaded by the platform during build or server startup.
 
 The error indicates that the extension does not exist.
 
 - Double-check its name
-- make sure that  you enable it in the `manifest.json` using the `extensions` array 
-  or in the file referenced via `useConfig.extensions.location`.
-- or configure it as a dependency of another extensions
+- Make sure that the extension is enabled in `manifest.json` using the `extensions` array 
+  or in the file referenced via `useConfig.extensions.location`
+- Or add it as a dependency to another extensions that is already configured
 
 ### Related Documentation
 
 - [Extensions](https://help.sap.com/viewer/1be46286b36a4aa48205be5a96240672/latest/en-US/aa4777ef30f845008c64dae7218ac82d.html)
-- [SAP Commerce Cloud Configuration Reuse](https://help.sap.com/viewer/1be46286b36a4aa48205be5a96240672/latest/en-US/2311d89eef9344fc81ef168ac9668307.html)
+- [SAP Commerce Cloud Configuration Reuse][reuse]
 - [Extension Dependencies](https://help.sap.com/viewer/20125f0eca6340dba918bda360e3cdfa/latest/en-US/8bbf3a9d86691014aa4189bf3ac0eb88.html)
 
 ## <a id="e002"></a>E-002 Aspect `<aspect>` not supported
@@ -51,7 +51,7 @@ Using the same `contextPath`/webroot more than once in the same aspect breaks th
 
 ## <a id="e006"></a>E-006 contextPath `<path>` must start with `/`
 
-If the contextPath doesn't start with `/`, the server doesn't start
+If the `contextPath` doesn't start with `/`, the build will fail (since the server wouldn't start)
 
 ## <a id="e007"></a>E-007 Webapps not allowed for aspect `admin`
 
@@ -155,8 +155,8 @@ When using the Cloud Extension Pack, you cannot configure a specific patch relea
 The build process preconfigures certain properties with optimal values for a high-performance cloud 
 environments.
 
-Changing their values may have unintended side effects and should only be done if recommended by SAP
-experts or SAP support.
+Changing their values may have unintended side effects (like preventing server startup) and should
+only be done if recommended by SAP experts or SAP support.
 
 ### Relevant Documentation
 

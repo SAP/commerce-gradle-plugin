@@ -118,8 +118,12 @@ public class CloudV2Plugin implements Plugin<Project> {
             }
             String storefrontParameter = String.join(",", storeFronts);
             String addonParameter = String.join(",", addons);
+            int finalI = i;
             TaskProvider<HybrisAntTask> install = project.getTasks().register(String.format("addonInstall_%d", i),
                     HybrisAntTask.class, t -> {
+                        if(finalI > 0) {
+                            t.mustRunAfter(String.format("addonInstall_%d", (finalI - 1)));
+                        }
                         t.args("addoninstall");
                         t.antProperty("addonnames", addonParameter);
                         t.antProperty("addonStorefront." + addonInstall.template, storefrontParameter);

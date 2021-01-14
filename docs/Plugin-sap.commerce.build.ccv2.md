@@ -65,29 +65,10 @@ The plugin defines the following tasks
 
 ### `validateManifest`
 
-Validate `manifest.json` for common errors. If errors are detected, the task fails. Warnings are logged, but do not cause
+Validate `manifest.json` for common issues. If errors are detected, the task fails. Warnings are logged, but do not cause
 the task to fail.
 
-Every reported issue includes a link to the relevant documentation.
-
-#### Checks
-
-- `properties` - Check if the `persona` is supported
-- `properties` - Warn if it is a managed property
-- `storefrontAddons` - Check that `addon` / `storefront` extensions are part of the configured extensions \
-  (check only available with a full local development setup)
-- `aspects` - Check if it is a supported aspect
-- `aspects` - `admin` does not support `webapps`
-- `aspects.webapps` - Check for duplicate configuration of either the extension (`name`) or `contextPath`
-- `aspects.webapps` - Check if the extension (`name`) is part of the configured extensions\
-  (check only available with a full local development setup)
-- `aspects.properties` - Check if the `persona` is supported
-- `aspects.properties` - Warn if it is a managed property
-- `useConfig.properties` - Check if `location` is valid, `persona` is supported and `aspect` is supported
-- `useConfig.extensions` - Check if `location` is a valid `localextensions.xml` file and contains supported `<extension>` tags
-- `useConfig.solr` - Check that `location` exists and contains the required folder structure
-- `useCloudExtensionPack` - Check if `commerceSuiteVersion` is compatible with the Cloud Extension Pack
-
+You can find all possible errors and warnings in [ccv2-validation.md](ccv2-validation.md)
 
 ### `installManifestAddons`
 
