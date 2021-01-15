@@ -18,3 +18,7 @@ repositories {
     flatDir { dirs("platform") }
     jcenter()
 }
+
+hybris {
+    antTaskDependencies.set(listOf("bootstrapPlatform"))
+}
