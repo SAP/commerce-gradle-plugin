@@ -75,10 +75,10 @@ Only a predefined set of personas (= environment types) is supported in CCv2
 
 Files and folders referenced in `manifest.json` must be:
 
-- relative to the folder that contains `manifest.json`
-- plain values (no relative paths, no environment variable substitution etc.)
 - Unix-style paths (using `/` as separator)
+- relative to the folder that contains `manifest.json`
 - in US-ASCII (using special characters may lead to undefined behaviour)
+- plain values (no relative paths, no environment variable substitution etc.)
 
 Bad:
 
@@ -117,12 +117,13 @@ The file referenced in `useConfig.extensions.locations` must be a valid extensio
 
 ## <a id="012"></a>E-012 `extension.dir` is not supported
 
-The cloud build only uses the `name` attribute of the `<extension>` tags in the
+The cloud build only supports the `name` attribute of the `<extension>` tags in the
 `useConfig.extensions.locations` file.
 
 ### Relevant Documentation
 
 - [SAP Commerce Cloud Configuration Reuse][reuse]
+- [Configuration Options in localextensions.xml](https://help.sap.com/viewer/b490bb4e85bc42a7aa09d513d0bcb18e/latest/en-US/cce26d8ef435425fb9e054d91794148c.html)
 
 ## <a id="e013"></a>E-013 Solr customization folder structure
 

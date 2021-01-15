@@ -121,7 +121,7 @@ public class CloudV2Plugin implements Plugin<Project> {
             int finalI = i;
             TaskProvider<HybrisAntTask> install = project.getTasks().register(String.format("addonInstall_%d", i),
                     HybrisAntTask.class, t -> {
-                        if(finalI > 0) {
+                        if (finalI > 0) {
                             t.mustRunAfter(String.format("addonInstall_%d", (finalI - 1)));
                         }
                         t.args("addoninstall");

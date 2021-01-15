@@ -7,7 +7,6 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Locale;
 
 import javax.inject.Inject;
 
@@ -66,14 +65,15 @@ public class ValidateManifest extends DefaultTask {
         for (Error error : errors) {
             switch (error.level) {
             case WARNING:
-                statusOut.withStyle(StyledTextOutput.Style.Description).format("%s %s @ %s\n", error.level, error.code, error.location);
+                statusOut.withStyle(StyledTextOutput.Style.Description).format("%s %s @ %s\n", error.level, error.code,
+                        error.location);
                 statusOut.withStyle(StyledTextOutput.Style.Description).println(error.message);
                 statusOut.formatln(toLink(error.code));
                 statusOut.println();
                 break;
             case ERROR:
-                statusOut.withStyle(StyledTextOutput.Style.FailureHeader).format("%s %s @ %s\n", error.level, error.code,
-                        error.location);
+                statusOut.withStyle(StyledTextOutput.Style.FailureHeader).format("%s %s @ %s\n", error.level,
+                        error.code, error.location);
                 statusOut.withStyle(StyledTextOutput.Style.Failure).println(error.message);
                 statusOut.formatln(toLink(error.code));
                 statusOut.println();

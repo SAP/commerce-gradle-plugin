@@ -38,8 +38,8 @@ public class ValidationUtils {
             if (errors.isEmpty()) {
                 resolved = projectRoot.resolve(inputPath);
                 if (!Files.exists(resolved)) {
-                    errors.add(new Error.Builder().setLocation(location)
-                            .setMessage("Location `%s` does not exist", input).setCode("E-009").createError());
+                    errors.add(new Error.Builder().setLocation(location).setMessage("Location `%s` not found", input)
+                            .setCode("E-009").createError());
                     resolved = null;
                 }
             }

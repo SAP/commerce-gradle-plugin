@@ -10,7 +10,7 @@ class ManifestParseSpec extends Specification {
 
     def "parse the sample manifest"() {
         given:
-        Map<String, Object> rawManifest = new JsonSlurper().parse(this.getClass().getResource('/test-manifest.json'))
+        def rawManifest = new JsonSlurper().parse(this.getClass().getResource('/test-manifest.json')) as Map<String, Object>
 
         when:
         Manifest m = Manifest.fromMap(rawManifest)

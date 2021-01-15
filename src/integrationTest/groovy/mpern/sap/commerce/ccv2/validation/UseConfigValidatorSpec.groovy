@@ -33,13 +33,13 @@ class UseConfigValidatorSpec extends Specification {
         errors.any{ it.location == "useConfig.properties[0]" && it.message.contains("absolute") }
         errors.any{ it.location == "useConfig.properties[1]" && it.message.contains("relative") }
         errors.any{ it.location == "useConfig.properties[2]" && it.message.contains("relative") }
-        errors.any{ it.location == "useConfig.properties[3]" && it.message.contains("exist") }
+        errors.any{ it.location == "useConfig.properties[3]" && it.message.contains("found") }
         errors.any{ it.location == "useConfig.properties[4]" && it.message.contains("invalid") }
     }
 
     def "localextensions.xml must be a valid localextensions.xml file"() {
         given:
-        Map<String, Object> rawManifest = new JsonSlurper().parse(this.getClass().getResource('/validator/useconfig-localextensions-manifest.json'))
+        def rawManifest = new JsonSlurper().parse(this.getClass().getResource('/validator/useconfig-localextensions-manifest.json')) as Map<String, Object>
         Manifest m = Manifest.fromMap(rawManifest)
 
         testProjectDir.newFile("localextensions.xml").text = """\
@@ -56,7 +56,7 @@ class UseConfigValidatorSpec extends Specification {
 
     def "localextensions.xml must only contain extension names"() {
         given:
-        Map<String, Object> rawManifest = new JsonSlurper().parse(this.getClass().getResource('/validator/useconfig-localextensions-manifest.json'))
+        def rawManifest = new JsonSlurper().parse(this.getClass().getResource('/validator/useconfig-localextensions-manifest.json')) as Map<String, Object>
         Manifest m = Manifest.fromMap(rawManifest)
 
         testProjectDir.newFile("localextensions.xml").text = '''\
@@ -80,7 +80,7 @@ class UseConfigValidatorSpec extends Specification {
 
     def "properties must use valid personas and aspects"() {
         given:
-        Map<String, Object> rawManifest = new JsonSlurper().parse(this.getClass().getResource('/validator/useconfig-properties-manifest.json'))
+        def rawManifest = new JsonSlurper().parse(this.getClass().getResource('/validator/useconfig-properties-manifest.json')) as Map<String, Object>
         Manifest m = Manifest.fromMap(rawManifest)
         testProjectDir.newFile("dummy.properties")
 
@@ -95,7 +95,7 @@ class UseConfigValidatorSpec extends Specification {
 
     def "properties must by a valid Java properties file"() {
         given:
-        Map<String, Object> rawManifest = new JsonSlurper().parse(this.getClass().getResource('/validator/useconfig-properties-encoding-manifest.json'))
+        def rawManifest = new JsonSlurper().parse(this.getClass().getResource('/validator/useconfig-properties-encoding-manifest.json')) as Map<String, Object>
         Manifest m = Manifest.fromMap(rawManifest)
         testProjectDir.newFile("non-latin1.properties").text = '''\
         non.latin1=fööbaß$\\{}
@@ -111,12 +111,12 @@ class UseConfigValidatorSpec extends Specification {
 
         then:
         errors.size() == 1
-        errors.any{ it.location == "useConfig.properties[0]" && it.message.contains('charset')}
+        errors.any{ it.level == Level.WARNING && it.location == "useConfig.properties[0]" && it.message.contains('charset')}
     }
 
     def "solr customization must have required folder structure"() {
         given:
-        Map<String, Object> rawManifest = new JsonSlurper().parse(this.getClass().getResource('/validator/useconfig-solr-manifest.json'))
+        def rawManifest = new JsonSlurper().parse(this.getClass().getResource('/validator/useconfig-solr-manifest.json')) as Map<String, Object>
         Manifest m = Manifest.fromMap(rawManifest)
         testProjectDir.newFolder("solr")
 
