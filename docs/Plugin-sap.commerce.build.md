@@ -153,6 +153,6 @@ task, e.g.
 
 ```gradle
 tasks.named("yall").configure {
-    dependsOn(tasks.named("bootstrapPlatform"))
+    dependsOn("bootstrapPlatform")
 }
 ```
