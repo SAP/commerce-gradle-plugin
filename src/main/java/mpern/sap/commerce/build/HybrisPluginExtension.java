@@ -13,6 +13,8 @@ public class HybrisPluginExtension {
     private final ListProperty<String> bootstrapInclude;
     private final ListProperty<String> bootstrapExclude;
 
+    private final ListProperty<Object> antTaskDependencies;
+
     private final HybrisPlatform platform;
 
     public HybrisPluginExtension(Project project) {
@@ -23,6 +25,8 @@ public class HybrisPluginExtension {
 
         bootstrapInclude = project.getObjects().listProperty(String.class);
         bootstrapExclude = project.getObjects().listProperty(String.class);
+
+        antTaskDependencies = project.getObjects().listProperty(Object.class);
 
         platform = project.getObjects().newInstance(HybrisPlatform.class, project);
     }
@@ -45,5 +49,9 @@ public class HybrisPluginExtension {
 
     public ListProperty<String> getBootstrapExclude() {
         return bootstrapExclude;
+    }
+
+    public ListProperty<Object> getAntTaskDependencies() {
+        return antTaskDependencies;
     }
 }

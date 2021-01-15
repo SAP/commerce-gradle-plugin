@@ -2,7 +2,7 @@
 
 ## How do I automate downloads from launchpad.support.sap.com?
 
-Using some revere engineering you can easily configure e.g. a Gradle download task ([Github][dlgh], [gradle plugin][dlplug])
+Using some revere engineering you can easily configure e.g. a Gradle download task ([Github][dlgh], [Gradle plugin][dlplug])
 to download the SAP Commerce artifacts for you.
 
 Let's say you want to download the Commere platform version 2005.

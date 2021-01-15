@@ -13,7 +13,6 @@ import org.gradle.api.tasks.TaskProvider;
 import org.gradle.api.tasks.WriteProperties;
 
 import groovy.json.JsonSlurper;
-import groovy.lang.Tuple2;
 
 import mpern.sap.commerce.build.HybrisPlugin;
 import mpern.sap.commerce.build.HybrisPluginExtension;
@@ -22,12 +21,14 @@ import mpern.sap.commerce.build.util.Version;
 import mpern.sap.commerce.ccv2.model.*;
 import mpern.sap.commerce.ccv2.tasks.GenerateLocalextensions;
 import mpern.sap.commerce.ccv2.tasks.PatchLocalExtensions;
+import mpern.sap.commerce.ccv2.tasks.ValidateManifest;
 
 public class CloudV2Plugin implements Plugin<Project> {
 
     public static final String EXTENSION_PACK = "cloudExtensionPack";
     private static final String GROUP = "CCv2 Build";
     private static final String MANIFEST_PATH = "manifest.json";
+    public static final String CCV2_EXTENSION = "CCV2";
     private CCv2Extension extension;
 
     @Override
@@ -41,7 +42,7 @@ public class CloudV2Plugin implements Plugin<Project> {
         Map parsed = (Map) slurper.parse(manifestFile);
         Manifest manifest = Manifest.fromMap(parsed);
 
-        extension = project.getExtensions().create("CCV2", CCv2Extension.class, project, manifest);
+        extension = project.getExtensions().create(CCV2_EXTENSION, CCv2Extension.class, project, manifest);
         extension.getGeneratedConfiguration().set(project.file("generated-configuration"));
         extension.getCloudExtensionPackFolder().set(project.file("cloud-extension-pack"));
 
@@ -67,6 +68,11 @@ public class CloudV2Plugin implements Plugin<Project> {
         });
         configurePropertyFileGeneration(project, manifest);
         configureExtensionGeneration(project, manifest);
+
+        project.getTasks().register("validateManifest", ValidateManifest.class, t -> {
+            t.setGroup(GROUP);
+            t.setDescription("Validate manifest.json for common errors");
+        });
     }
 
     private void configureDefaultDependencies(HybrisPluginExtension extension, Project project, Manifest manifest) {
@@ -82,8 +88,6 @@ public class CloudV2Plugin implements Plugin<Project> {
                 if (!p.artifact.isEmpty()) {
                     dependencies.add(project.getDependencies().create(p.artifact));
                 } else {
-                    System.out.println(p.artifact);
-                    System.out.println(p.version);
                     Version parseVersion = Version.parseVersion(p.version);
                     dependencies.add(project.getDependencies().create(String.format("de.hybris.platform:%s:%s@zip",
                             p.name, parseVersion.getDependencyVersion())));
@@ -101,22 +105,28 @@ public class CloudV2Plugin implements Plugin<Project> {
         if (storefrontAddons.isEmpty()) {
             return;
         }
+        for (int i = 0; i < storefrontAddons.size(); i++) {
+            Addon addonInstall = storefrontAddons.get(i);
 
-        Map<Tuple2<String, String>, Set<String>> addonsPerStorefront = new HashMap<>();
-        for (Addon c : storefrontAddons) {
-            Tuple2<String, String> templateStorefront = new Tuple2<>(c.template, c.storefront);
-            addonsPerStorefront.computeIfAbsent(templateStorefront, t -> new LinkedHashSet<>()).add(c.addon);
-        }
-        for (Map.Entry<Tuple2<String, String>, Set<String>> tuple2SetEntry : addonsPerStorefront.entrySet()) {
-            Tuple2<String, String> templateStorefront = tuple2SetEntry.getKey();
-            Set<String> addons = tuple2SetEntry.getValue();
-            TaskProvider<HybrisAntTask> install = project.getTasks().register(
-                    String.format("addonInstall_%s_%s", templateStorefront.getFirst(), templateStorefront.getSecond()),
+            List<String> storeFronts = new ArrayList<>(addonInstall.storefronts);
+            if (!addonInstall.storefront.isEmpty()) {
+                storeFronts.add(addonInstall.storefront);
+            }
+            List<String> addons = new ArrayList<>(addonInstall.addons);
+            if (!addonInstall.addon.isEmpty()) {
+                addons.add(addonInstall.addon);
+            }
+            String storefrontParameter = String.join(",", storeFronts);
+            String addonParameter = String.join(",", addons);
+            int finalI = i;
+            TaskProvider<HybrisAntTask> install = project.getTasks().register(String.format("addonInstall_%d", i),
                     HybrisAntTask.class, t -> {
+                        if (finalI > 0) {
+                            t.mustRunAfter(String.format("addonInstall_%d", (finalI - 1)));
+                        }
                         t.args("addoninstall");
-                        t.antProperty("addonnames", String.join(",", addons));
-                        t.antProperty("addonStorefront." + templateStorefront.getFirst(),
-                                templateStorefront.getSecond());
+                        t.antProperty("addonnames", addonParameter);
+                        t.antProperty("addonStorefront." + addonInstall.template, storefrontParameter);
                     });
             installManifestAddons.configure(t -> t.dependsOn(install));
         }

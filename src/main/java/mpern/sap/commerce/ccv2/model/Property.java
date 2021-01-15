@@ -3,9 +3,16 @@ package mpern.sap.commerce.ccv2.model;
 import static mpern.sap.commerce.ccv2.model.util.ParseUtils.nullToEmpty;
 import static mpern.sap.commerce.ccv2.model.util.ParseUtils.validateNullOrWhitespace;
 
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 public class Property {
+
+    public static final Set<String> ALLOWED_PERSONAS = new HashSet<>(
+            Arrays.asList("development", "staging", "production", ""));
+
     public final String key;
     public final String value;
     public final String persona;

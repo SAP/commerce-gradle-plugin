@@ -1,6 +1,6 @@
 # Plugin `sap.commerce.build.ccv2`
 
-This plugins parses Commerce Cloud v2 [`manifest.json`][manifest] file and provides it to the gradle build script.
+This plugins parses Commerce Cloud v2 [`manifest.json`][manifest] file and provides it to the Gradle build script.
 
 If you also use the `sap.commerce.build` plugin, it adds various tasks to
 your build which are configured based on `manifest.json`
@@ -63,19 +63,12 @@ If the cloud extension pack is enabled in your `manifest.json` (`useCloudExtensi
 
 The plugin defines the following tasks
 
-### `generateCloudProperties`
+### `validateManifest`
 
-Generates `*.properties` files in `CCV2.generatedConfiguration` per aspect and persona as defined in `manifest.json`.
+Validate `manifest.json` for common issues. If errors are detected, the task fails. Warnings are logged, but do not cause
+the task to fail.
 
-Filename schema: `<aspect>_<persona>.properties`.
-
-The aspect `common` is used for the properties that are defined independent of any
-aspect.
-
-### `generateCloudLocalextensions`
-
-Generates a `localextensions.xml` file in `CCV2.generatedConfiguration` based on
-the `extensions` list in the manifest.
+You can find all possible errors and warnings in [ccv2-validation.md](ccv2-validation.md)
 
 ### `installManifestAddons`
 
@@ -98,3 +91,17 @@ Runs `ant alltests` preconfigured with the values of the [`tests`][tests] object
 Runs `ant webtests` preconfigured with the values of the [`webTests`][webtests] object of the manifest
 
 [webtests]: https://help.sap.com/viewer/1be46286b36a4aa48205be5a96240672/latest/en-US/e978c15cad464c9eabb67bd868154377.html
+
+### `generateCloudProperties`
+
+Generates `*.properties` files in `CCV2.generatedConfiguration` per aspect and persona as defined in `manifest.json`.
+
+Filename schema: `<aspect>_<persona>.properties`.
+
+The aspect `common` is used for the properties that are defined independent of any
+aspect.
+
+### `generateCloudLocalextensions`
+
+Generates a `localextensions.xml` file in `CCV2.generatedConfiguration` based on
+the `extensions` list in the manifest.

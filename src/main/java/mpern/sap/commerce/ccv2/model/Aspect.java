@@ -2,13 +2,17 @@ package mpern.sap.commerce.ccv2.model;
 
 import static mpern.sap.commerce.ccv2.model.util.ParseUtils.validateNullOrWhitespace;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class Aspect {
+
+    // https://help.sap.com/viewer/1be46286b36a4aa48205be5a96240672/v2011/en-US/8f494fb9617346188ddf21a971db84fc.html
+    public static final String ADMIN_ASPECT = "admin";
+    public static final String BACKGROUND_ASPECT = "backgroundProcessing";
+    public static final Set<String> ALLOWED_ASPECTS = new HashSet<>(
+            Arrays.asList("accstorefront", "backoffice", BACKGROUND_ASPECT, ADMIN_ASPECT, "api"));
+
     public final String name;
     public final List<Property> properties;
     public final List<Webapp> webapps;

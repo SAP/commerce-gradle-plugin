@@ -1,0 +1,8 @@
+{
+  "commerceSuiteVersion": "2011",
+  "useConfig": {
+    "solr": {
+      "location": "solr"
+    }
+  }
+}

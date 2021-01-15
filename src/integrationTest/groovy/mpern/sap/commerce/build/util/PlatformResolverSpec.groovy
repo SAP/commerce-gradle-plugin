@@ -1,8 +1,10 @@
 package mpern.sap.commerce.build.util
 
+import java.nio.file.Files
 import java.nio.file.Paths
 
-import spock.lang.Ignore
+import org.junit.AssumptionViolatedException
+
 import spock.lang.Specification
 
 class PlatformResolverSpec extends Specification {
@@ -10,11 +12,14 @@ class PlatformResolverSpec extends Specification {
     PlatformResolver resolver
 
     def setup() {
-        def root = Paths.get("/path/to/commerce-gradle-plugin/manualTest")
-        resolver = new PlatformResolver(root.resolve(Paths.get("hybris", "bin", "platform")))
+        def root = Paths.get("manualTest")
+        def platformHome = root.resolve(Paths.get("hybris", "bin", "platform"))
+        if(!Files.exists(platformHome)) {
+            throw new AssumptionViolatedException("platform not available");
+        }
+        resolver = new PlatformResolver(platformHome)
     }
 
-    @Ignore
     def "load extensions correctly"() {
         when:
         def extensions = resolver.getConfiguredExtensions()

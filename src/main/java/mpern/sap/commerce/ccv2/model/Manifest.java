@@ -1,13 +1,8 @@
 package mpern.sap.commerce.ccv2.model;
 
-import static mpern.sap.commerce.ccv2.model.util.ParseUtils.emptyOrSet;
-import static mpern.sap.commerce.ccv2.model.util.ParseUtils.validateNullOrWhitespace;
+import static mpern.sap.commerce.ccv2.model.util.ParseUtils.*;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class Manifest {
@@ -16,6 +11,11 @@ public class Manifest {
     public final boolean enableImageProcessingService;
 
     public final List<ExtensionPack> extensionPacks;
+
+    public final boolean troubleshootingModeEnabled;
+    public final boolean disableImageReuse;
+
+    public final UseConfig useConfig;
 
     public final Set<String> extensions;
 
@@ -30,11 +30,15 @@ public class Manifest {
     public final TestConfiguration webTests;
 
     public Manifest(String commerceSuiteVersion, boolean useCloudExtensionPack, boolean enableImageProcessingService,
+            boolean troubleshootingModeEnabled, boolean disableImageReuse, UseConfig useConfig,
             List<ExtensionPack> extensionPacks, Set<String> extensions, List<Addon> storefrontAddons,
             List<Property> properties, List<Aspect> aspects, TestConfiguration tests, TestConfiguration webTests) {
         this.commerceSuiteVersion = commerceSuiteVersion;
         this.useCloudExtensionPack = useCloudExtensionPack;
         this.enableImageProcessingService = enableImageProcessingService;
+        this.troubleshootingModeEnabled = troubleshootingModeEnabled;
+        this.disableImageReuse = disableImageReuse;
+        this.useConfig = useConfig;
         this.extensionPacks = extensionPacks;
         this.extensions = Collections.unmodifiableSet(extensions);
         this.storefrontAddons = Collections.unmodifiableList(storefrontAddons);
@@ -47,22 +51,12 @@ public class Manifest {
     public static Manifest fromMap(Map<String, Object> jsonMap) {
         String version = validateNullOrWhitespace((String) jsonMap.get("commerceSuiteVersion"),
                 "Manifest.commerceSuiteVersion must have a value");
-        boolean useExtensionPack = false;
+
         Object rawBool = jsonMap.get("useCloudExtensionPack");
-        if (rawBool != null) {
-            if (!(rawBool instanceof Boolean)) {
-                throw new IllegalArgumentException("Manifest.useCloudExtensionPack must be a boolean value");
-            }
-            useExtensionPack = (boolean) rawBool;
-        }
-        boolean enableImageProcessingService = false;
+        boolean useExtensionPack = parseBoolean(rawBool, "useCloudExtensionPack");
+
         rawBool = jsonMap.get("enableImageProcessingService");
-        if (rawBool != null) {
-            if (!(rawBool instanceof Boolean)) {
-                throw new IllegalArgumentException("Manifest.enableImageProcessingService must be a boolean value");
-            }
-            enableImageProcessingService = (boolean) rawBool;
-        }
+        boolean enableImageProcessingService = parseBoolean(rawBool, "enableImageProcessingService");
 
         List<Map<String, Object>> raw = (List<Map<String, Object>>) jsonMap.get("extensionPacks");
         List<ExtensionPack> extensionPacks;
@@ -72,7 +66,13 @@ public class Manifest {
             extensionPacks = raw.stream().map(ExtensionPack::fromMap).collect(Collectors.toList());
         }
 
-        // TODO: check useConfig
+        rawBool = jsonMap.get("troubleshootingModeEnabled");
+        boolean troubleshootingModeEnabled = parseBoolean(rawBool, "troubleshootingModeEnabled");
+
+        rawBool = jsonMap.get("disableImageReuse");
+        boolean disableImageReuse = parseBoolean(rawBool, "disableImageReuse");
+
+        UseConfig useConfig = UseConfig.fromMap((Map<String, Object>) jsonMap.get("useConfig"));
 
         Set<String> extensions = emptyOrSet((List<String>) jsonMap.get("extensions"));
 
@@ -108,10 +108,11 @@ public class Manifest {
         TestConfiguration webTests = Optional.ofNullable(rawConfig).map(TestConfiguration::fromMap)
                 .orElse(TestConfiguration.NO_VALUE);
 
-        return new Manifest(version, useExtensionPack, enableImageProcessingService, extensionPacks, extensions, addons,
-                properties, aspects, tests, webTests);
+        return new Manifest(version, useExtensionPack, enableImageProcessingService, troubleshootingModeEnabled,
+                disableImageReuse, useConfig, extensionPacks, extensions, addons, properties, aspects, tests, webTests);
     }
 
+    // necessary to shadow groovy method getProperties
     public List<Property> getProperties() {
         return properties;
     }

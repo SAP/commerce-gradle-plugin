@@ -1,9 +1,10 @@
 package mpern.sap.commerce.build;
 
+import static mpern.sap.commerce.ccv2.CloudV2Plugin.CCV2_EXTENSION;
+
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.*;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
@@ -63,7 +64,7 @@ public class HybrisPlugin implements Plugin<Project> {
         hybrisPlatform.defaultDependencies(dependencies -> {
             boolean ccv2Plugin = false;
             try {
-                project.getExtensions().getByName("CCV2");
+                project.getExtensions().getByName(CCV2_EXTENSION);
                 ccv2Plugin = true;
             } catch (UnknownDomainObjectException e) {
                 // ignore
@@ -136,17 +137,15 @@ public class HybrisPlugin implements Plugin<Project> {
         bootstrap.dependsOn(cleanOnVersionChange, unpackPlatform, setupDBDriver, touchDbDriverLastUpdate);
 
         project.getTasks().addRule(new HybrisAntRule(project));
-
         // sensible defaults
-        Task yclean = project.getTasks().getByPath("yclean");
-        Task ybuild = project.getTasks().getByPath("ybuild");
-        Task yall = project.getTasks().getByPath("yall");
-        Task ycustomize = project.getTasks().getByPath("ycustomize");
-        Task yproduction = project.getTasks().getByPath("yproduction");
-
-        ybuild.mustRunAfter(yclean, ycustomize);
-        yall.mustRunAfter(yclean, ycustomize);
-        yproduction.mustRunAfter(ybuild, yall);
+        TaskProvider<Task> yclean = project.getTasks().named("yclean");
+        TaskProvider<Task> ybuild = project.getTasks().named("ybuild");
+        TaskProvider<Task> yall = project.getTasks().named("yall");
+        TaskProvider<Task> ycustomize = project.getTasks().named("ycustomize");
+        TaskProvider<Task> yproduction = project.getTasks().named("yproduction");
+        ybuild.configure(t -> t.mustRunAfter(yclean, ycustomize));
+        yall.configure(t -> t.mustRunAfter(yclean, ycustomize));
+        yproduction.configure(t -> t.mustRunAfter(ybuild, yall));
 
         TaskProvider<HybrisAntTask> createConfigFolder = project.getTasks().register("createDefaultConfig",
                 HybrisAntTask.class, t -> {
@@ -154,7 +153,7 @@ public class HybrisPlugin implements Plugin<Project> {
                     t.setDescription(
                             "Launches hybris build to create the hybris config folder, if no config folder is present");
                     t.mustRunAfter(bootstrap);
-
+                    t.args("createConfig");
                     t.antProperty("input.template", "develop");
                     t.onlyIf(s -> {
                         boolean configPresent = project.file("hybris/config").exists();

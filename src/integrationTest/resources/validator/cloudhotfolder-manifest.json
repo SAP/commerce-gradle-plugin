@@ -1,0 +1,14 @@
+{
+  "commerceSuiteVersion": "2011",
+  "extensions": [
+    "azurecloudhotfolder"
+  ],
+  "useConfig": {
+    "properties": [
+      {
+        "location": "background.properties",
+        "aspect": "backgroundProcessing"
+      }
+    ]
+  }
+}

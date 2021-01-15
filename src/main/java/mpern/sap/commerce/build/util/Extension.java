@@ -2,6 +2,7 @@ package mpern.sap.commerce.build.util;
 
 import java.nio.file.Path;
 import java.util.Objects;
+import java.util.StringJoiner;
 
 public class Extension {
     public final String name;
@@ -27,5 +28,11 @@ public class Extension {
     @Override
     public int hashCode() {
         return Objects.hash(name);
+    }
+
+    @Override
+    public String toString() {
+        return new StringJoiner(", ", Extension.class.getSimpleName() + "[", "]").add("name='" + name + "'")
+                .add("directory=" + directory).toString();
     }
 }
