@@ -1,6 +1,6 @@
 # Plugin `sap.commerce.build.ccv2`
 
-This plugins parses Commerce Cloud v2 [`manifest.json`][manifest] file and provides it to the gradle build script.
+This plugins parses Commerce Cloud v2 [`manifest.json`][manifest] file and provides it to the Gradle build script.
 
 If you also use the `sap.commerce.build` plugin, it adds various tasks to
 your build which are configured based on `manifest.json`
