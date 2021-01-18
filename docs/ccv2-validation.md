@@ -148,6 +148,15 @@ The Cloud Extension Pack is only available for versions 1811 to 1905.
 
 When using the Cloud Extension Pack, you cannot configure a specific patch release
 
+## <a id="e016"></a>:red_circle: E-016 Invalid media conversion configuration
+
+To use the cloud media conversion feature, you have to configure the `cloudmediaconversion` extension *and* enable the image processing
+service (`enableImageProcessingService`)
+
+### Relevant Documentation
+
+- [Enabling Media Conversion](https://help.sap.com/viewer/403d43bf9c564f5a985913d1fbfbf8d7/latest/en-US/fba094343e624aae8f041d0170046355.html)
+
 ### Relevant Documentation
 
 - [Manifest Components Reference (v1905)](https://help.sap.com/viewer/1be46286b36a4aa48205be5a96240672/v1905/en-US/3d562b85b37a460a92d32ec991459133.html)

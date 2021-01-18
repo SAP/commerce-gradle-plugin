@@ -42,6 +42,7 @@ public class ValidateManifest extends DefaultTask {
         validators.add(new UseConfigValidator(projectDir));
         ManifestExtensionsResolver resolver = new ManifestExtensionsResolver(projectDir);
         validators.add(new CloudHotfolderValidator(projectDir, resolver));
+        validators.add(new MediaConversionValidator(resolver));
         boolean deepInspection = false;
         if (Files.exists(projectDir.resolve("hybris/bin/platform"))) {
             deepInspection = true;
