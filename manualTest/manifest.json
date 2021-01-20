@@ -107,7 +107,6 @@
   "aspects": [
     {
       "name": "backoffice",
-      "properties": [],
       "webapps": [
         {
           "name": "hac",

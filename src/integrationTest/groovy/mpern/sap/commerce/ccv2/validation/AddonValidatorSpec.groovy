@@ -8,25 +8,34 @@ import mpern.sap.commerce.ccv2.validation.impl.AddonValidator
 
 class AddonValidatorSpec extends Specification {
 
-    Manifest manifest
-    AddonValidator validator
-
-    def setup() {
-        def rawManifest = new JsonSlurper().parse(this.getClass().getResource('/validator/addon-manifest.json')) as Map<String, Object>
-        manifest = Manifest.fromMap(rawManifest)
-        TestExtensionResolver resolver = new TestExtensionResolver()
+    def "addon validation checks available extensions"() {
+        given:
+        def rawManifest = new JsonSlurper().parseText('''\
+        {
+          "commerceSuiteVersion": "2005",
+          "storefrontAddons": [
+            {
+              "addon": "spartacussampledataaddon,commerceorgsamplesaddon",
+              "storefront": "yacceleratorstorefront,yb2bacceleratorstorefront",
+              "template": "yacceleratorstorefront"
+            },
+            {
+              "addons": ["smarteditaddon", "textfieldconfiguratortemplateaddon"],
+              "storefront": "yacceleratorstorefront",
+              "template": "yacceleratorstorefront"
+            }
+          ]
+        }
+        ''') as Map<String, Object>
+        def manifest = Manifest.fromMap(rawManifest)
+        def resolver = new TestExtensionResolver()
         resolver.addExtension("spartacussampledataaddon")
         resolver.addExtension("yacceleratorstorefront")
         resolver.addExtension("textfieldconfiguratortemplateaddon")
-        validator = new AddonValidator(resolver);
-    }
+        def validator = new AddonValidator(resolver);
 
-    def "addon validation checks available extensions"() {
         when:
-        List<Error> errors = validator.validate(manifest)
-        errors.forEach {
-            System.out.println(it)
-        }
+        def errors = validator.validate(manifest)
 
         then:
         errors.size() == 3

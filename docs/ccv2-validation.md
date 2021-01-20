@@ -152,6 +152,24 @@ When using the Cloud Extension Pack, you cannot configure a specific patch relea
 
 - [Manifest Components Reference (v1905)](https://help.sap.com/viewer/1be46286b36a4aa48205be5a96240672/v1905/en-US/3d562b85b37a460a92d32ec991459133.html)
 
+## <a id="e016"></a>:red_circle: E-016 Invalid media conversion configuration
+
+To use the cloud media conversion feature, you have to configure the `cloudmediaconversion` extension *and* enable the image processing
+service (`enableImageProcessingService`)
+
+### Relevant Documentation
+
+- [Enabling Media Conversion](https://help.sap.com/viewer/403d43bf9c564f5a985913d1fbfbf8d7/latest/en-US/fba094343e624aae8f041d0170046355.html)
+
+## <a id="e017"></a>:red_circle: E-017 Webroot configured in properties
+
+Do not configure `<extension>.webroot` in any properties. Only use `asepect[].webapps[].contextPath` 
+to configure and enable web extensions.
+
+### Relevant Documentation
+
+- [Manifest Components Reference](https://help.sap.com/viewer/1be46286b36a4aa48205be5a96240672/latest/en-US/3d562b85b37a460a92d32ec991459133.html)
+
 ## <a id="w001"></a>:warning: W-001 Property `<property>` is a managed property
 
 The build process preconfigures certain properties with optimal values for a high-performance cloud 

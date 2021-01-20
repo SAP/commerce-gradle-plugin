@@ -7,7 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-TBD
+### Added
+
+- Task `validateManifest` - New Validations
+
+  - Check setup of cloud media conversion
+  - Check if `<extension>.webroot` properties are used
 
 ## [3.2.0] 2021-01-15
 
