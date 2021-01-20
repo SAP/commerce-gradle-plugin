@@ -163,7 +163,7 @@ service (`enableImageProcessingService`)
 
 ## <a id="e017"></a>:red_circle: E-017 Webroot configured in properties
 
-Don't configure `<extension>.webroot` in any properties. Only use `asepect[].webapps[].contextPath` 
+Do not configure `<extension>.webroot` in any properties. Only use `asepect[].webapps[].contextPath` 
 to configure and enable web extensions.
 
 ### Relevant Documentation

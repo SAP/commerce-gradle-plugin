@@ -18,19 +18,35 @@ class CloudHotfolderValidatorSpec extends Specification {
 
     def "hotfolder validator checks backgroundProcessing properties"() {
         given:
-        def rawManifest = new JsonSlurper().parse(this.getClass().getResource('/validator/cloudhotfolder-manifest.json')) as Map<String, Object>
+        def rawManifest = new JsonSlurper().parseText('''\
+        {
+          "commerceSuiteVersion": "2011",
+          "extensions": [
+            "azurecloudhotfolder"
+          ],
+          "useConfig": {
+            "properties": [
+              {
+                "location": "background.properties",
+                "aspect": "backgroundProcessing"
+              }
+            ]
+          }
+        }
+        ''') as Map<String, Object>
         def manifest = Manifest.fromMap(rawManifest)
-        CloudHotfolderValidator validator = new CloudHotfolderValidator(testProjectDir.root.toPath(), new ManifestExtensionsResolver(testProjectDir.root.toPath()))
+        def validator = new CloudHotfolderValidator(testProjectDir.root.toPath(), new ManifestExtensionsResolver(testProjectDir.root.toPath()))
         def props = testProjectDir.newFile("background.properties")
 
         when:
-        List<Error> unconfigured = validator.validate(manifest)
+        def unconfiguredErrors = validator.validate(manifest)
 
         props.text = "cluster.node.groups=yHotfolderCandidate,integration"
-        List<Error> configured = validator.validate(manifest)
+        def configuredErrors = validator.validate(manifest)
 
         then:
-        unconfigured.size() == 1
-        configured.isEmpty()
+        unconfiguredErrors.size() == 1
+        unconfiguredErrors.any{ it.level == Level.WARNING && it.code == "W-003"}
+        configuredErrors.isEmpty()
     }
 }

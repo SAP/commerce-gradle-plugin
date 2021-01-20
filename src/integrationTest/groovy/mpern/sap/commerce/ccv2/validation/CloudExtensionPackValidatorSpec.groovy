@@ -7,20 +7,23 @@ import mpern.sap.commerce.ccv2.model.Manifest
 import mpern.sap.commerce.ccv2.validation.impl.CloudExtensionPackValidator
 
 class CloudExtensionPackValidatorSpec extends Specification {
-    Manifest manifest
-    CloudExtensionPackValidator validator
 
-    def setup() {
-        def rawManifest = new JsonSlurper().parse(this.getClass().getResource('/validator/cep-manifest.json')) as Map<String, Object>
-        manifest = Manifest.fromMap(rawManifest)
-        validator = new CloudExtensionPackValidator()
-    }
 
-    def "CEP validation"() {
+    def "CEP validation checks for patch version"() {
+        def rawManifest = new JsonSlurper().parseText('''\
+        {
+          "commerceSuiteVersion": "1905.5",
+          "useCloudExtensionPack": true
+        }
+        ''') as Map<String, Object>
+        def manifest = Manifest.fromMap(rawManifest)
+        def validator = new CloudExtensionPackValidator()
+
         when:
-        List<Error> errors = validator.validate(manifest)
+        def errors = validator.validate(manifest)
 
         then:
         errors.size() == 1
+        errors.any{ it.location == 'useCloudExtensionPack' && it.message.contains("patch") && it.message.contains(".5")}
     }
 }

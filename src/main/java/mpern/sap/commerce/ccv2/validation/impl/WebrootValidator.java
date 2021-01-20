@@ -40,7 +40,8 @@ public class WebrootValidator implements Validator {
         Map<String, Set<String>> occurences = new HashMap<>();
         for (int i = 0; i < manifest.properties.size(); i++) {
             Property p = manifest.properties.get(i);
-            checkProperty(p.key, String.format("properties[%d]", i), occurences);
+            String location = String.format("properties[%d]", i);
+            checkProperty(p.key, location, occurences);
         }
         for (int i = 0; i < manifest.useConfig.properties.size(); i++) {
             Properties properties = manifest.useConfig.properties.get(i);
@@ -50,10 +51,10 @@ public class WebrootValidator implements Validator {
                 try (InputStream stream = Files.newInputStream(result.getFirst())) {
                     java.util.Properties props = new java.util.Properties();
                     props.load(stream);
-                    int finalI = i;
-                    props.forEach((k, v) -> checkProperty((String) k,
-                            String.format("useConfig.properties[%d].location (%s)", finalI, properties.location),
-                            occurences));
+                    String location = String.format("useConfig.properties[%d].location (%s)", i, properties.location);
+                    for (Map.Entry<Object, Object> entry : props.entrySet()) {
+                        checkProperty((String) entry.getKey(), location, occurences);
+                    }
                 } catch (IOException e) {
                     // ignore
                 }
@@ -62,37 +63,29 @@ public class WebrootValidator implements Validator {
         for (Aspect aspect : manifest.aspects) {
             for (int i = 0; i < aspect.properties.size(); i++) {
                 Property p = aspect.properties.get(i);
-                checkProperty(p.key, String.format("useConfig.aspects[?name == '%s'].properties[%d]", aspect.name, i),
-                        occurences);
+                String location = String.format("aspects[?name == '%s'].properties[%d]", aspect.name, i);
+                checkProperty(p.key, location, occurences);
             }
-
         }
         if (occurences.isEmpty()) {
             return Collections.emptyList();
         } else {
-            StringBuilder message = new StringBuilder("Do not configure webroots in properties.\nFaulty properties:\n");
-            String location = null;
+            List<Error> errors = new ArrayList<>();
             for (Map.Entry<String, Set<String>> errorEntry : occurences.entrySet()) {
-                message.append("-`").append(errorEntry.getKey()).append("` @\n");
-                for (String s : errorEntry.getValue()) {
-                    if (location == null) {
-                        location = s;
-                    } else {
-                        location = "<multiple>";
-                    }
-                    message.append("    ").append(s).append("\n");
-                }
+                errors.add(new Error.Builder().setLocation(errorEntry.getKey()).setCode("E-017")
+                        .setMessage("Do not configure webroots in properties.\nFaulty properties:\n- "
+                                + String.join("\n -", errorEntry.getValue()))
+                        .createError());
             }
-            return Collections.singletonList(new Error.Builder().setLocation(location).setCode("E-017")
-                    .setMessage(message.toString()).createError());
+            return errors;
         }
     }
 
     private void checkProperty(String key, String location, Map<String, Set<String>> occurences) {
         key = key.trim();
         if (key.endsWith(".webroot")) {
-            Set<String> locations = occurences.computeIfAbsent(key, k -> new LinkedHashSet<>());
-            locations.add(location);
+            Set<String> properties = occurences.computeIfAbsent(location, k -> new LinkedHashSet<>());
+            properties.add(key);
         }
     }
 }

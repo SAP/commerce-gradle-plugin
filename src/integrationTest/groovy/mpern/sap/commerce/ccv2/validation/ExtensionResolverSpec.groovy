@@ -19,14 +19,14 @@ class ExtensionResolverSpec extends Specification {
     def "test extension resolver"() {
         given:
         if(!Files.exists(projectRoot.resolve(Paths.get("hybris/bin/platform")))) {
-            throw new AssumptionViolatedException("platform not available");
+            throw new AssumptionViolatedException("platform not available for tests");
         }
-        ManifestExtensionsResolver resolver = new ManifestExtensionsResolver(projectRoot)
+        def resolver = new ManifestExtensionsResolver(projectRoot)
         def rawManifest = new JsonSlurper().parse(projectRoot.resolve("manifest.json").toFile(), "UTF-8") as Map<String, Object>
         def manifest = Manifest.fromMap(rawManifest)
 
         when:
-        ExtensionsResolver.Result result = resolver.determineEffectiveExtensions(manifest)
+        def result = resolver.determineEffectiveExtensions(manifest)
 
         then:
         !result.extensions.isEmpty()
