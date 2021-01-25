@@ -1,6 +1,6 @@
 # FAQ
 
-## How do I automate downloads from launchpad.support.sap.com?
+## <a id="downloadPlatform"></a>How do I automate downloads from launchpad.support.sap.com?
 
 Using some revere engineering you can easily configure e.g. a Gradle download task ([Github][dlgh], [Gradle plugin][dlplug])
 to download the SAP Commerce artifacts for you.
