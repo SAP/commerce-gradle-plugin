@@ -44,6 +44,7 @@ public class ValidateManifest extends DefaultTask {
         validators.add(new CloudHotfolderValidator(projectDir, resolver));
         validators.add(new MediaConversionValidator(resolver));
         validators.add(new WebrootValidator(projectDir));
+        validators.add(new SolrVersionValidator());
         boolean deepInspection = false;
         if (Files.exists(projectDir.resolve("hybris/bin/platform"))) {
             deepInspection = true;

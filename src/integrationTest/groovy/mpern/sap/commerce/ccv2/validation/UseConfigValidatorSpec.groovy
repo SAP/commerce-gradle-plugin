@@ -211,17 +211,30 @@ class UseConfigValidatorSpec extends Specification {
           }
         }
         ''') as Map<String, Object>
-        Manifest manifest = Manifest.fromMap(rawManifest)
+        Manifest manifestWithoutVersion = Manifest.fromMap(rawManifest)
         testProjectDir.newFolder("solr")
+        rawManifest = new JsonSlurper().parseText('''
+        {
+          "commerceSuiteVersion": "2011",
+          "solrVersion": "8.6",
+          "useConfig": {
+            "solr": {
+              "location": "solr"
+            }
+          }
+        }
+        ''') as Map<String, Object>
+        Manifest manifestWithVersion = Manifest.fromMap(rawManifest)
 
         when:
-        def missingFolder = validator.validate(manifest)
+        def missingFolder = validator.validate(manifestWithoutVersion)
         testProjectDir.newFolder("solr", "server", "solr", "configsets", "default", "conf")
-        def folderExists = validator.validate(manifest)
+        def folderExists = validator.validate(manifestWithVersion)
 
         then:
-        missingFolder.size() == 1
+        missingFolder.size() == 2
         missingFolder.any{ it.location == "useConfig.solr.location" && it.message.contains("server/solr/configsets/default/conf")}
+        missingFolder.any{ it.location == "solrVersion" && it.level == Level.WARNING}
         folderExists.isEmpty()
     }
 }

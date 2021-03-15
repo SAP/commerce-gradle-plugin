@@ -146,6 +146,11 @@ public class UseConfigValidator implements Validator {
                             "Location `%s` does not contain the required folder structure `server/solr/configsets/default/conf`",
                             solrCustom).setCode("E-013").createError());
                 }
+                if (manifest.solrVersion.isEmpty()) {
+                    errors.add(new Error.Builder().setLocation("solrVersion").setLevel(Level.WARNING).setMessage(
+                            "Solr customization without pinned Solr version.\nThis may lead to unexpected build errors if a patch releases changes the Solr version.")
+                            .setCode("W-004").createError());
+                }
             }
         }
         return errors;

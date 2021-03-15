@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 
 public class Manifest {
     public final String commerceSuiteVersion;
+    public final String solrVersion;
     public final boolean useCloudExtensionPack;
     public final boolean enableImageProcessingService;
 
@@ -29,11 +30,13 @@ public class Manifest {
 
     public final TestConfiguration webTests;
 
-    public Manifest(String commerceSuiteVersion, boolean useCloudExtensionPack, boolean enableImageProcessingService,
-            boolean troubleshootingModeEnabled, boolean disableImageReuse, UseConfig useConfig,
-            List<ExtensionPack> extensionPacks, Set<String> extensions, List<Addon> storefrontAddons,
-            List<Property> properties, List<Aspect> aspects, TestConfiguration tests, TestConfiguration webTests) {
+    public Manifest(String commerceSuiteVersion, String solrVersion, boolean useCloudExtensionPack,
+            boolean enableImageProcessingService, boolean troubleshootingModeEnabled, boolean disableImageReuse,
+            UseConfig useConfig, List<ExtensionPack> extensionPacks, Set<String> extensions,
+            List<Addon> storefrontAddons, List<Property> properties, List<Aspect> aspects, TestConfiguration tests,
+            TestConfiguration webTests) {
         this.commerceSuiteVersion = commerceSuiteVersion;
+        this.solrVersion = solrVersion;
         this.useCloudExtensionPack = useCloudExtensionPack;
         this.enableImageProcessingService = enableImageProcessingService;
         this.troubleshootingModeEnabled = troubleshootingModeEnabled;
@@ -51,6 +54,11 @@ public class Manifest {
     public static Manifest fromMap(Map<String, Object> jsonMap) {
         String version = validateNullOrWhitespace((String) jsonMap.get("commerceSuiteVersion"),
                 "Manifest.commerceSuiteVersion must have a value");
+
+        String solrVersion = (String) jsonMap.get("solrVersion");
+        if (solrVersion == null) {
+            solrVersion = "";
+        }
 
         Object rawBool = jsonMap.get("useCloudExtensionPack");
         boolean useExtensionPack = parseBoolean(rawBool, "useCloudExtensionPack");
@@ -108,8 +116,9 @@ public class Manifest {
         TestConfiguration webTests = Optional.ofNullable(rawConfig).map(TestConfiguration::fromMap)
                 .orElse(TestConfiguration.NO_VALUE);
 
-        return new Manifest(version, useExtensionPack, enableImageProcessingService, troubleshootingModeEnabled,
-                disableImageReuse, useConfig, extensionPacks, extensions, addons, properties, aspects, tests, webTests);
+        return new Manifest(version, solrVersion, useExtensionPack, enableImageProcessingService,
+                troubleshootingModeEnabled, disableImageReuse, useConfig, extensionPacks, extensions, addons,
+                properties, aspects, tests, webTests);
     }
 
     // necessary to shadow groovy method getProperties

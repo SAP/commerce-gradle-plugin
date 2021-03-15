@@ -170,6 +170,14 @@ to configure and enable web extensions.
 
 - [Manifest Components Reference](https://help.sap.com/viewer/1be46286b36a4aa48205be5a96240672/latest/en-US/3d562b85b37a460a92d32ec991459133.html)
 
+## <a id="e018"></a>:red_circle: E-018 Invalid Solr version
+
+The Solr version in the manifest must be two numbers separated by a dot (`<major>.<minor>`).
+
+### Relevant Documentation
+
+- [Manifest Components Reference](https://help.sap.com/viewer/1be46286b36a4aa48205be5a96240672/latest/en-US/3d562b85b37a460a92d32ec991459133.html)
+
 ## <a id="w001"></a>:warning: W-001 Property `<property>` is a managed property
 
 The build process preconfigures certain properties with optimal values for a high-performance cloud 
@@ -199,6 +207,17 @@ If you use the Cloud Hot Fodlers feature of the Commerce cloud, you also have to
 ### Relevant Documentation
 
 - [Enabling and Configuring Hot Folders](https://help.sap.com/viewer/403d43bf9c564f5a985913d1fbfbf8d7/latest/en-US/6e23a26fe9c8472380f9101e8a9fe1c3.html)
+
+## <a id="w004"></a>:warning: W-004 Solr customization without pinned Solr version
+
+If you customize your Solr configuration, it is recommended that you pin the Solr version in your `manifest.json`.
+
+A SAP Commerce patch release may change the default Solr version, leading to deployment errors if your customization is not
+compatible with the new Solr version.
+
+### Relevant Documentation
+
+- [Solr Server Version Selection](https://help.sap.com/viewer/1be46286b36a4aa48205be5a96240672/latest/en-US/b35bc14a62aa4950bdba451a5f40fc61.html#loiod7294323e5e542b7b37f48dd83565321)
 
 [aspects]: https://help.sap.com/viewer/1be46286b36a4aa48205be5a96240672/latest/en-US/8f494fb9617346188ddf21a971db84fc.htm
 [reuse]: https://help.sap.com/viewer/1be46286b36a4aa48205be5a96240672/latest/en-US/2311d89eef9344fc81ef168ac9668307.html
