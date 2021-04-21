@@ -36,6 +36,7 @@ public class ValidateManifest extends DefaultTask {
         Path projectDir = getProject().getProjectDir().toPath();
 
         List<Validator> validators = new ArrayList<>();
+
         validators.add(new AspectValidator());
         validators.add(new CloudExtensionPackValidator());
         validators.add(new PropertyValidator());
@@ -45,6 +46,8 @@ public class ValidateManifest extends DefaultTask {
         validators.add(new MediaConversionValidator(resolver));
         validators.add(new WebrootValidator(projectDir));
         validators.add(new SolrVersionValidator());
+        validators.add(new IntExtPackValidator());
+
         boolean deepInspection = false;
         if (Files.exists(projectDir.resolve("hybris/bin/platform"))) {
             deepInspection = true;
@@ -61,7 +64,8 @@ public class ValidateManifest extends DefaultTask {
         errors.sort(Comparator.comparing(Error::getLevel).thenComparing(Error::getLocation));
 
         StyledTextOutput statusOut = styledTextOutputFactory.create(ValidateManifest.class);
-        statusOut.withStyle(StyledTextOutput.Style.Header).println("--- Manifest Validation Results ---");
+        statusOut.withStyle(StyledTextOutput.Style.Header)
+                .println("--------------------- Manifest Validation Results ----------------------\n");
         if (errors.isEmpty()) {
             statusOut.withStyle(StyledTextOutput.Style.Success).println("No issues detected");
         }
@@ -83,7 +87,8 @@ public class ValidateManifest extends DefaultTask {
                 break;
             }
         }
-        statusOut.withStyle(StyledTextOutput.Style.Header).println("-----------------------------------");
+        statusOut.withStyle(StyledTextOutput.Style.Header)
+                .println("------------------------------------------------------------------------");
         if (!deepInspection) {
             statusOut.withStyle(StyledTextOutput.Style.Info)
                     .println("hybris/bin/platform not available. Cannot perform deep inspection.");

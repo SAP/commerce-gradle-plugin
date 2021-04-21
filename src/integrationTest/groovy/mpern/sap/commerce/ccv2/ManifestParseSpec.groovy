@@ -242,4 +242,81 @@ class ManifestParseSpec extends Specification {
             }
         }
     }
+
+    def "invalid extensions packs fail to be parsed"(String str) {
+        given:
+        def rawManifest = new JsonSlurper().parseText(str) as Map<String, Object>
+
+        when:
+        Manifest m = Manifest.fromMap(rawManifest)
+
+        then:
+        thrown(IllegalArgumentException)
+
+        where:
+        str << [
+            """
+            {
+              "commerceSuiteVersion": "2011",
+              "extensionPacks" : [
+                {
+                  "name" : "hybris-commerce-integrations"
+                }
+              ]
+            }
+            """,
+            """
+            {
+              "commerceSuiteVersion": "2011",
+              "extensionPacks" : [
+                {
+                  "version" : "2102"
+                }
+              ]
+            }
+            """,
+            """
+            {
+              "commerceSuiteVersion": "2011",
+              "extensionPacks" : [
+                {
+                  "name" : "hybris-commerce-integrations",
+                  "version" : "wrong"
+                }
+              ]
+            }
+            """,
+            """
+            {
+              "commerceSuiteVersion": "2011",
+              "extensionPacks" : [
+                {
+                  "name" : "foo",
+                  "version" : "2011.x"
+                }
+              ]
+            }
+            """,
+            """
+            {
+              "commerceSuiteVersion": "2011",
+              "extensionPacks" : [
+                {
+                  "artifact": "de.hybris.platform.suite:fsa-suite"
+                }
+              ]
+            }
+            """,
+            """
+            {
+              "commerceSuiteVersion": "2011",
+              "extensionPacks" : [
+                {
+                  "artifact": "de.hybris.platform.suite:fsa-suite:xxx"
+                }
+              ]
+            }
+            """
+        ]
+    }
 }

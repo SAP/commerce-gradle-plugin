@@ -1,8 +1,35 @@
 # CCv2 Validation Errors
 
-Here you can detail information for the errors and warnings reported by `validateManifest`
+Here you can find additional information for the errors and warnings reported by `validateManifest`
 
-## <a id="e001"></a>:red_circle: E-001 `<extension>` not available
+<!-- toc levels=2 bold=false -->
+- [:red_circle: E-001 >extension< not available](#red_circle-e-001-extension-not-available)
+- [:red_circle: E-002 Aspect >aspect< not supported](#red_circle-e-002-aspect-aspect-not-supported)
+- [:red_circle: E-003 Duplicate aspect configuration](#red_circle-e-003-duplicate-aspect-configuration)
+- [:red_circle: E-004 Duplicate extension configuration](#red_circle-e-004-duplicate-extension-configuration)
+- [:red_circle: E-005 Duplicate context path/webroot configuration](#red_circle-e-005-duplicate-context-pathwebroot-configuration)
+- [:red_circle: E-006 contextPath <path> must start with /](#red_circle-e-006-contextpath-path-must-start-with-)
+- [:red_circle: E-007 Webapps not allowed for aspect admin](#red_circle-e-007-webapps-not-allowed-for-aspect-admin)
+- [:red_circle: E-008 Persona >persona< not supported](#red_circle-e-008-persona-persona-not-supported)
+- [:red_circle: E-009 Location >path< is invalid/absolute/...](#red_circle-e-009-location-path-is-invalidabsolute)
+- [:red_circle: E-010 >file< is not a valid Java properties file](#red_circle-e-010-file-is-not-a-valid-java-properties-file)
+- [:red_circle: E-011 >file< is not a valid extensions.xml file](#red_circle-e-011-file-is-not-a-valid-extensionsxml-file)
+- [:red_circle: E-012 extension.dir is not supported](#red_circle-e-012-extensiondir-is-not-supported)
+- [:red_circle: E-013 Solr customization folder structure](#red_circle-e-013-solr-customization-folder-structure)
+- [:red_circle: E-014 Version >version< does not support Cloud Extension Pack](#red_circle-e-014-version-version-does-not-support-cloud-extension-pack)
+- [:red_circle: E-015 Patch release not allowed with Cloud Extension Pack](#red_circle-e-015-patch-release-not-allowed-with-cloud-extension-pack)
+- [:red_circle: E-016 Invalid media conversion configuration](#red_circle-e-016-invalid-media-conversion-configuration)
+- [:red_circle: E-017 Webroot configured in properties](#red_circle-e-017-webroot-configured-in-properties)
+- [:red_circle: E-018 Invalid Solr Version](#red_circle-e-018-invalid-solr-version)
+- [:red_circle: E-019 Invalid Integration Extension Pack Version](#red_circle-e-019-invalid-integration-extension-pack-version)
+- [:warning: W-001 Property >property< is a managed property](#warning-w-001-property-property-is-a-managed-property)
+- [:warning: W-002 Property file encoding](#warning-w-002-property-file-encoding)
+- [:warning: W-003 Cloud Hot Folder without configuration for processing nodes](#warning-w-003-cloud-hot-folder-without-configuration-for-processing-nodes)
+- [:warning: W-004 Solr customization without pinned Solr version](#warning-w-004-solr-customization-without-pinned-solr-version)
+<!-- /toc -->
+
+
+## <a id="e001"></a>:red_circle: E-001 `>extension<` not available
 
 All extensions (remember, addons are also extensions) referenced in the `manifest.json` 
 must be part of the extensions loaded by the platform during build or server startup.
@@ -10,9 +37,10 @@ must be part of the extensions loaded by the platform during build or server sta
 The error indicates that the extension is not loaded by the platform.
 
 - Double-check the name of the extension/addon
-- Make sure that the extension is enabled in `manifest.json` using the `extensions` array 
-  or in the file referenced via `useConfig.extensions.location`
-- Or add it as a dependency to another extensions that is already configured
+- Make sure that the extension is enabled in `manifest.json`
+  - Is it configured in extensions.xml file referenced via `useConfig.extensions.location`?
+  - Is it listed in the `extensions` array?
+- Or add the extensions as a dependency to another extensions that is already configured
 
 ### Related Documentation
 
@@ -20,7 +48,7 @@ The error indicates that the extension is not loaded by the platform.
 - [SAP Commerce Cloud Configuration Reuse][reuse]
 - [Extension Dependencies](https://help.sap.com/viewer/20125f0eca6340dba918bda360e3cdfa/latest/en-US/8bbf3a9d86691014aa4189bf3ac0eb88.html)
 
-## <a id="e002"></a>:red_circle: E-002 Aspect `<aspect>` not supported
+## <a id="e002"></a>:red_circle: E-002 Aspect `>aspect<` not supported
 
 Only a predefined set of aspects is supported in CCv2.
 
@@ -62,7 +90,7 @@ Configuring webapps for it is not supported and may break the deployment process
 
 - [Aspects][aspects]
 
-## <a id="e008"></a>:red_circle: E-008 Persona `<persona>` not supported
+## <a id="e008"></a>:red_circle: E-008 Persona `>persona<` not supported
 
 Only a predefined set of personas (= environment types) is supported in CCv2
 
@@ -71,10 +99,11 @@ Only a predefined set of personas (= environment types) is supported in CCv2
 - [Properties](https://help.sap.com/viewer/1be46286b36a4aa48205be5a96240672/latest/en-US/d6794b766aea4783b829988dc587f978.html)
 - [Detailed Information](https://help.sap.com/viewer/1be46286b36a4aa48205be5a96240672/latest/en-US/e6e07ca6171a4081b733c46fce22e8ee.html)
 
-## <a id="e009"></a>:red_circle: E-009 Location `<path>` is invalid/absolute/...
+## <a id="e009"></a>:red_circle: E-009 Location `>path<` is invalid/absolute/...
 
 Files and folders referenced in `manifest.json` must be:
 
+- Not empty (you have to define the `location` attribute!)
 - Unix-style paths (i.e. use `/` as separator)
 - relative to the folder that contains `manifest.json`
 - in US-ASCII (using special characters may lead to undefined behaviour)
@@ -97,7 +126,7 @@ Good:
 - [General Rules for Paths Declared in a Manifest](https://help.sap.com/viewer/1be46286b36a4aa48205be5a96240672/latest/en-US/6b40de5762694346bf3b1e9494b2256b.html)
 - [Location of Resources in the Code Repository](https://help.sap.com/viewer/1be46286b36a4aa48205be5a96240672/latest/en-US/611a2ffa372348c1a39447ad927b2035.html)
 
-## <a id="e010"></a>:red_circle: E-010 `<file>` is not a valid Java properties file
+## <a id="e010"></a>:red_circle: E-010 `>file<` is not a valid Java properties file
 
 Files referenced in the `useConfig.properties` array of `manifest.json` must be readable as Java
 properties files.
@@ -107,7 +136,7 @@ properties files.
 - [SAP Commerce Cloud Configuration Reuse][reuse]
 - [java.util.Properties](https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Properties.html)
 
-## <a id="011"></a>:red_circle: E-011 `<file>` is not a valid extensions.xml file
+## <a id="011"></a>:red_circle: E-011 `>file<` is not a valid extensions.xml file
 
 The file referenced in `useConfig.extensions.locations` must be a valid extensions.xml file.
 
@@ -136,7 +165,7 @@ If the folder structure is incorrect, the customization simply doesn't work.
 
 - [Customizing Solr](https://help.sap.com/viewer/b2f400d4c0414461a4bb7e115dccd779/latest/en-US/f7251d5a1d6848489b1ce7ba46300fe6.html)
 
-## <a id="e014"></a>:red_circle: E-014 Version `<version>` does not support Cloud Extension Pack
+## <a id="e014"></a>:red_circle: E-014 Version `>version<` does not support Cloud Extension Pack
 
 The Cloud Extension Pack is only available for versions 1811 to 1905.
 
@@ -170,7 +199,7 @@ to configure and enable web extensions.
 
 - [Manifest Components Reference](https://help.sap.com/viewer/1be46286b36a4aa48205be5a96240672/latest/en-US/3d562b85b37a460a92d32ec991459133.html)
 
-## <a id="e018"></a>:red_circle: E-018 Invalid Solr version
+## <a id="e018"></a>:red_circle: E-018 Invalid Solr Version
 
 The Solr version in the manifest must be two numbers separated by a dot (`<major>.<minor>`).
 
@@ -178,7 +207,20 @@ The Solr version in the manifest must be two numbers separated by a dot (`<major
 
 - [Manifest Components Reference](https://help.sap.com/viewer/1be46286b36a4aa48205be5a96240672/latest/en-US/3d562b85b37a460a92d32ec991459133.html)
 
-## <a id="w001"></a>:warning: W-001 Property `<property>` is a managed property
+## <a id="e019"></a>:red_circle: E-019 Invalid Integration Extension Pack Version
+
+The Integration Extension Pack must be compatible with SAP Commerce and its version must be fully 
+qualified, i.e. include the patch number.
+
+:x: `2102` - missing patch\
+:white_check_mark: `2102.0`
+
+### Relevant Documentation
+
+- [Integrations Compatibility Matrix](https://help.sap.com/viewer/bad9b0b66bac476f8a4a5c4a08e4ab6b/LATEST/en-US/f7e859a4b880476aa37e376b5423188c.html)
+
+
+## <a id="w001"></a>:warning: W-001 Property `>property<` is a managed property
 
 The build process preconfigures certain properties with optimal values for a high-performance cloud 
 environments.

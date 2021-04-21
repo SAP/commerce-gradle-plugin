@@ -44,6 +44,10 @@ class UseConfigValidatorSpec extends Specification {
               },
               {
                 "location": "hybriß/cönfig/environments/common.properties"
+              },
+              {
+                "key": "invalid",
+                "value": "entry"
               }
             ]
           }
@@ -56,12 +60,13 @@ class UseConfigValidatorSpec extends Specification {
         def errors = validator.validate(manifest)
 
         then:
-        errors.size() == 5
+        errors.size() == 6
         errors.any{ it.location == "useConfig.properties[0]" && it.message.contains("absolute") }
         errors.any{ it.location == "useConfig.properties[1]" && it.message.contains("relative") }
         errors.any{ it.location == "useConfig.properties[2]" && it.message.contains("relative") }
         errors.any{ it.location == "useConfig.properties[3]" && it.message.contains("not found") }
         errors.any{ it.location == "useConfig.properties[4]" && it.message.contains("invalid") }
+        errors.any{ it.location == "useConfig.properties[5]" && it.message.contains("invalid") }
     }
 
     def "localextensions.xml must be a valid localextensions.xml file"() {

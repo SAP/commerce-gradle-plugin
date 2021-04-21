@@ -7,7 +7,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-> TBD
+TBD
+
+## [3.4.0] 2021-04-21
+
+### Added
+
+- Task `validateManifest` - Validate Integration Extension Pack\
+  Ensure that the correct Integration Extension Pack is used.
+
+### Changed
+
+- `manifest.json` - Stricter validation for `extensionPacks`. Invalid entries now cause the parser to fail.
+
+### Fixed
+
+- Task `unpackPlatform` could fail in case of duplicate files. Now Gradle will emit a warning and overwrite the file.
 
 ## [3.3.0] 2021-01-20
 
@@ -15,7 +30,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Task `validateManifest` - New Validations
 
-  - Check if of cloud media conversion is correct
+  - Check if of cloud media conversion is correctly configured
   - Fail if `<extension>.webroot` properties are used
 
 ## [3.2.0] 2021-01-15
@@ -270,7 +285,8 @@ Shout out to [@corneleberle] for providing the fix.
 
 :tada: Initial release :tada:
 
-[Unreleased]: https://github.com/SAP/commerce-gradle-plugin/compare/v3.3.0...HEAD
+[Unreleased]: https://github.com/SAP/commerce-gradle-plugin/compare/v3.4.0...HEAD
+[3.4.0]: https://github.com/SAP/commerce-gradle-plugin/compare/v3.3.0...v3.4.0
 [3.3.0]: https://github.com/SAP/commerce-gradle-plugin/compare/v3.2.0...v3.3.0
 [3.2.0]: https://github.com/SAP/commerce-gradle-plugin/compare/v3.1.0...v3.2.0
 [3.1.0]: https://github.com/SAP/commerce-gradle-plugin/compare/v3.0.0...v3.1.0

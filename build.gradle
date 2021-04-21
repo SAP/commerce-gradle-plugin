@@ -8,25 +8,22 @@ buildscript {
 }
 
 plugins {
-    id 'com.gradle.plugin-publish' version '0.12.0'
-    id 'pl.allegro.tech.build.axion-release' version '1.12.1'
+    id 'com.gradle.plugin-publish' version '0.14.0'
+    id 'pl.allegro.tech.build.axion-release' version '1.13.1'
     id 'java-gradle-plugin'
     id 'groovy'
-    id 'com.diffplug.spotless' version '5.9.0'
-    id 'com.github.ben-manes.versions' version '0.36.0'
+    id 'com.diffplug.spotless' version '5.11.1'
+    id 'com.github.ben-manes.versions' version '0.38.0'
+    id "com.github.blueboxware.tocme" version "1.2"
 }
 
 scmVersion {
-    tag {
-        prefix = 'v'
-        versionSeparator = ''
-    }
     hooks {
         pre 'fileUpdate', [
             file: 'README.md',
-            pattern: {v, c -> /SAP Commerce Gradle Plugins $v/},
+            pattern: {v, c -> /$v/},
             replacement: {v, c ->
-                "SAP Commerce Gradle Plugins $v"}
+                "$v"}
         ]
         pre 'commit'
     }
@@ -37,6 +34,17 @@ scmVersion {
         localOnly = true
     }
     ignoreUncommittedChanges = false
+}
+
+tocme {
+    doc 'docs/ccv2-validation.md'
+}
+
+tasks.named('assemble') {
+    dependsOn('insertTocs')
+}
+tasks.named('checkTocs') {
+    mustRunAfter('insertTocs')
 }
 
 spotless {

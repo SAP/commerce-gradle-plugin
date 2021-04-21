@@ -19,7 +19,7 @@ public class CloudExtensionPackValidator implements Validator {
                         .setMessage("Version `%s` does not support Cloud Extension Pack", v).setCode("E-014")
                         .createError());
             }
-            if (v.getPatch() != Integer.MAX_VALUE) {
+            if (v.getPatch() != Version.UNDEFINED_PART) {
                 errors.add(new Error.Builder().setLocation("useCloudExtensionPack").setMessage(
                         "Configuring a specific patch release (`.%d`) is not allowed when using Cloud Extension Pack",
                         v.getPatch()).setCode("E-015").createError());

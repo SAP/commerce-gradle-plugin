@@ -2,62 +2,66 @@
 
 This plugins parses Commerce Cloud v2 [`manifest.json`][manifest] file and provides it to the Gradle build script.
 
-If you also use the `sap.commerce.build` plugin, it adds various tasks to
-your build which are configured based on `manifest.json`
+If you also use the `sap.commerce.build` plugin, it preconfigures various tasks based on `manifest.json`
 
 [manifest]: https://help.sap.com/viewer/1be46286b36a4aa48205be5a96240672/latest/en-US/2be55790d99e4a1dad4caa7a1fc1738f.html
 
-## Configuration 
- 
-The following example shows the full DSL (Domain Specific Language) with all default options and the dependencies the 
+## Configuration
+
+The following example shows the full DSL (Domain Specific Language) with all default options and the dependencies the
 plugin pre-configures.
 
 ```groovy
 CCV2 {
-    //target folder for the generate* tasks (details see below)
+    //target folder for the `generate*` tasks (details see below)
     generatedConfiguration = file('generated-configuration')
-    
-    //allows you a read-only access to the parsed manifest in your build script
-    manifest = <parsed manifest.json>
+
+    //Use this property to access the manifest.json in your Gradle build script
+    manifest = < parsed manifest.json >
 }
 
 ```
 
-If you also use `sap.commerce.build` in your build, the `hybris.version` is
-preconfigured with `commerceSuiteVersion` of the manifest.
+If you also use `sap.commerce.build` in your build, the `hybris.version` is preconfigured with `commerceSuiteVersion` of
+the manifest.
 
 ### `extenionPacks` Support
 
-All artifacts configured as additional `extensionPacks` in your `manifest.json` will also be unpacked into the root of your repository during [`bootstrapPlatform`][bootstrap].
-This allows you e.g. to use the "Integration Extension Pack" locally.
+All artifacts configured as additional `extensionPacks` in your `manifest.json` will also be unpacked into the root of
+your repository during [`bootstrapPlatform`][bootstrap]. This allows you to easily bootstrap e.g. the "Integration
+Extension Pack" locally.
 
 See also:
 
-- ["Deploying the Integrations Pack on SAP Commerce Cloud"][pack]
-- ["Extension Packs"][packs]
+- [Deploying the Integrations Pack on SAP Commerce Cloud][pack]
+- [Extension Packs][packs]
 
 **How are `extensionPacks` resolved as Maven artifacts?**
 
-- `name` / `version` :\
-    `de.hybris.platform:${name}:${version}@zip`
-- `artifact`:\
-    `${artifact}` (as is, without any changes)\
-    If `artifact` is configured, `name` and `version` are ignored (as specified in the docs)
+- If `name` / `version` is supplied:\
+  `de.hybris.platform:${name}:${version}@zip`
+- If `artifact` is supplied:\
+  `${artifact}` (as is, without any changes)\
+  (If `artifact` is configured, `name` and `version` are ignored, as specified in the docs)
 
 [bootstrap]: /docs/Plugin-sap.commerce.build.md#bootstrapplatform
+
 [pack]: https://help.sap.com/viewer/2f43049ad8e443249e1981575adddb5d/LATEST/en-US/19bacaecbdd34cc8bd58bdd8daf428c5.html
+
 [packs]: https://help.sap.com/viewer/1be46286b36a4aa48205be5a96240672/LATEST/en-US/ad98c976ab3d433e935b4b5c89303dd5.html
 
 ### `useCloudExtensionPack` Support
 
-> The Cloud Extension Pack is only available for SAP Commerce 1811 and 1905.
-> Starting with 2005 it is replaced by the "Integration Extension Pack" (see above)
+> The Cloud Extension Pack is only available for SAP Commerce 1811 and 1905.\
+> Starting with 2005, it is replaced by the "Integration Extension Pack" (see above)
 
-If the cloud extension pack is enabled in your `manifest.json` (`useCloudExtensionPack: true`), the `bootstrapPlatform` task will automatically:
+If the cloud extension pack is enabled in your `manifest.json` (`useCloudExtensionPack: true`), the `bootstrapPlatform`
+task will automatically:
 
-- Download and unpack the extension pack (artifact coordinates: `de.hybris.platform:hybris-cloud-extension-pack:<commerce-version-without-patch>.+`) into `cloud-extension-pack`
+- Download and unpack the extension pack (artifact
+  coordinates: `de.hybris.platform:hybris-cloud-extension-pack:<commerce-version-without-patch>.+`)
+  into `cloud-extension-pack`
 - Patch `localextensions.xml` to load the extensions from the cloud extension pack, if necessary
-
 
 ## Tasks
 
@@ -65,8 +69,8 @@ The plugin defines the following tasks
 
 ### `validateManifest`
 
-Validate `manifest.json` for common issues. If errors are detected, the task fails. Warnings are logged, but do not cause
-the task to fail.
+Validate `manifest.json` for common issues. If errors are detected, the task fails. Warnings are logged, but do not
+cause the task to fail.
 
 You can find all possible errors and warnings in [ccv2-validation.md](ccv2-validation.md)
 
@@ -94,14 +98,14 @@ Runs `ant webtests` preconfigured with the values of the [`webTests`][webtests] 
 
 ### `generateCloudProperties`
 
-Generates `*.properties` files in `CCV2.generatedConfiguration` per aspect and persona as defined in `manifest.json`.
+Generates `*.properties` files (into the folder configured by `CCV2.generatedConfiguration`) per aspect and persona as
+defined in `manifest.json`.
 
 Filename schema: `<aspect>_<persona>.properties`.
 
-The aspect `common` is used for the properties that are defined independent of any
-aspect.
+The aspect `common` is used for the properties that are shared between all aspects.
 
 ### `generateCloudLocalextensions`
 
-Generates a `localextensions.xml` file in `CCV2.generatedConfiguration` based on
+Generates a `localextensions.xml` file (into the folder configured by `CCV2.generatedConfiguration`) based on
 the `extensions` list in the manifest.

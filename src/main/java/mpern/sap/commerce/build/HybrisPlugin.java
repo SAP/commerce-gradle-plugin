@@ -5,8 +5,9 @@ import static mpern.sap.commerce.ccv2.CloudV2Plugin.CCV2_EXTENSION;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.*;
+import java.nio.file.attribute.FileTime;
+import java.time.Instant;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -17,8 +18,8 @@ import org.gradle.api.Task;
 import org.gradle.api.UnknownDomainObjectException;
 import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.file.ConfigurableFileTree;
+import org.gradle.api.file.DuplicatesStrategy;
 import org.gradle.api.logging.Logger;
-import org.gradle.api.tasks.Copy;
 import org.gradle.api.tasks.TaskExecutionException;
 import org.gradle.api.tasks.TaskProvider;
 
@@ -106,28 +107,34 @@ public class HybrisPlugin implements Plugin<Project> {
 
         project.afterEvaluate(p -> unpackPlatform.get().doLast(t -> project.copy(c -> {
             c.from(project.provider(
-                    () -> hybrisPlatform.getFiles().stream().map(project::zipTree).collect(Collectors.toSet())));
+                    () -> hybrisPlatform.getFiles().stream().map(project::zipTree).collect(Collectors.toList())));
             c.into(t.getProject().getProjectDir());
             c.include(extension.getBootstrapInclude().get());
             c.exclude(extension.getBootstrapExclude().get());
+            c.setDuplicatesStrategy(DuplicatesStrategy.WARN);
         })));
 
-        TaskProvider<Copy> setupDBDriver = project.getTasks().register("setupDbDriver", Copy.class, t -> {
-            File driverDir = t.getProject().file("hybris/bin/platform/lib/dbdriver");
-            t.from(dbDrivers);
-            t.into(driverDir);
+        TaskProvider<Task> setupDBDriver = project.getTasks().register("setupDbDriver", t -> {
             t.mustRunAfter(unpackPlatform);
+            t.doLast(l -> project.copy(c -> {
+                File driverDir = t.getProject().file("hybris/bin/platform/lib/dbdriver");
+                c.from(dbDrivers);
+                c.into(driverDir);
+                c.setDuplicatesStrategy(DuplicatesStrategy.WARN);
+            }));
         });
 
         TaskProvider<Task> touchDbDriverLastUpdate = project.getTasks().register("touchLastUpdate", t -> {
             t.mustRunAfter(unpackPlatform, setupDBDriver);
             t.doLast(a -> {
-                File driverDir = a.getProject().file("hybris/bin/platform/lib/dbdriver");
-                File lastUpdate = new File(driverDir, ".lastupdate");
+                Path driverDir = a.getProject().file("hybris/bin/platform/lib/dbdriver").toPath();
+                Path lastUpdate = driverDir.resolve(".lastupdate");
                 try {
-                    driverDir.mkdirs();
-                    lastUpdate.createNewFile();
-                    lastUpdate.setLastModified(new Date().getTime());
+                    Files.createDirectories(driverDir);
+                    if (!Files.exists(lastUpdate)) {
+                        Files.createFile(lastUpdate);
+                    }
+                    Files.setLastModifiedTime(lastUpdate, FileTime.from(Instant.now()));
                 } catch (IOException e) {
                     throw new TaskExecutionException(a, e);
                 }
@@ -234,7 +241,7 @@ public class HybrisPlugin implements Plugin<Project> {
         }
 
         boolean exactMatch = current.equals(required);
-        boolean nearMatch = current.equalsIgnorePatch(required) && required.getPatch() == Integer.MAX_VALUE;
+        boolean nearMatch = current.equalsIgnorePatch(required) && required.getPatch() == Version.UNDEFINED_PART;
 
         if (nearMatch) {
             logger.lifecycle("current version {}; required version: {} -> {}", current, required, "NEAR MATCH");

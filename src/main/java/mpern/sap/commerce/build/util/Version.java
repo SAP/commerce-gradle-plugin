@@ -8,8 +8,9 @@ import java.util.regex.Pattern;
 public class Version implements Comparable<Version> {
     private static final Pattern NEW_VERSION = Pattern.compile("(\\d\\d)(\\d\\d)(\\.([1-9]?\\d))?");
     private static final Pattern OLD_VERSION = Pattern.compile("(\\d)\\.(\\d)\\.(\\d)(\\.([1-9]?\\d))?");
-    public static final Version UNDEFINED = new Version(Integer.MAX_VALUE, Integer.MAX_VALUE, Integer.MAX_VALUE,
-            Integer.MAX_VALUE, "<undefined>");
+    public static final int UNDEFINED_PART = Integer.MAX_VALUE;
+    public static final Version UNDEFINED = new Version(UNDEFINED_PART, UNDEFINED_PART, UNDEFINED_PART, UNDEFINED_PART,
+            "<undefined>");
     public static final Comparator<Version> VERSION_COMPARATOR = Comparator.comparingInt(Version::getMajor)
             .thenComparingInt(Version::getMinor).thenComparingInt(Version::getRelease)
             .thenComparingInt(Version::getPatch);
@@ -35,14 +36,14 @@ public class Version implements Comparable<Version> {
         Matcher newV = NEW_VERSION.matcher(v);
 
         if (newV.matches()) {
-            int patch = Integer.MAX_VALUE;
+            int patch = UNDEFINED_PART;
 
             if (newV.groupCount() > 3 && newV.group(4) != null) {
                 patch = Integer.parseInt(newV.group(4));
             }
             return new Version(Integer.parseInt(newV.group(1)), Integer.parseInt(newV.group(2)), 0, patch, v);
         } else if (oldV.matches()) {
-            int patch = Integer.MAX_VALUE;
+            int patch = UNDEFINED_PART;
             if (oldV.groupCount() > 4 && oldV.group(5) != null) {
                 patch = Integer.parseInt(oldV.group(5));
             }
@@ -50,8 +51,7 @@ public class Version implements Comparable<Version> {
                     Integer.parseInt(oldV.group(3)), patch, v);
         }
         String[] split = v.split("\\.");
-        int major = Integer.MAX_VALUE, minor = Integer.MAX_VALUE, release = Integer.MAX_VALUE,
-                patch = Integer.MAX_VALUE;
+        int major = UNDEFINED_PART, minor = UNDEFINED_PART, release = UNDEFINED_PART, patch = UNDEFINED_PART;
         switch (split.length) {
         case 4:
             patch = Integer.parseInt(split[3]);
@@ -66,6 +66,10 @@ public class Version implements Comparable<Version> {
             throw new IllegalArgumentException("Could not parse " + v);
         }
         return new Version(major, minor, release, patch, v);
+    }
+
+    public Version withoutPatch() {
+        return new Version(major, minor, release, UNDEFINED_PART, original);
     }
 
     @Override

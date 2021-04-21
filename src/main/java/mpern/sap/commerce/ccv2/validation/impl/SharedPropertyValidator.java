@@ -13,12 +13,14 @@ public class SharedPropertyValidator {
     // https://help.sap.com/viewer/1be46286b36a4aa48205be5a96240672/LATEST/en-US/a30160b786b545959184898b51c737fa.html
     // @formatter:off
     public static final Set<String> MANAGED_PROPERTIES = new HashSet<>(Arrays.asList(
+            "db.customsessionsql", // this will break DB connections
+
+            // from help page
             "db.url",
             "db.driver",
             "db.username",
             "db.password",
             "db.tableprefix",
-
             "media.read.dir",
             "media.replication.dirs",
             "mediaweb.webroot",
@@ -100,7 +102,6 @@ public class SharedPropertyValidator {
             "task.engine.exclusive.mode",
             "cluster.node.groups"
     ));
-
     // @formatter:on
 
     private final String locationPrefix;
