@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 TBD
 
-## [3.4.0] 2021-04-21
+## [3.5.0] 2021-04-21
 
 ### Added
 
@@ -23,6 +23,13 @@ TBD
 ### Fixed
 
 - Task `unpackPlatform` could fail in case of duplicate files. Now Gradle will emit a warning and overwrite the file.
+
+## [3.4.0] 2021-03-15
+
+### Added
+
+- Task `validateManifest` \
+  Validate `solrVersion` and warn if you customize solr without pinning the version.
 
 ## [3.3.0] 2021-01-20
 
@@ -285,7 +292,8 @@ Shout out to [@corneleberle] for providing the fix.
 
 :tada: Initial release :tada:
 
-[Unreleased]: https://github.com/SAP/commerce-gradle-plugin/compare/v3.4.0...HEAD
+[Unreleased]: https://github.com/SAP/commerce-gradle-plugin/compare/v3.5.0...HEAD
+[3.5.0]: https://github.com/SAP/commerce-gradle-plugin/compare/v3.4.0...v3.5.0
 [3.4.0]: https://github.com/SAP/commerce-gradle-plugin/compare/v3.3.0...v3.4.0
 [3.3.0]: https://github.com/SAP/commerce-gradle-plugin/compare/v3.2.0...v3.3.0
 [3.2.0]: https://github.com/SAP/commerce-gradle-plugin/compare/v3.1.0...v3.2.0
