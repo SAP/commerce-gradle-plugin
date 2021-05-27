@@ -83,7 +83,7 @@ Here is how you get started with the plugins for your SAP Commerce project.
    ```
 4. Enjoy things like:
 
-   - `./gradlew bootstraPlatform` - download (if you use Maven) and set up the correct SAP Commerce zip, extension packs, cloud extension packs, ..., as defined in `manifest.json`
+   - `./gradlew bootstrapPlatform` - download (if you use Maven) and set up the correct SAP Commerce zip, extension packs, cloud extension packs, ..., as defined in `manifest.json`
    - `./gradlew installManifestAddons` - install all addons as defined in `manifest.json`
    - `./gradlew yclean yall` - run `ant clean all` using Gradle. You can run any Ant target provided by SAP Commerce as `y<target>`.
    - `./gradlew validateManifest`- validate your manifest for common errors. Now with additional checks because
