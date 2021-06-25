@@ -2,17 +2,15 @@ package mpern.sap.commerce.ccv1.util
 
 import java.nio.file.Path
 
-import org.junit.ClassRule
-import org.junit.rules.TemporaryFolder
-
 import spock.lang.Shared
 import spock.lang.Specification
+import spock.lang.TempDir
 
 class PropertyFileMergeSpec extends Specification {
 
     @Shared
-    @ClassRule
-    TemporaryFolder propertyFolder = new TemporaryFolder()
+    @TempDir
+    Path propertyFolder
 
     @Shared
     Path first
@@ -22,7 +20,7 @@ class PropertyFileMergeSpec extends Specification {
     Path third
 
     def setupSpec() {
-        def root = propertyFolder.root.toPath()
+        def root = propertyFolder
 
         first = root.resolve("first.properties")
         first << """

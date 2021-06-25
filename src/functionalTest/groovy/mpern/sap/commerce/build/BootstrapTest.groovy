@@ -1,27 +1,30 @@
 package mpern.sap.commerce.build
 
+import static mpern.sap.commerce.build.TestUtils.ensureParents
 import static org.gradle.testkit.runner.TaskOutcome.*
 
 import java.nio.file.Files
 import java.nio.file.Path
+import java.nio.file.Paths
+import java.time.Instant
 
 import org.gradle.testkit.runner.GradleRunner
-import org.junit.Rule
-import org.junit.rules.TemporaryFolder
 
 import spock.lang.Specification
+import spock.lang.TempDir
 
 class BootstrapTest extends Specification {
-    @Rule
-    TemporaryFolder testProjectDir = new TemporaryFolder()
-    File buildFile
+    @TempDir
+    Path testProjectDir
+
+    Path buildFile
 
     String providedVersion = '2020.0'
 
     GradleRunner runner
 
     def setup() {
-        buildFile = testProjectDir.newFile('build.gradle')
+        buildFile = testProjectDir.resolve('build.gradle')
 
         buildFile << """
             plugins {
@@ -33,13 +36,14 @@ class BootstrapTest extends Specification {
                 }
             }
         """
-        def deps = testProjectDir.newFolder("dependencies").toPath()
+        def deps = testProjectDir.resolve("dependencies")
+        Files.createDirectory(deps)
         Path dbDriver = deps.resolve("jdbc-TEST.jar")
         Files.createFile(dbDriver)
         TestUtils.generateDummyPlatform(deps, providedVersion)
 
         runner = GradleRunner.create()
-                .withProjectDir(testProjectDir.root)
+                .withProjectDir(testProjectDir.toFile())
         def gradleVersion = System.getenv("GRADLE_VERSION")
         if (gradleVersion) {
             println "Using Gradle ${gradleVersion}"
@@ -57,7 +61,7 @@ class BootstrapTest extends Specification {
                 version = '$version'
             }
         """
-        new File(testProjectDir.newFolder("hybris", "bin", "platform"), "build.number") << """
+        ensureParents(testProjectDir.resolve("hybris/bin/platform/build.number")) << """
             version=$version
         """
 
@@ -98,22 +102,23 @@ class BootstrapTest extends Specification {
                 version = '$providedVersion'
             }
         """
-        def buildFile = new File(testProjectDir.newFolder("hybris", "bin", "platform"), "build.number")
+        def buildFile = ensureParents(testProjectDir.resolve("hybris/bin/platform/build.number"))
         buildFile << """
             version=18.08
         """
 
-        def platformExtensionFolder = testProjectDir.newFolder("hybris", "bin", "ext-accelerator", "b2baddon", "src")
-        def dummyPlatformFile = new File(platformExtensionFolder, "dummy.java")
-        dummyPlatformFile.createNewFile()
-        def dotFile = new File(platformExtensionFolder, ".dotfile")
-        dotFile.createNewFile()
+        def platformExtensionFolder = testProjectDir.resolve("hybris/bin/ext-accelerator/b2baddon/src")
+        Files.createDirectories(platformExtensionFolder)
+        def dummyPlatformFile = platformExtensionFolder.resolve("dummy.java")
+        Files.createFile(dummyPlatformFile)
+        def dotFile = platformExtensionFolder.resolve(".dotfile")
+        Files.createFile(dotFile)
 
-        def customFile = new File(testProjectDir.newFolder("hybris", "bin", "custom", "customExtension", "src"), "dummy.java")
-        customFile.createNewFile()
+        def customFile = ensureParents(testProjectDir.resolve("hybris/bin/custom/customExtension/src/dummy.java"))
+        Files.createFile(customFile)
 
-        def localProperties = new File(testProjectDir.newFolder("hybris", "config"), "local.properties")
-        localProperties.createNewFile()
+        def localProperties = ensureParents(testProjectDir.resolve("hybris/config/local.properties"))
+        Files.createFile(localProperties)
 
         when: "running bootstrap task"
         def result = runner
@@ -126,15 +131,15 @@ class BootstrapTest extends Specification {
 
         result.task(":bootstrapPlatform").outcome == SUCCESS
 
-        customFile.exists()
-        localProperties.exists()
+        Files.exists(customFile)
+        Files.exists(localProperties)
 
-        !dummyPlatformFile.exists()
-        !dotFile.exists()
-        !new File(testProjectDir.getRoot(), "hybris/bin/ext-accelerator").exists()
+        !Files.exists(dummyPlatformFile)
+        !Files.exists(dotFile)
+        !Files.exists(testProjectDir.resolve(Paths.get("hybris/bin/ext-accelerator")))
 
         buildFile.text.contains("version=$providedVersion")
-        new File(testProjectDir.getRoot(), "hybris/bin/ext-template/yaccelerator/src/dummy.java").exists()
+        Files.exists(testProjectDir.resolve(Paths.get( "hybris/bin/ext-template/yaccelerator/src/dummy.java")))
     }
 
     def "boostrap sets up db drivers"() {
@@ -151,39 +156,38 @@ class BootstrapTest extends Specification {
 
         when: "running bootstrap task"
 
-        def beforeBootstrap = new Date()
-        beforeBootstrap.seconds -= 1
+        def beforeBootstrap = Instant.now()
 
         def result = runner
                 .withArguments("--stacktrace", 'bootstrapPlatform')
                 .build()
 
-        def driverFile = new File(testProjectDir.getRoot(), "hybris/bin/platform/lib/dbdriver/jdbc-TEST.jar")
-        def lastUpdate = new File(testProjectDir.getRoot(), "hybris/bin/platform/lib/dbdriver/.lastupdate")
+        def driverFile = testProjectDir.resolve("hybris/bin/platform/lib/dbdriver/jdbc-TEST.jar")
+        def lastUpdate = testProjectDir.resolve("hybris/bin/platform/lib/dbdriver/.lastupdate")
 
         then:
         result.task(":bootstrapPlatform").outcome == SUCCESS
 
-        driverFile.exists()
-        lastUpdate.exists()
-        lastUpdate.isFile()
-        new Date(lastUpdate.lastModified()).after(beforeBootstrap)
+        Files.exists(driverFile)
+        Files.exists(lastUpdate)
+        Files.isRegularFile(lastUpdate)
+        Files.getLastModifiedTime(lastUpdate).toInstant().isAfter(beforeBootstrap)
     }
 
     def "cleanPlatform must delete all files as configured"() {
 
         given: "various platform files"
-        def platformExtensionFolder = testProjectDir.newFolder("hybris", "bin", "ext-accelerator", "b2baddon", "src")
-        def dummyPlatformFile = new File(platformExtensionFolder, "dummy.java")
-        dummyPlatformFile.createNewFile()
-        def dotFile = new File(testProjectDir.newFolder("hybris", "bin", "platform"), ".dotfile")
-        dotFile.createNewFile()
+        def dummyPlatformFile = ensureParents(testProjectDir.resolve("hybris/bin/ext-accelerator/b2baddon/src/dummy.java"))
+        Files.createFile(dummyPlatformFile)
 
-        def customFile = new File(testProjectDir.newFolder("hybris", "bin", "custom", "customExtension", "src"), "dummy.java")
-        customFile.createNewFile()
+        def dotFile = ensureParents(testProjectDir.resolve("hybris/bin/platform/.dotfile"))
+        Files.createFile(dotFile)
 
-        def localProperties = new File(testProjectDir.newFolder("hybris", "config"), "local.properties")
-        localProperties.createNewFile()
+        def customFile = ensureParents(testProjectDir.resolve("hybris/bin/custom/customExtension/src/dummy.java"))
+        Files.createFile(customFile)
+
+        def localProperties = ensureParents(testProjectDir.resolve("hybris/config/local.properties"))
+        Files.createFile(localProperties)
 
         when: "running the clean target"
         def result = runner.withArguments("--stacktrace", 'cleanPlatformIfVersionChanged')
@@ -191,10 +195,10 @@ class BootstrapTest extends Specification {
                 .build()
 
         then: "only platform files are deleted"
-        customFile.exists()
-        localProperties.exists()
+        Files.exists(customFile)
+        Files.exists(localProperties)
 
-        !dummyPlatformFile.exists()
-        !dotFile.exists()
+        !Files.exists(dummyPlatformFile)
+        !Files.exists(dotFile)
     }
 }

@@ -1,10 +1,11 @@
 package mpern.sap.commerce.ccv2.validation
 
-import org.junit.Rule
-import org.junit.rules.TemporaryFolder
+
+import java.nio.file.Path
 
 import groovy.json.JsonSlurper
 import spock.lang.Specification
+import spock.lang.TempDir
 
 import mpern.sap.commerce.ccv2.model.Manifest
 import mpern.sap.commerce.ccv2.validation.impl.CloudHotfolderValidator
@@ -12,8 +13,8 @@ import mpern.sap.commerce.ccv2.validation.impl.ManifestExtensionsResolver
 
 class CloudHotfolderValidatorSpec extends Specification {
 
-    @Rule
-    TemporaryFolder testProjectDir = new TemporaryFolder()
+    @TempDir
+    Path testProjectDir
 
 
     def "hotfolder validator checks backgroundProcessing properties"() {
@@ -35,13 +36,13 @@ class CloudHotfolderValidatorSpec extends Specification {
         }
         ''') as Map<String, Object>
         def manifest = Manifest.fromMap(rawManifest)
-        def validator = new CloudHotfolderValidator(testProjectDir.root.toPath(), new ManifestExtensionsResolver(testProjectDir.root.toPath()))
-        def props = testProjectDir.newFile("background.properties")
+        def validator = new CloudHotfolderValidator(testProjectDir, new ManifestExtensionsResolver(testProjectDir))
+        def props = testProjectDir.resolve("background.properties")
 
         when:
         def unconfiguredErrors = validator.validate(manifest)
 
-        props.text = "cluster.node.groups=yHotfolderCandidate,integration"
+        props.text = "cluster.node.groups=yHotfolderCandidate,integration,backgroundProcessing,foo"
         def configuredErrors = validator.validate(manifest)
 
         then:

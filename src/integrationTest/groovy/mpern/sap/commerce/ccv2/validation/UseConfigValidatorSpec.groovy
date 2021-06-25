@@ -1,23 +1,25 @@
 package mpern.sap.commerce.ccv2.validation
 
-import org.junit.Rule
-import org.junit.rules.TemporaryFolder
+import java.nio.file.Files
+import java.nio.file.Path
+import java.nio.file.Paths
 
 import groovy.json.JsonSlurper
 import spock.lang.Specification
+import spock.lang.TempDir
 
 import mpern.sap.commerce.ccv2.model.Manifest
 import mpern.sap.commerce.ccv2.validation.impl.UseConfigValidator
 
 class UseConfigValidatorSpec extends Specification {
 
-    @Rule
-    TemporaryFolder testProjectDir = new TemporaryFolder()
+    @TempDir
+    Path testProjectDir
 
     UseConfigValidator validator
 
     def setup() {
-        validator = new UseConfigValidator(testProjectDir.root.toPath())
+        validator = new UseConfigValidator(testProjectDir)
     }
 
     def "locations are validated"() {
@@ -83,7 +85,7 @@ class UseConfigValidatorSpec extends Specification {
         ''') as Map<String, Object>
         def manifest = Manifest.fromMap(rawManifest)
 
-        testProjectDir.newFile("localextensions.xml").text = """\
+        testProjectDir.resolve("localextensions.xml").text = """\
         <something><invalid></invalid></something>
         """.stripIndent()
 
@@ -109,7 +111,7 @@ class UseConfigValidatorSpec extends Specification {
         ''') as Map<String, Object>
         Manifest manifest = Manifest.fromMap(rawManifest)
 
-        testProjectDir.newFile("localextensions.xml").text = '''\
+        testProjectDir.resolve("localextensions.xml").text = '''\
         <?xml version="1.0" encoding="UTF-8" standalone="no"?>
         <hybrisconfig xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
               xsi:noNamespaceSchemaLocation="resources/schemas/extensions.xsd">
@@ -157,7 +159,7 @@ class UseConfigValidatorSpec extends Specification {
         
         ''') as Map<String, Object>
         Manifest manifest = Manifest.fromMap(rawManifest)
-        testProjectDir.newFile("dummy.properties")
+        Files.createFile(testProjectDir.resolve("dummy.properties"))
 
         when:
         def errors = validator.validate(manifest)
@@ -187,11 +189,11 @@ class UseConfigValidatorSpec extends Specification {
         ''') as Map<String, Object>
         Manifest manifest = Manifest.fromMap(rawManifest)
 
-        testProjectDir.newFile("non-latin1.properties").text = '''\
+        testProjectDir.resolve("non-latin1.properties").text = '''\
         non.latin1=fööbaß$\\{}
         foo=bar
         '''.stripIndent()
-        testProjectDir.newFile("latin1.properties").text = '''\
+        testProjectDir.resolve("latin1.properties").text = '''\
         latin1=foobar$\\{}
         foo=bar
         '''.stripIndent()
@@ -217,7 +219,7 @@ class UseConfigValidatorSpec extends Specification {
         }
         ''') as Map<String, Object>
         Manifest manifestWithoutVersion = Manifest.fromMap(rawManifest)
-        testProjectDir.newFolder("solr")
+        Files.createDirectory(testProjectDir.resolve("solr"))
         rawManifest = new JsonSlurper().parseText('''
         {
           "commerceSuiteVersion": "2011",
@@ -233,7 +235,7 @@ class UseConfigValidatorSpec extends Specification {
 
         when:
         def missingFolder = validator.validate(manifestWithoutVersion)
-        testProjectDir.newFolder("solr", "server", "solr", "configsets", "default", "conf")
+        Files.createDirectories(testProjectDir.resolve("solr/server/solr/configsets/default/conf"))
         def folderExists = validator.validate(manifestWithVersion)
 
         then:

@@ -1,5 +1,7 @@
 package mpern.sap.commerce.build
 
+import static mpern.sap.commerce.build.TestUtils.ensureParents
+
 import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.Paths
@@ -7,25 +9,24 @@ import java.nio.file.StandardCopyOption
 
 import org.gradle.testkit.runner.GradleRunner
 import org.gradle.testkit.runner.TaskOutcome
-import org.junit.Rule
-import org.junit.rules.TemporaryFolder
 
 import spock.lang.Specification
-
+import spock.lang.TempDir
 
 class CCv2Tests extends Specification {
-    @Rule
-    TemporaryFolder testProjectDir = new TemporaryFolder()
-    File buildFile
+
+    @TempDir
+    Path testProjectPath
+
+    Path buildFile
 
     GradleRunner runner
 
-    Path testProjectPath
-
     def setup() {
-        buildFile = testProjectDir.newFile('build.gradle')
+        buildFile = testProjectPath.resolve('build.gradle')
 
-        def deps = testProjectDir.newFolder("dependencies").toPath()
+        def deps = testProjectPath.resolve("dependencies")
+        Files.createDirectory(deps)
 
         TestUtils.generateDummyPlatform(deps, "1808.0")
 
@@ -35,9 +36,7 @@ class CCv2Tests extends Specification {
         TestUtils.generateDummyPlatform(deps, "2005.0")
         TestUtils.generateDummyIntegrationPack(deps, '2005.0')
 
-        testProjectPath = testProjectDir.root.toPath()
-
-        Path dummy = Paths.get(TestUtils.class.getResource("/test-manifest.json").toURI())
+        Path dummy = Paths.get(TestUtils.class.getResource("/ccv2-test-manifest.json").toURI())
         Files.copy(dummy, testProjectPath.resolve("manifest.json"))
 
         buildFile << """
@@ -51,12 +50,12 @@ class CCv2Tests extends Specification {
                 }
             }
         """
-        new File(testProjectDir.newFolder("hybris", "bin", "platform"), "build.number") << """
+        ensureParents(testProjectPath.resolve("hybris/bin/platform/build.number")) << """
             version=18.08
         """
 
         runner = GradleRunner.create()
-                .withProjectDir(testProjectDir.root)
+                .withProjectDir(testProjectPath.toFile())
         def gradleVersion = System.getenv("GRADLE_VERSION")
         if (gradleVersion) {
             println "Using Gradle ${gradleVersion}"
@@ -67,7 +66,7 @@ class CCv2Tests extends Specification {
 
     def "hybris.version is configured by manifest.json"() {
         given: "platform with different version"
-        testProjectDir.root.toPath().resolve("hybris/bin/platform/build.number") << """
+        ensureParents(testProjectPath.resolve("hybris/bin/platform/build.number")) << """
         version=2020.0
         """
         when: "running bootstrap task"
@@ -82,7 +81,7 @@ class CCv2Tests extends Specification {
 
     def "configured version overrides manifest.json version"() {
         given: "platform with different version"
-        testProjectDir.root.toPath().resolve("hybris/bin/platform/build.number") << """
+        ensureParents(testProjectPath.resolve("hybris/bin/platform/build.number")) << """
         version=1811.0
         """
         buildFile << """
@@ -108,7 +107,7 @@ class CCv2Tests extends Specification {
                 .withArguments("generateCloudProperties", "--stacktrace")
                 .build()
 
-        def propFolder = testProjectDir.root.toPath().resolve("generated-configuration")
+        def propFolder = testProjectPath.resolve("generated-configuration")
 
         def commonProps = propFolder.resolve("common.properties")
         println result.output
@@ -123,7 +122,7 @@ class CCv2Tests extends Specification {
                 .withArguments("generateCloudLocalextensions", "--stacktrace")
                 .build()
 
-        def localExtensions = testProjectDir.root.toPath().resolve("generated-configuration").resolve("localextensions.xml").text
+        def localExtensions = testProjectPath.resolve("generated-configuration").resolve("localextensions.xml").text
 
         then:
         localExtensions.contains("<extension name='modeltacceleratorservices' />")
@@ -135,7 +134,7 @@ class CCv2Tests extends Specification {
 
     def enableCep() {
         Path dummy = Paths.get(TestUtils.class.getResource("/cloud-extension-pack-manifest.json").toURI())
-        Files.copy(dummy, testProjectDir.root.toPath().resolve("manifest.json"), StandardCopyOption.REPLACE_EXISTING)
+        Files.copy(dummy, testProjectPath.resolve("manifest.json"), StandardCopyOption.REPLACE_EXISTING)
     }
 
     def "useCloudExtensionPack triggers unpack and setup of extension pack"() {
@@ -151,14 +150,13 @@ class CCv2Tests extends Specification {
 
         then: "cloud extension pack is resolved correctly and expanded to build folder"
         Files.exists(cepFolder)
-        Files.exists(cepFolder.resolve(Paths.get("hybris", "bin", "modules", "sap-ccv2-hotfolder", "azurecloudhotfolder", "extensioninfo.xml")))
+        Files.exists(cepFolder.resolve("hybris/bin/modules/sap-ccv2-hotfolder/azurecloudhotfolder/extensioninfo.xml"))
     }
 
     def "useCloudExtensionPack patches localextensions.xml to load extension pack"() {
         given: "localextensions.xml present"
         enableCep()
-        def configDir = testProjectDir.newFolder("hybris", "config")
-        def localExtensions = new File(configDir, "localextensions.xml")
+        def localExtensions = ensureParents(testProjectPath.resolve("hybris/config/localextensions.xml"))
         localExtensions << """<?xml version="1.0" encoding="UTF-8"?>
         <hybrisconfig xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                       xsi:noNamespaceSchemaLocation="resources/schemas/extensions.xsd">
@@ -172,7 +170,7 @@ class CCv2Tests extends Specification {
         when: "running bootstrap task"
         runner.withArguments("bootstrapPlatform", "--stacktrace")
                 .build()
-        def local = new XmlSlurper().parse(localExtensions)
+        def local = new XmlSlurper().parse(localExtensions.toFile())
 
         then: "plugin patches localextensions.xml to load cloud extension pack first"
         local.extensions.path[0].'@dir' == '${HYBRIS_BIN_DIR}/../../cloud-extension-pack'
@@ -181,19 +179,19 @@ class CCv2Tests extends Specification {
     }
 
     void cepDirResolvesCorrectly(folderName) {
-        folderName = folderName.replace('${HYBRIS_BIN_DIR}', testProjectDir.root.toPath().resolve(Paths.get("hybris", "bin")).toString())
+        folderName = folderName.replace('${HYBRIS_BIN_DIR}', testProjectPath.resolve("hybris/bin").toString())
         assert Files.exists(Paths.get(folderName))
     }
 
     def "extensionPacks are automatically bootstrapped"() {
         given: "manifest with enabled integration-extension-pack pack"
         Path dummy = Paths.get(TestUtils.class.getResource("/manifest.2005.json").toURI())
-        Files.copy(dummy, testProjectDir.root.toPath().resolve("manifest.json"), StandardCopyOption.REPLACE_EXISTING)
+        Files.copy(dummy, testProjectPath.resolve("manifest.json"), StandardCopyOption.REPLACE_EXISTING)
 
         when: "running bootstrap task"
         runner.withArguments("bootstrapPlatform", "--stacktrace")
                 .build()
-        def cpiProject = testProjectPath.resolve(Paths.get("hybris", "bin", "modules", "scpi", "sapcpiproductexchange", "project.properties"))
+        def cpiProject = testProjectPath.resolve("hybris/bin/modules/scpi/sapcpiproductexchange/project.properties")
 
         then:
         Files.exists(cpiProject)

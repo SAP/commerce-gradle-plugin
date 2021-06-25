@@ -4,9 +4,8 @@ import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.Paths
 
-import org.junit.AssumptionViolatedException
-
 import groovy.json.JsonSlurper
+import spock.lang.IgnoreIf
 import spock.lang.Specification
 
 import mpern.sap.commerce.ccv2.model.Manifest
@@ -16,11 +15,9 @@ class ExtensionResolverSpec extends Specification {
 
     Path projectRoot = Paths.get("manualTest")
 
+    @IgnoreIf({ !Files.exists(instance.projectRoot.resolve("hybris/bin/platform")) })
     def "test extension resolver"() {
         given:
-        if(!Files.exists(projectRoot.resolve(Paths.get("hybris/bin/platform")))) {
-            throw new AssumptionViolatedException("platform not available for tests");
-        }
         def resolver = new ManifestExtensionsResolver(projectRoot)
         def rawManifest = new JsonSlurper().parse(projectRoot.resolve("manifest.json").toFile(), "UTF-8") as Map<String, Object>
         def manifest = Manifest.fromMap(rawManifest)

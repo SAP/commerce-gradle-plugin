@@ -26,7 +26,9 @@ jobs:
         - "6.6.1"
         - "6.7.1"
         - "6.8.3"
-        - "7.0"
+        - "6.9"
+        - "7.0.2"
+        - "7.1"
 
     runs-on: ubuntu-latest
 
@@ -48,7 +50,7 @@ jobs:
       run: |
         echo "GRADLE_PUBLISH_KEY=${{secrets.PUBLISH_KEY}}" >> $GITHUB_ENV
         echo "GRADLE_PUBLISH_SECRET=${{ secrets.PUBLISH_SECRET }}" >> $GITHUB_ENV
-      if: startsWith(github.ref, 'refs/tags/v') && matrix.GRADLE_VERSION == '7.0'
+      if: startsWith(github.ref, 'refs/tags/v') && matrix.GRADLE_VERSION == '7.1'
     - name: Publish
       run: ./gradlew publishPlugins "-Pgradle.publish.key=${GRADLE_PUBLISH_KEY}" "-Pgradle.publish.secret=${GRADLE_PUBLISH_SECRET}"
-      if: startsWith(github.ref, 'refs/tags/v') && matrix.GRADLE_VERSION == '7.0'
+      if: startsWith(github.ref, 'refs/tags/v') && matrix.GRADLE_VERSION == '7.1'

@@ -1,18 +1,18 @@
 package mpern.sap.commerce.ccv2.validation
 
-import org.junit.Rule
-import org.junit.rules.TemporaryFolder
+import java.nio.file.Path
 
 import groovy.json.JsonSlurper
 import spock.lang.Specification
+import spock.lang.TempDir
 
 import mpern.sap.commerce.ccv2.model.Manifest
 import mpern.sap.commerce.ccv2.validation.impl.WebrootValidator
 
 class WebrootValidatorSpec extends Specification {
 
-    @Rule
-    TemporaryFolder testProjectDir = new TemporaryFolder()
+    @TempDir
+    Path testProjectDir
 
     def "extension.webroot is not allowed"() {
         given:
@@ -47,8 +47,8 @@ class WebrootValidatorSpec extends Specification {
         }
         ''') as Map<String, Object>
         def manifest = Manifest.fromMap(rawManifest)
-        def validator = new WebrootValidator(testProjectDir.root.toPath())
-        testProjectDir.newFile("webroot.properties").text = '''\
+        def validator = new WebrootValidator(testProjectDir)
+        testProjectDir.resolve("webroot.properties").text = '''\
         demostorefront.webroot=/root
         '''.stripIndent()
 

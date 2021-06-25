@@ -4,23 +4,22 @@ import java.nio.file.*
 import java.nio.file.attribute.BasicFileAttributes
 
 import org.gradle.testkit.runner.GradleRunner
-import org.junit.Rule
-import org.junit.rules.TemporaryFolder
 
 import spock.lang.Specification
+import spock.lang.TempDir
 
 class PackagingTest extends Specification {
-    @Rule
-    TemporaryFolder testProjectDir = new TemporaryFolder()
+    @TempDir
+    Path testProjectDir
 
-    File buildFile
+    Path buildFile
 
-    File common
-    File dev
-    File stag
+    Path common
+    Path dev
+    Path stag
 
-    File hybrisPlatformZip
-    File hybrisExtensionsZip
+    Path hybrisPlatformZip
+    Path hybrisExtensionsZip
 
     FileSystem packageFile
 
@@ -33,7 +32,7 @@ class PackagingTest extends Specification {
     GradleRunner runner
 
     def setup() {
-        buildFile = testProjectDir.newFile('build.gradle')
+        buildFile = testProjectDir.resolve('build.gradle')
         buildFile << """
             plugins {
                 id 'sap.commerce.ccv1.package'
@@ -48,22 +47,23 @@ class PackagingTest extends Specification {
             }
         """
 
-        common = testProjectDir.newFolder("ccv1-configuration", "common")
-        createConfigStructure(common.toPath())
-        dev = testProjectDir.newFolder("ccv1-configuration", "dev")
-        createConfigStructure(dev.toPath())
-        stag = testProjectDir.newFolder("ccv1-configuration", "stag")
-        createConfigStructure(stag.toPath())
+        common = testProjectDir.resolve(Paths.get("ccv1-configuration", "common"))
+        createConfigStructure(common)
+        dev = testProjectDir.resolve(Paths.get("ccv1-configuration", "dev"))
+        createConfigStructure(dev)
+        stag = testProjectDir.resolve(Paths.get("ccv1-configuration", "stag"))
+        createConfigStructure(stag)
 
-        def hybrisProductionFolder = testProjectDir.newFolder("hybris", "temp", "hybris", "hybrisServer")
-        hybrisPlatformZip = new File(hybrisProductionFolder, "hybrisServer-Platform.zip")
-        hybrisPlatformZip.createNewFile()
+        def hybrisProductionFolder = testProjectDir.resolve("hybris/temp/hybris/hybrisServer")
+        Files.createDirectories(hybrisProductionFolder)
+        hybrisPlatformZip = hybrisProductionFolder.resolve("hybrisServer-Platform.zip")
+        Files.createFile(hybrisPlatformZip)
 
-        hybrisExtensionsZip = new File(hybrisProductionFolder, "hybrisServer-AllExtensions.zip")
-        hybrisExtensionsZip.createNewFile()
+        hybrisExtensionsZip = hybrisProductionFolder.resolve("hybrisServer-AllExtensions.zip")
+        Files.createFile(hybrisExtensionsZip)
 
         runner = GradleRunner.create()
-                .withProjectDir(testProjectDir.root)
+                .withProjectDir(testProjectDir.toFile())
         def gradleVersion = System.getenv("GRADLE_VERSION")
         if (gradleVersion) {
             println "Using Gradle ${gradleVersion}"
@@ -89,7 +89,7 @@ class PackagingTest extends Specification {
     def "packaging fails when no platform artifacts present"() {
 
         given:
-        hybrisPlatformZip.delete()
+        Files.delete(hybrisPlatformZip)
 
         when:
         runner.withArguments("--stacktrace", 'buildCCV1Package')
@@ -102,7 +102,7 @@ class PackagingTest extends Specification {
     def "package name is root folder of zip file"() {
 
         given: "hybris configuration files in common folder"
-        def props = common.toPath().resolve("hybris/customer.properties")
+        def props = common.resolve("hybris/customer.properties")
         Files.createFile(props)
         props.toFile() << """
         some content
@@ -123,7 +123,7 @@ class PackagingTest extends Specification {
     def "content of common folder is used for all environments"() {
 
         given: "hybris configuration files in common folder"
-        def props = common.toPath().resolve("hybris/customer.properties")
+        def props = common.resolve("hybris/customer.properties")
         Files.createFile(props)
         props.toFile() << """
         some content
@@ -145,7 +145,7 @@ class PackagingTest extends Specification {
     def "md5 hash is created for package"() {
 
         given: "hybris configuration files in common folder"
-        def props = common.toPath().resolve("hybris/customer.properties")
+        def props = common.resolve("hybris/customer.properties")
         Files.createFile(props)
         props.toFile() << """
             some content
@@ -156,7 +156,7 @@ class PackagingTest extends Specification {
                 .build()
 
         then: "hash file is present"
-        Files.exists(testProjectDir.root.toPath().resolve("dist/${packageName}.md5"))
+        Files.exists(testProjectDir.resolve("dist/${packageName}.md5"))
     }
 
     private void dumpDir(Path p) {
@@ -180,8 +180,8 @@ class PackagingTest extends Specification {
             datahubWar = file("${datahubfile}")
         }
         """
-        def datahub = testProjectDir.newFile("${datahubfile}")
-        datahub.createNewFile()
+        def datahub = testProjectDir.resolve("${datahubfile}")
+        Files.createFile(datahub)
 
         when: "building CCV1 package"
         runner.withArguments("--stacktrace", 'buildCCV1Package')
@@ -220,11 +220,11 @@ class PackagingTest extends Specification {
             datahubWar = file('datahub.war')
         }
         """
-        testProjectDir.newFile("datahub.war")
-        def commonDatahubConfig = common.toPath().resolve("datahub")
+        Files.createFile(testProjectDir.resolve("datahub.war"))
+        def commonDatahubConfig = common.resolve("datahub")
         Files.createDirectories(commonDatahubConfig)
         Files.createFile(commonDatahubConfig.resolve("dhub-encrypt-key"))
-        def devDatahubConfig = dev.toPath().resolve("datahub")
+        def devDatahubConfig = dev.resolve("datahub")
         Files.createDirectories(devDatahubConfig)
         Files.createFile(devDatahubConfig.resolve("customer.properties"))
 
@@ -241,19 +241,19 @@ class PackagingTest extends Specification {
     }
 
     private Tuple openPackageFile() {
-        packageFile = FileSystems.newFileSystem(testProjectDir.root.toPath().resolve("dist/${packageName}.zip"), null)
+        packageFile = FileSystems.newFileSystem(testProjectDir.resolve("dist/${packageName}.zip"), null)
         new Tuple(packageFile, packageFile.getPath("${packageName}"))
     }
 
     def "property files are merged from common into environment specific configs"() {
         given: "property files in common and environment"
-        def commonProperties = common.toPath().resolve("hybris/customer.properties")
+        def commonProperties = common.resolve("hybris/customer.properties")
         Files.createFile(commonProperties)
         commonProperties << """
         property.from.common=common
         property.to.override=common
         """.stripIndent()
-        def devProperties = dev.toPath().resolve("hybris/customer.properties")
+        def devProperties = dev.resolve("hybris/customer.properties")
         Files.createFile(devProperties)
         devProperties << """
         property.to.override=dev
@@ -284,19 +284,19 @@ class PackagingTest extends Specification {
     }
 
     def "localextensions.xml built from env or from common"() {
-        def common = common.toPath().resolve("hybris/localextensions.xml")
+        def common = common.resolve("hybris/localextensions.xml")
         Files.createFile(common)
         common << "common"
 
-        def dev = dev.toPath().resolve("hybris/localextensions.xml")
+        def dev = dev.resolve("hybris/localextensions.xml")
         Files.createFile(dev)
         dev << "dev"
 
-        def stag_adm = stag.toPath().resolve("hybris/localextensions.adm.xml")
+        def stag_adm = stag.resolve("hybris/localextensions.adm.xml")
         Files.createFile(stag_adm)
         stag_adm << "stag adm"
 
-        def stag_app = stag.toPath().resolve("hybris/localextensions.app.xml")
+        def stag_app = stag.resolve("hybris/localextensions.app.xml")
         Files.createFile(stag_app)
         stag_app << "stag app"
 
@@ -319,11 +319,11 @@ class PackagingTest extends Specification {
     }
 
     def "misc folder is included in package"() {
-        def common = common.toPath().resolve("misc/somefile.txt")
+        def common = common.resolve("misc/somefile.txt")
         Files.createFile(common)
         common << "common"
 
-        def dev = dev.toPath().resolve("misc/somefile.txt")
+        def dev = dev.resolve("misc/somefile.txt")
         Files.createFile(dev)
         dev << "dev"
 

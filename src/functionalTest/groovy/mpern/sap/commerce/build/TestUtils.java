@@ -85,4 +85,9 @@ public class TestUtils {
             });
         }
     }
+
+    public static Path ensureParents(Path p) throws Exception{
+        Files.createDirectories(p.getParent());
+        return p;
+    }
 }

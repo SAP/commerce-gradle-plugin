@@ -124,7 +124,7 @@ public class Version implements Comparable<Version> {
 
     public String getDependencyVersion() {
         String v = this.original;
-        if (this.getPatch() == Integer.MAX_VALUE) {
+        if (this.getPatch() == UNDEFINED_PART) {
             if (!v.endsWith(".")) {
                 v += ".";
             }

@@ -3,23 +3,19 @@ package mpern.sap.commerce.build.util
 import java.nio.file.Files
 import java.nio.file.Paths
 
-import org.junit.AssumptionViolatedException
-
+import spock.lang.IgnoreIf
 import spock.lang.Specification
 
 class PlatformResolverSpec extends Specification {
 
+    def platformHome = Paths.get("manualTest/hybris/bin/platform");
     PlatformResolver resolver
 
     def setup() {
-        def root = Paths.get("manualTest")
-        def platformHome = root.resolve(Paths.get("hybris", "bin", "platform"))
-        if(!Files.exists(platformHome)) {
-            throw new AssumptionViolatedException("platform not available");
-        }
         resolver = new PlatformResolver(platformHome)
     }
 
+    @IgnoreIf({ !Files.exists(instance.platformHome) })
     def "load extensions correctly"() {
         when:
         def extensions = resolver.getConfiguredExtensions()

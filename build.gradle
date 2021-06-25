@@ -8,13 +8,12 @@ buildscript {
 }
 
 plugins {
-    id 'com.gradle.plugin-publish' version '0.14.0'
-    id 'pl.allegro.tech.build.axion-release' version '1.13.1'
+    id 'com.gradle.plugin-publish' version '0.15.0'
+    id 'pl.allegro.tech.build.axion-release' version '1.13.2'
     id 'java-gradle-plugin'
     id 'groovy'
-    id 'com.diffplug.spotless' version '5.11.1'
-    id 'com.github.ben-manes.versions' version '0.38.0'
-    id "com.github.blueboxware.tocme" version "1.2"
+    id 'com.diffplug.spotless' version '5.14.0'
+    //    id 'com.github.ben-manes.versions' version '0.39.0'
 }
 
 scmVersion {
@@ -36,16 +35,16 @@ scmVersion {
     ignoreUncommittedChanges = false
 }
 
-tocme {
-    doc 'docs/ccv2-validation.md'
-}
-
-tasks.named('assemble') {
-    dependsOn('insertTocs')
-}
-tasks.named('checkTocs') {
-    mustRunAfter('insertTocs')
-}
+//tocme {
+//    doc 'docs/ccv2-validation.md'
+//}
+//
+//tasks.named('assemble') {
+//    dependsOn('insertTocs')
+//}
+//tasks.named('checkTocs') {
+//    mustRunAfter('insertTocs')
+//}
 
 spotless {
     format 'misc', {
@@ -78,12 +77,12 @@ group = 'sap.commerce'
 project.version = scmVersion.version
 
 repositories {
-    jcenter()
+    mavenCentral()
 }
 
 dependencies {
-    testImplementation('org.codehaus.groovy:groovy-all:2.5.13')
-    testImplementation('org.spockframework:spock-core:1.3-groovy-2.5')
+    testImplementation platform("org.spockframework:spock-bom:2.0-groovy-3.0")
+    testImplementation "org.spockframework:spock-core"
 }
 
 java {
@@ -158,7 +157,6 @@ pluginBundle {
 sourceSets {
     integrationTest {
         groovy.srcDir file('src/integrationTest/groovy')
-        resources.srcDir file('src/integrationTest/resources')
         compileClasspath += sourceSets.main.output + configurations.testRuntimeClasspath
         runtimeClasspath += output + compileClasspath
     }
@@ -177,7 +175,6 @@ check.dependsOn integrationTest
 sourceSets {
     functionalTest {
         groovy.srcDir file('src/functionalTest/groovy')
-        resources.srcDir file('src/functionalTest/resources')
         compileClasspath += sourceSets.main.output + configurations.testRuntimeClasspath
         runtimeClasspath += output + compileClasspath
     }
@@ -197,7 +194,8 @@ gradlePlugin {
     testSourceSets sourceSets.functionalTest
 }
 
-tasks.withType(Test) {
+tasks.withType(Test).configureEach {
+    useJUnitPlatform()
     testLogging {
         events "passed", "failed", "skipped", "standardError"
     }
