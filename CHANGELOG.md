@@ -9,6 +9,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 TBD
 
+## [3.6.0] 2021-06-25
+
+### Changed
+
+- CCv2 Plugin, Tasks `cloudTests` and `cloudWebTests`: build fails when tests fail (`failbuildonerror=yes`, [#26])
+
+### Fixed
+
+- CCv2 Plugin, Tasks `cloudTests` and `cloudWebTests` Tasks are now always instances of `mpern.sap.commerce.build.tasks.HybrisAntTask` ([#27])
+
+Thank you [@guiliguili] for reporting both issues!
+
+[#26]: https://github.com/SAP/commerce-gradle-plugin/issues/26
+[#27]: https://github.com/SAP/commerce-gradle-plugin/issues/27
+[@guiliguili]: https://github.com/guiliguili
+
+
 ## [3.5.0] 2021-04-21
 
 ### Added
@@ -292,7 +309,8 @@ Shout out to [@corneleberle] for providing the fix.
 
 :tada: Initial release :tada:
 
-[Unreleased]: https://github.com/SAP/commerce-gradle-plugin/compare/v3.5.0...HEAD
+[Unreleased]: https://github.com/SAP/commerce-gradle-plugin/compare/v3.6.0...HEAD
+[3.6.0]: https://github.com/SAP/commerce-gradle-plugin/compare/v3.5.0...v3.6.0
 [3.5.0]: https://github.com/SAP/commerce-gradle-plugin/compare/v3.4.0...v3.5.0
 [3.4.0]: https://github.com/SAP/commerce-gradle-plugin/compare/v3.3.0...v3.4.0
 [3.3.0]: https://github.com/SAP/commerce-gradle-plugin/compare/v3.2.0...v3.3.0
