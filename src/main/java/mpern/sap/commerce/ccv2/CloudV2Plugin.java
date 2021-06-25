@@ -39,7 +39,7 @@ public class CloudV2Plugin implements Plugin<Project> {
             throw new InvalidUserDataException(MANIFEST_PATH + " not found!");
         }
         JsonSlurper slurper = new JsonSlurper();
-        Map parsed = (Map) slurper.parse(manifestFile);
+        Map<String, Object> parsed = (Map<String, Object>) slurper.parse(manifestFile);
         Manifest manifest = Manifest.fromMap(parsed);
 
         extension = project.getExtensions().create(CCV2_EXTENSION, CCv2Extension.class, project, manifest);
@@ -134,9 +134,10 @@ public class CloudV2Plugin implements Plugin<Project> {
 
     private void configureTests(Project project, TestConfiguration tests) {
         if (tests == TestConfiguration.NO_VALUE) {
-            project.getTasks().register("cloudTests", t -> {
+            project.getTasks().register("cloudTests", HybrisAntTask.class, t -> {
                 t.setGroup(GROUP);
                 t.setDescription("run ant alltests with manifest configuration");
+                t.getNoOp().set(Boolean.TRUE);
             });
             return;
         }
@@ -145,15 +146,17 @@ public class CloudV2Plugin implements Plugin<Project> {
             t.setDescription("run ant alltests with manifest configuration");
 
             t.setArgs(Collections.singletonList("alltests"));
+            t.antProperty("failbuildonerror", "yes");
         });
         allTests.configure(configureTest(tests));
     }
 
     private void configureWebTests(Project project, TestConfiguration test) {
         if (test == TestConfiguration.NO_VALUE) {
-            project.getTasks().register("cloudWebTests", t -> {
+            project.getTasks().register("cloudWebTests", HybrisAntTask.class, t -> {
                 t.setGroup(GROUP);
                 t.setDescription("run ant allwebtests with manifest configuration");
+                t.getNoOp().set(Boolean.TRUE);
             });
             return;
         }
@@ -163,6 +166,7 @@ public class CloudV2Plugin implements Plugin<Project> {
                     t.setDescription("run ant allwebtests with manifest configuration");
 
                     t.setArgs(Collections.singletonList("allwebtests"));
+                    t.antProperty("failbuildonerror", "yes");
                 });
         allWebTests.configure(configureTest(test));
     }

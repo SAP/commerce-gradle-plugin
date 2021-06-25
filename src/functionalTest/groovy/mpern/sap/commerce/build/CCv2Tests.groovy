@@ -197,4 +197,28 @@ class CCv2Tests extends Specification {
         Files.exists(cpiProject)
         Files.isRegularFile(cpiProject)
     }
+
+    def "cloudTests and cloudWebTests are always HybrisAntTask"() {
+        given: "manifest with tests"
+        testProjectPath.resolve("manifest.json").text = """\
+        {
+            "commerceSuiteVersion": "2011",
+            "tests": {
+                "annotations": ["UnitTests", "IntegrationTests"],
+                "packages": ["com.demo."]
+            }
+        }
+        """.stripIndent()
+
+        buildFile << """
+        assert tasks.getByName("cloudTests") instanceof mpern.sap.commerce.build.tasks.HybrisAntTask
+        assert tasks.getByName("cloudWebTests") instanceof mpern.sap.commerce.build.tasks.HybrisAntTask
+        """
+
+        when: "running generateCloudProperties task"
+        def result = runner.withArguments("--stacktrace").build()
+
+        then:
+        result != null
+    }
 }

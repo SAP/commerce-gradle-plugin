@@ -6,6 +6,8 @@ import java.util.Map;
 import org.gradle.api.Task;
 import org.gradle.api.execution.TaskExecutionAdapter;
 import org.gradle.api.file.ConfigurableFileTree;
+import org.gradle.api.provider.Property;
+import org.gradle.api.tasks.Internal;
 import org.gradle.api.tasks.JavaExec;
 
 import mpern.sap.commerce.build.HybrisPlugin;
@@ -16,9 +18,20 @@ public class HybrisAntTask extends JavaExec {
 
     private Map<String, String> antProperties;
 
+    private final Property<Boolean> noOp;
+
     public HybrisAntTask() {
         super();
         antProperties = new HashMap<>();
+        noOp = getProject().getObjects().property(Boolean.class);
+    }
+
+    @Override
+    public void exec() {
+        if (noOp.getOrElse(Boolean.FALSE)) {
+            return;
+        }
+        super.exec();
     }
 
     public static class HybrisAntConfigureAdapter extends TaskExecutionAdapter {
@@ -66,5 +79,10 @@ public class HybrisAntTask extends JavaExec {
      */
     public void setAntProperties(Map<String, String> antProperties) {
         this.antProperties = new HashMap<>(antProperties);
+    }
+
+    @Internal
+    public Property<Boolean> getNoOp() {
+        return noOp;
     }
 }
