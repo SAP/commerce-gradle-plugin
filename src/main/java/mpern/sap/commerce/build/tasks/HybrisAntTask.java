@@ -15,7 +15,7 @@ import mpern.sap.commerce.build.HybrisPlugin;
 import mpern.sap.commerce.build.HybrisPluginExtension;
 import mpern.sap.commerce.build.util.HybrisPlatform;
 
-public abstract class HybrisAntTask extends JavaExec {
+public class HybrisAntTask extends JavaExec {
 
     @Input
     public MapProperty<String, String> antProperties;
@@ -89,6 +89,16 @@ public abstract class HybrisAntTask extends JavaExec {
      */
     public void setAntProperties(Map<String, String> antProperties) {
         this.antProperties.set(antProperties);
+    }
+
+    /**
+     * Add a new runtime property to configure the ant target
+     *
+     * @param key   key of the property
+     * @param value value of the property
+     */
+    public void fallbackAntProperty(String key, String value) {
+        fallbackAntProperties.put(key, value);
     }
 
     @Internal
