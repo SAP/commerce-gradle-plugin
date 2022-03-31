@@ -42,7 +42,7 @@ public class PatchLocalExtensions extends DefaultTask {
         Path cepPath = cepFolder.get().getAsFile().toPath();
 
         Path relativize = hybrisBin.relativize(cepPath);
-        String cepPathString = "${HYBRIS_BIN_DIR}"+ File.separator + relativize.toString();
+        String cepPathString = "${HYBRIS_BIN_DIR}" + File.separator + relativize.toString();
 
         patchLocalExtensions(cepPathString);
     }
