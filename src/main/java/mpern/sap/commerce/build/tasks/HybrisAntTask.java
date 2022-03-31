@@ -17,11 +17,9 @@ import mpern.sap.commerce.build.util.HybrisPlatform;
 
 public class HybrisAntTask extends JavaExec {
 
-    @Input
-    public MapProperty<String, String> antProperties;
+    private final MapProperty<String, String> antProperties;
 
-    @Input
-    public MapProperty<String, String> fallbackAntProperties;
+    private final MapProperty<String, String> fallbackAntProperties;
 
     private final Property<Boolean> noOp;
 
@@ -104,5 +102,15 @@ public class HybrisAntTask extends JavaExec {
     @Internal
     public Property<Boolean> getNoOp() {
         return noOp;
+    }
+
+    @Input
+    public MapProperty<String, String> getAntProperties() {
+        return antProperties;
+    }
+
+    @Input
+    public MapProperty<String, String> getFallbackAntProperties() {
+        return fallbackAntProperties;
     }
 }
