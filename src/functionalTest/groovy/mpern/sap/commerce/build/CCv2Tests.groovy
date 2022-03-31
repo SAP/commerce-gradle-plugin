@@ -173,7 +173,7 @@ class CCv2Tests extends Specification {
         def local = new XmlSlurper().parse(localExtensions.toFile())
 
         then: "plugin patches localextensions.xml to load cloud extension pack first"
-        local.extensions.path[0].'@dir' == '${HYBRIS_BIN_DIR}/../../cloud-extension-pack'
+        local.extensions.path[0].'@dir' == Paths.get('${HYBRIS_BIN_DIR}/../../cloud-extension-pack')
         local.extensions.path[1].'@dir' == '${HYBRIS_BIN_DIR}'
         cepDirResolvesCorrectly(local.extensions.path[0].'@dir'.toString())
     }
