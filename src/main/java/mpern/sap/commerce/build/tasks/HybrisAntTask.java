@@ -1,12 +1,13 @@
 package mpern.sap.commerce.build.tasks;
 
-import java.util.HashMap;
 import java.util.Map;
 
 import org.gradle.api.Task;
 import org.gradle.api.execution.TaskExecutionAdapter;
 import org.gradle.api.file.ConfigurableFileTree;
+import org.gradle.api.provider.MapProperty;
 import org.gradle.api.provider.Property;
+import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.Internal;
 import org.gradle.api.tasks.JavaExec;
 
@@ -14,16 +15,20 @@ import mpern.sap.commerce.build.HybrisPlugin;
 import mpern.sap.commerce.build.HybrisPluginExtension;
 import mpern.sap.commerce.build.util.HybrisPlatform;
 
-public class HybrisAntTask extends JavaExec {
+public abstract class HybrisAntTask extends JavaExec {
 
-    private Map<String, String> antProperties;
+    @Input
+    public abstract MapProperty<String, String> antProperties();
+
+    @Input
+    public abstract MapProperty<String, String> fallbackAntProperties();
 
     private final Property<Boolean> noOp;
 
     public HybrisAntTask() {
         super();
-        antProperties = new HashMap<>();
         noOp = getProject().getObjects().property(Boolean.class);
+        antProperties().put("maven.update.dbdrivers", "false");
     }
 
     @Override
@@ -48,8 +53,11 @@ public class HybrisAntTask extends JavaExec {
                         .getByName(HybrisPlugin.HYBRIS_EXTENSION)).getPlatform();
                 t.systemProperty("ant.home", platform.getAntHome().get().getAsFile());
 
-                t.antProperty("maven.update.dbdrivers", "false");
-                t.antProperties.forEach((k, v) -> t.args("-D" + k + "=" + v));
+                Map<String, String> props = t.antProperties().get();
+
+                t.fallbackAntProperties().get().forEach(props::putIfAbsent);
+
+                props.forEach((k, v) -> t.args("-D" + k + "=" + v));
 
                 t.workingDir(platform.getPlatformHome());
             }
@@ -69,7 +77,7 @@ public class HybrisAntTask extends JavaExec {
      * @param value value of the property
      */
     public void antProperty(String key, String value) {
-        antProperties.put(key, value);
+        antProperties().put(key, value);
     }
 
     /**
@@ -78,7 +86,7 @@ public class HybrisAntTask extends JavaExec {
      * @param antProperties ant properties to use for the target
      */
     public void setAntProperties(Map<String, String> antProperties) {
-        this.antProperties = new HashMap<>(antProperties);
+        this.antProperties().set(antProperties);
     }
 
     @Internal
