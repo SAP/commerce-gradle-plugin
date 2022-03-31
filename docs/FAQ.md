@@ -37,6 +37,24 @@ Here is how you would do it with `curl`:
 100 1483M  100 1483M    0     0  6450k      0  0:03:55  0:03:55 --:--:-- 7130k
 ```
 
+Another way to download via `curl`, if the approach above does not work, e.g. you are always redirected
+to a login page instead of the download (thank you @aepfli for discovering this!)
+
+```sh
+# initialize download session, store required cookies in 'cookies.txt'
+❯ curl -L -v -b cookies.txt  -c cookie.txt \
+	-u "$SAP_USER_ID:$SAP_PASSWORD" \
+   -o "download.file" \
+	"https://origin.softwaredownloads.sap.com/tokengen/?file=${SAP_FILE_ID}"
+
+# start actual download
+curl -L -v -b cookies.txt \
+	-u "$SAP_USER_ID:$SAP_PASSWORD" \
+	-o "download.file" \
+	"https://softwaredownloads.sap.com/file/${SAP_FILE_ID}"
+
+```
+
 The field "Checksum" of the content info page is the sha-256 hash of the file (that comes in handy if you want to verify the download)
 
 ```sh
