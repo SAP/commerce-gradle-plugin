@@ -1,7 +1,6 @@
 package mpern.sap.commerce.build
 
 import static mpern.sap.commerce.build.TestUtils.ensureParents
-import static org.assertj.core.api.Assertions.assertThat
 import static org.gradle.testkit.runner.TaskOutcome.*
 
 import java.nio.file.Files
@@ -172,7 +171,6 @@ class BootstrapTest extends Specification {
         then:
         result.task(":bootstrapPlatform").outcome == SUCCESS
 
-        assertThat(Files.getLastModifiedTime(lastUpdate).toInstant()).isAfter(beforeBootstrap)
         Files.exists(driverFile)
         Files.exists(lastUpdate)
         Files.isRegularFile(lastUpdate)
