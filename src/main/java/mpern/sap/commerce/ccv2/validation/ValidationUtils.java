@@ -22,7 +22,7 @@ public class ValidationUtils {
         } else {
             List<Error> errors = new ArrayList<>();
             Path inputPath = Paths.get(input);
-            if (inputPath.isAbsolute()) {
+            if (inputPath.isAbsolute() || inputPath.startsWith("/")) {
                 errors.add(new Error.Builder().setLocation(location)
                         .setMessage("Location `%s` is absolute (starts with `/`).", input).setCode("E-009")
                         .createError());
