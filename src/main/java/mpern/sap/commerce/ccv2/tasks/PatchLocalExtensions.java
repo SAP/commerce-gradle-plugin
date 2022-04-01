@@ -1,5 +1,6 @@
 package mpern.sap.commerce.ccv2.tasks;
 
+import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -41,7 +42,7 @@ public class PatchLocalExtensions extends DefaultTask {
         Path cepPath = cepFolder.get().getAsFile().toPath();
 
         Path relativize = hybrisBin.relativize(cepPath);
-        String cepPathString = "${HYBRIS_BIN_DIR}/" + relativize.toString();
+        String cepPathString = "${HYBRIS_BIN_DIR}" + File.separator + relativize.toString();
 
         patchLocalExtensions(cepPathString);
     }
