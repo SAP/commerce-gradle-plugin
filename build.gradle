@@ -83,6 +83,7 @@ repositories {
 dependencies {
     testImplementation platform("org.spockframework:spock-bom:2.0-groovy-3.0")
     testImplementation "org.spockframework:spock-core"
+    testImplementation "org.assertj:assertj-core:3.20.2"
 }
 
 java {

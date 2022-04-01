@@ -13,6 +13,8 @@ import org.gradle.testkit.runner.GradleRunner
 import spock.lang.Specification
 import spock.lang.TempDir
 
+import static org.assertj.core.api.Assertions.assertThat
+
 class BootstrapTest extends Specification {
     @TempDir
     Path testProjectDir
@@ -171,6 +173,7 @@ class BootstrapTest extends Specification {
         then:
         result.task(":bootstrapPlatform").outcome == SUCCESS
 
+        assertThat(Files.getLastModifiedTime(lastUpdate).toInstant()).isAfter(beforeBootstrap)
         Files.exists(driverFile)
         Files.exists(lastUpdate)
         Files.isRegularFile(lastUpdate)
