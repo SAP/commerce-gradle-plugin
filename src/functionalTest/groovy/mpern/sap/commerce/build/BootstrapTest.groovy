@@ -156,7 +156,7 @@ class BootstrapTest extends Specification {
 
         when: "running bootstrap task"
 
-        def beforeBootstrap = Instant.now()
+        def beforeBootstrap = Instant.now() - 5
 
         // Sometimes the test is too fast - and the is after check evaluates to false
         Thread.sleep(100)
