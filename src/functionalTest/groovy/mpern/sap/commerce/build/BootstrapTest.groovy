@@ -1,6 +1,7 @@
 package mpern.sap.commerce.build
 
 import static mpern.sap.commerce.build.TestUtils.ensureParents
+import static org.assertj.core.api.Assertions.assertThat
 import static org.gradle.testkit.runner.TaskOutcome.*
 
 import java.nio.file.Files
@@ -12,8 +13,6 @@ import org.gradle.testkit.runner.GradleRunner
 
 import spock.lang.Specification
 import spock.lang.TempDir
-
-import static org.assertj.core.api.Assertions.assertThat
 
 class BootstrapTest extends Specification {
     @TempDir
