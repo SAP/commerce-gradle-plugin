@@ -158,6 +158,9 @@ class BootstrapTest extends Specification {
 
         def beforeBootstrap = Instant.now()
 
+        // Sometimes the test is too fast - and the is after check evaluates to false
+        Thread.sleep(100)
+
         def result = runner
                 .withArguments("--stacktrace", 'bootstrapPlatform')
                 .build()
