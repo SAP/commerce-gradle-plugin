@@ -7,6 +7,7 @@ import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.Paths
 import java.time.Instant
+import java.time.temporal.ChronoUnit
 
 import org.gradle.testkit.runner.GradleRunner
 
@@ -156,7 +157,12 @@ class BootstrapTest extends Specification {
 
         when: "running bootstrap task"
 
-        def beforeBootstrap = Instant.now()
+        /*
+         we need to truncate because it seems like on mac,
+         the lastModifiedDate does not contain milliseconds
+         at least on GitHub Action MacOS runner.
+         */
+        def beforeBootstrap = Instant.now().truncatedTo(ChronoUnit.SECONDS)
 
         def result = runner
                 .withArguments("--stacktrace", 'bootstrapPlatform')
@@ -171,7 +177,7 @@ class BootstrapTest extends Specification {
         Files.exists(driverFile)
         Files.exists(lastUpdate)
         Files.isRegularFile(lastUpdate)
-        Files.getLastModifiedTime(lastUpdate).toInstant().isAfter(beforeBootstrap)
+        Files.getLastModifiedTime(lastUpdate).toInstant().truncatedTo(ChronoUnit.SECONDS) >= beforeBootstrap
     }
 
     def "cleanPlatform must delete all files as configured"() {

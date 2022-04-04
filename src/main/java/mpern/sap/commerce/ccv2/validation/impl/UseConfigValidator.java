@@ -6,6 +6,7 @@ import static mpern.sap.commerce.ccv2.validation.ValidationUtils.validateAndNorm
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.MalformedInputException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -83,6 +84,12 @@ public class UseConfigValidator implements Validator {
                                         properties.location)
                                 .setCode("W-002").createError());
                     }
+                } catch (MalformedInputException e) {
+                    errors.add(new Error.Builder().setLocation("useConfig.properties[%d]", i).setLevel(Level.WARNING)
+                            .setMessage(
+                                    "`%s` seems to use a different charset than ISO 8859-1. This might lead to corrupted properties after build and deployment.",
+                                    properties.location)
+                            .setCode("W-002").createError());
                 } catch (IOException e) {
                     // shouldn't happen
                 }
