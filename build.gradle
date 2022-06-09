@@ -2,17 +2,17 @@
 buildscript {
     configurations.classpath {
         resolutionStrategy {
-            force 'org.eclipse.jgit:org.eclipse.jgit:5.7.0.202003110725-r'
+            force 'org.eclipse.jgit:org.eclipse.jgit:6.1.0.202203080745-r'
         }
     }
 }
 
 plugins {
-    id 'com.gradle.plugin-publish' version '0.15.0'
-    id 'pl.allegro.tech.build.axion-release' version '1.13.2'
+    id 'com.gradle.plugin-publish' version '0.21.0'
+    id 'pl.allegro.tech.build.axion-release' version '1.13.14'
     id 'java-gradle-plugin'
     id 'groovy'
-    id 'com.diffplug.spotless' version '5.14.0'
+    id 'com.diffplug.spotless' version '6.7.0'
     //    id 'com.github.ben-manes.versions' version '0.39.0'
 }
 
@@ -81,7 +81,7 @@ repositories {
 }
 
 dependencies {
-    testImplementation platform("org.spockframework:spock-bom:2.0-groovy-3.0")
+    testImplementation platform("org.spockframework:spock-bom:2.1-groovy-3.0")
     testImplementation "org.spockframework:spock-core"
 }
 
@@ -113,7 +113,7 @@ pluginBundle {
     plugins {
         hybrisPlugin {
             displayName = 'SAP Commerce Bootstrap & Build Plugin'
-            description = """Manage the whole development lifecycle of your SAP Commerce Project with Gradle"""
+            description = 'Manage the whole development lifecycle of your SAP Commerce Project with Gradle'
             tags = [
                 'sap commerce',
                 'sap hybris commerce',
@@ -125,8 +125,8 @@ pluginBundle {
             ]
         }
         hybrisCCv1Packaging {
-            displayName = "SAP Commerce CCv1 Packaging Plugin"
-            description = """Package your SAP Commerce project according to the CCv1 Deployment Packaging Guidelines"""
+            displayName = 'SAP Commerce CCv1 Packaging Plugin'
+            description = 'Package your SAP Commerce project according to the CCv1 Deployment Packaging Guidelines'
             tags = [
                 'sap commerce',
                 'sap hybris commerce',
@@ -138,8 +138,8 @@ pluginBundle {
             ]
         }
         ccv2BuildSupport {
-            displayName = "SAP Commerce Cloud in the Public Cloud Build Support Plugin"
-            description = """Use the CCv2 manifest.json to configure and build your local development environment"""
+            displayName = 'SAP Commerce Cloud in the Public Cloud Build Support Plugin'
+            description = 'Use the CCv2 manifest.json to configure and build your local development environment'
             tags = [
                 'sap commerce',
                 'sap hybris commerce',
