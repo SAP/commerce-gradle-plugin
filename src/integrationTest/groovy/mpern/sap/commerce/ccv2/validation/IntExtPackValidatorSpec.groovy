@@ -65,5 +65,6 @@ class IntExtPackValidatorSpec extends Specification {
         "2005"   | "2015.2" | "not compatible"
         "1811"   | "2005.2" | "available"
         "2105"   | "2108" | "qualified"
+        "2205"   | "2108.0" | "available"
     }
 }
