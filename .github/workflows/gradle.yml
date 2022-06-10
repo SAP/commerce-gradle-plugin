@@ -36,7 +36,7 @@ jobs:
       - name: Set up Java
         uses: actions/setup-java@v3
         with:
-          java-version: 17
+          java-version: 8
           distribution: 'temurin'
           cache: 'gradle'
       - name: Gradle build
@@ -59,7 +59,7 @@ jobs:
       - name: Set up Java
         uses: actions/setup-java@v3
         with:
-          java-version: 17
+          java-version: 8
           distribution: 'temurin'
           cache: 'gradle'
       - name: Gradle build
@@ -106,7 +106,7 @@ jobs:
       - name: Setup Java JDK
         uses: actions/setup-java@v3
         with:
-          java-version: 17
+          java-version: 8
           distribution: 'temurin'
           cache: 'gradle'
       - name: Gradle build
@@ -126,7 +126,7 @@ jobs:
       - name: Setup Java JDK
         uses: actions/setup-java@v3
         with:
-          java-version: 17
+          java-version: 8
           distribution: 'temurin'
           cache: 'gradle'
       - name: Gradle build
