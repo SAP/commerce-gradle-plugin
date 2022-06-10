@@ -241,7 +241,7 @@ class PackagingTest extends Specification {
     }
 
     private Tuple openPackageFile() {
-        packageFile = FileSystems.newFileSystem(testProjectDir.resolve("dist/${packageName}.zip"), Collections.emptyMap())
+        packageFile = FileSystems.newFileSystem(testProjectDir.resolve("dist/${packageName}.zip"), null)
         new Tuple(packageFile, packageFile.getPath("${packageName}"))
     }
 
