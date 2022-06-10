@@ -2,7 +2,7 @@
 buildscript {
     configurations.classpath {
         resolutionStrategy {
-            force 'org.eclipse.jgit:org.eclipse.jgit:6.1.0.202203080745-r'
+            force 'org.eclipse.jgit:org.eclipse.jgit:5.13.0.202109080827-r'
         }
     }
 }
