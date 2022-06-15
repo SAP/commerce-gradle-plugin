@@ -1,19 +1,18 @@
 # Plugin `sap.commerce.build`
 
-The goal for this plugin is to automate the most common steps when setting up a SAP Commerce development environment and
-allows you to call the platform ant build as a Gradle task (in your script, or from the command line).
-
-It also allows you to automate the download of the distribution zip files from the SAP Support Portal.
+The goal for this plugin is to automate the most common steps when setting up a SAP Commerce development 
+environment and  allows you to call the platform ant build as a Gradle task (in your script, or from
+the command line).
 
 ## Configuration
 
-The following example shows the full DSL (Domain Specific Language) with all default options and the dependencies the
-plugin pre-configures.
+The following example shows the full Domain Specific Language (DSL) with all default options and 
+pre-configured dependencies.
 
 ```gradle
 hybris {
     //SAP Commerce version to use
-    version = "2011.4"
+    version = "2205.0"
     
     //What files should be deleted when cleaning up the platform?
     cleanGlob = "glob:**hybris/bin/{ext-**,platform**}"
@@ -105,6 +104,9 @@ This task type allows you to define a hybris ant target as Gradle task.
 
 Under the hood it's a pre-configured `JavaExec` task
 
+**Added in 3.7.0:** Lazy configuration of `antProperties` plus `fallbackAntProperties` for fallbacks
+if something is not configured during a particular Gradle run.
+
 #### Example:
 
 ```gradle
@@ -122,23 +124,10 @@ task unitTests(type: mpern.sap.commerce.build.tasks.HybrisAntTask) {
 }
 ```
 
+
 ### ~~`mpern.sap.commerce.build.tasks.SupportPortalDownload`~~
 
 **Deprecated with v2.1.1; Removed with v3.0.0; Check the [FAQ](FAQ.md)**
-
-Downloads hybris commerce files from the SAP Support Portal.
-
-| Parameter     | Description |
-| ------------- | ------------- |
-| `supportPortalUrl` | URL of the file in the Support Portal (The same URL that opens when you click on the link on the Hybris Commerce Release Page) |
-| `username`         | S/I/D-User |
-| `password`         | Password  |
-| `targetFile`       | Where the file is downloaded to |
-| `md5Hash`          | Expected MD5-hash of the file (used to perform up-to-date checks). You can find the hash in the Support Portal via Related Info -> Content Info |
-| `sha256Sum`        | Expected SHA-256 hash of the file. You need to specify either the `md5Hash` or the `sha256Sum` |
-
-The plugin also makes sure that all `SupportPortalDownload` tasks are executed before `bootstrapPlatform`, to avoid
-dependency resolution issues when bootstrapping the platform after a fresh clone.
 
 ## Task Rules
 

@@ -9,6 +9,37 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 TBD
 
+## [3.7.0] 2022-06-15
+
+### Deprecated
+
+- `sap.commerce.ccv1.package` - CCv1 is sunset. The packaging plugin will be removed in the next release
+
+### Added
+
+- Commerce plugin: [Lazy configuration] with fallback for ant properties ([$32])
+- Commerce plugin: `HybrisAntTaks` support for 2205
+- CCv2 Plugin, manifest validation: Add support for SAP Commerce 2105 and
+  Integration Extension Pack 2108 ([#38])
+- CCv2 Plugin, manifest validation: Add support for SAP Commerce 2205 and
+    Integration Extension Pack 2205
+
+### Fixed
+
+- Windows compatibility ([#34])
+
+Thank you [@tklostermannNSD] for adding the 2105 / 2108 compatibility check!
+
+Special shout out to [@aepfli] for not only adding lazy configuration to `HybrisAntTas` and improving
+the Windows compatibility, but for also adding the much-needed OS compatibility check to our
+GH Actions flow.
+
+[#32]: https://github.com/SAP/commerce-gradle-plugin/pull/32
+[Lazy configuration]: https://docs.gradle.org/current/userguide/lazy_configuration.html
+[#38]: https://github.com/SAP/commerce-gradle-plugin/pull/38
+[@aepfli]: https://github.com/aepfli
+[@tklostermannNSD]: https://github.com/tklostermannNSD
+
 ## [3.6.0] 2021-06-25
 
 ### Changed
@@ -309,7 +340,8 @@ Shout out to [@corneleberle] for providing the fix.
 
 :tada: Initial release :tada:
 
-[Unreleased]: https://github.com/SAP/commerce-gradle-plugin/compare/v3.6.0...HEAD
+[Unreleased]: https://github.com/SAP/commerce-gradle-plugin/compare/v3.7.0...HEAD
+[3.7.0]: https://github.com/SAP/commerce-gradle-plugin/compare/v3.6.0...v3.7.0
 [3.6.0]: https://github.com/SAP/commerce-gradle-plugin/compare/v3.5.0...v3.6.0
 [3.5.0]: https://github.com/SAP/commerce-gradle-plugin/compare/v3.4.0...v3.5.0
 [3.4.0]: https://github.com/SAP/commerce-gradle-plugin/compare/v3.3.0...v3.4.0
