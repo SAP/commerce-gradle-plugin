@@ -2,7 +2,6 @@ package mpern.sap.commerce.ccv2.validation
 
 import java.nio.file.Files
 import java.nio.file.Path
-import java.nio.file.Paths
 
 import groovy.json.JsonSlurper
 import spock.lang.Specification
