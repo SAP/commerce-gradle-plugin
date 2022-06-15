@@ -11,11 +11,7 @@ import java.nio.file.attribute.BasicFileAttributes;
 import org.gradle.api.DefaultTask;
 import org.gradle.api.file.DirectoryProperty;
 import org.gradle.api.provider.Property;
-import org.gradle.api.tasks.Input;
-import org.gradle.api.tasks.InputDirectory;
-import org.gradle.api.tasks.SkipWhenEmpty;
-import org.gradle.api.tasks.TaskAction;
-import org.gradle.api.tasks.TaskExecutionException;
+import org.gradle.api.tasks.*;
 
 public class GlobClean extends DefaultTask {
     final Property<String> glob;
@@ -61,8 +57,7 @@ public class GlobClean extends DefaultTask {
         return glob;
     }
 
-    @SkipWhenEmpty
-    @InputDirectory
+    @Input
     public DirectoryProperty getBaseFolder() {
         return baseFolder;
     }

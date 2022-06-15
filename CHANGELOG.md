@@ -7,7 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-TBD
+## [3.7.1] 2022-06-15
+
+### Fixed
+
+- Commerce plugin, task `cleanPlatform`: Fix OutOfMemory error and performance issues
+
+Details: [Conversation in Gradle Community Slack](https://gradle-community.slack.com/archives/CAHSN3LDN/p1655306254427809)
 
 ## [3.7.0] 2022-06-15
 
@@ -340,7 +346,8 @@ Shout out to [@corneleberle] for providing the fix.
 
 :tada: Initial release :tada:
 
-[Unreleased]: https://github.com/SAP/commerce-gradle-plugin/compare/v3.7.0...HEAD
+[Unreleased]: https://github.com/SAP/commerce-gradle-plugin/compare/v3.7.1...HEAD
+[3.7.1]: https://github.com/SAP/commerce-gradle-plugin/compare/v3.7.0...v3.7.1
 [3.7.0]: https://github.com/SAP/commerce-gradle-plugin/compare/v3.6.0...v3.7.0
 [3.6.0]: https://github.com/SAP/commerce-gradle-plugin/compare/v3.5.0...v3.6.0
 [3.5.0]: https://github.com/SAP/commerce-gradle-plugin/compare/v3.4.0...v3.5.0

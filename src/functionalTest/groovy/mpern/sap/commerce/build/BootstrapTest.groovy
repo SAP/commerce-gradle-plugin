@@ -91,7 +91,6 @@ class BootstrapTest extends Specification {
 
         then:
         result.task(":bootstrapPlatform").outcome == SUCCESS
-        result.task(":cleanPlatformIfVersionChanged").outcome == NO_SOURCE
         result.task(":unpackPlatform").outcome == SUCCESS
     }
 
