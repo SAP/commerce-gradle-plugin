@@ -1,19 +1,10 @@
-// https://github.com/diffplug/spotless/issues/587
-buildscript {
-    configurations.classpath {
-        resolutionStrategy {
-            force 'org.eclipse.jgit:org.eclipse.jgit:5.7.0.202003110725-r'
-        }
-    }
-}
-
 plugins {
     id 'com.gradle.plugin-publish' version '0.15.0'
-    id 'pl.allegro.tech.build.axion-release' version '1.13.2'
+    id 'pl.allegro.tech.build.axion-release' version '1.13.14'
     id 'java-gradle-plugin'
     id 'groovy'
-    id 'com.diffplug.spotless' version '5.14.0'
-    //    id 'com.github.ben-manes.versions' version '0.39.0'
+    id 'com.diffplug.spotless' version '6.7.2'
+    id 'com.github.ben-manes.versions' version '0.42.0'
 }
 
 scmVersion {
@@ -22,7 +13,8 @@ scmVersion {
             file: 'README.md',
             pattern: {v, c -> /$v/},
             replacement: {v, c ->
-                "$v"}
+                "$v"
+            }
         ]
         pre 'commit'
     }
@@ -81,7 +73,7 @@ repositories {
 }
 
 dependencies {
-    testImplementation platform("org.spockframework:spock-bom:2.0-groovy-3.0")
+    testImplementation platform("org.spockframework:spock-bom:2.1-groovy-3.0")
     testImplementation "org.spockframework:spock-core"
 }
 
