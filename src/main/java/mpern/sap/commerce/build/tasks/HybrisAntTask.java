@@ -1,12 +1,13 @@
 package mpern.sap.commerce.build.tasks;
 
-import java.util.HashMap;
 import java.util.Map;
 
 import org.gradle.api.Task;
 import org.gradle.api.execution.TaskExecutionAdapter;
 import org.gradle.api.file.ConfigurableFileTree;
+import org.gradle.api.provider.MapProperty;
 import org.gradle.api.provider.Property;
+import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.Internal;
 import org.gradle.api.tasks.JavaExec;
 
@@ -16,14 +17,18 @@ import mpern.sap.commerce.build.util.HybrisPlatform;
 
 public class HybrisAntTask extends JavaExec {
 
-    private Map<String, String> antProperties;
+    private final MapProperty<String, String> antProperties;
+
+    private final MapProperty<String, String> fallbackAntProperties;
 
     private final Property<Boolean> noOp;
 
     public HybrisAntTask() {
         super();
-        antProperties = new HashMap<>();
         noOp = getProject().getObjects().property(Boolean.class);
+        fallbackAntProperties = getProject().getObjects().mapProperty(String.class, String.class);
+        antProperties = getProject().getObjects().mapProperty(String.class, String.class);
+        antProperties.put("maven.update.dbdrivers", "false");
     }
 
     @Override
@@ -48,8 +53,11 @@ public class HybrisAntTask extends JavaExec {
                         .getByName(HybrisPlugin.HYBRIS_EXTENSION)).getPlatform();
                 t.systemProperty("ant.home", platform.getAntHome().get().getAsFile());
 
-                t.antProperty("maven.update.dbdrivers", "false");
-                t.antProperties.forEach((k, v) -> t.args("-D" + k + "=" + v));
+                Map<String, String> props = t.antProperties.get();
+
+                t.fallbackAntProperties.get().forEach(props::putIfAbsent);
+
+                props.forEach((k, v) -> t.args("-D" + k + "=" + v));
 
                 t.workingDir(platform.getPlatformHome());
             }
@@ -78,11 +86,31 @@ public class HybrisAntTask extends JavaExec {
      * @param antProperties ant properties to use for the target
      */
     public void setAntProperties(Map<String, String> antProperties) {
-        this.antProperties = new HashMap<>(antProperties);
+        this.antProperties.set(antProperties);
+    }
+
+    /**
+     * Add a new runtime property to configure the ant target
+     *
+     * @param key   key of the property
+     * @param value value of the property
+     */
+    public void fallbackAntProperty(String key, String value) {
+        fallbackAntProperties.put(key, value);
     }
 
     @Internal
     public Property<Boolean> getNoOp() {
         return noOp;
+    }
+
+    @Input
+    public MapProperty<String, String> getAntProperties() {
+        return antProperties;
+    }
+
+    @Input
+    public MapProperty<String, String> getFallbackAntProperties() {
+        return fallbackAntProperties;
     }
 }
