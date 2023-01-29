@@ -20,6 +20,7 @@ public class IntExtPackValidator implements Validator {
         PLATFORM_TO_PACK.put(Version.parseVersion("2011"), Version.parseVersion("2102"));
         PLATFORM_TO_PACK.put(Version.parseVersion("2105"), Version.parseVersion("2108"));
         PLATFORM_TO_PACK.put(Version.parseVersion("2205"), Version.parseVersion("2205"));
+        PLATFORM_TO_PACK.put(Version.parseVersion("2211"), Version.parseVersion("2211"));
     }
 
     @Override
