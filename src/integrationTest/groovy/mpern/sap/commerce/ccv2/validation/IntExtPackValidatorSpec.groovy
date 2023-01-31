@@ -36,6 +36,7 @@ class IntExtPackValidatorSpec extends Specification {
         "2011"   | "2102.0"
         "2105"   | "2108.0"
         "2205"   | "2205.0"
+        "2211"   | "2211.0"
     }
 
     def "Int Ext Pack validation recognizes invalid combinations"(String commerce, String pack, String message) {
@@ -65,6 +66,8 @@ class IntExtPackValidatorSpec extends Specification {
         commerce | pack     | message
         "2005"   | "2015.2" | "not compatible"
         "1811"   | "2005.2" | "available"
-        "2105"   | "2108" | "qualified"
+        "2105"   | "2108"   | "qualified"
+        "2211"   | "2211"   | "qualified"
+        "2211"   | "2108.1" | "not compatible"
     }
 }
