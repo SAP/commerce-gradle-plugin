@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [3.8.0]
+
+### Added
+
+- CCv2 Plugin, manifest validation: Add support for SAP Commerce 2211 and
+  Integration Extension Pack 2211 ([#41])
+
+Thank you [@iccaprar] for adding the 2211 compatibility check!
+
+[#41]: https://github.com/SAP/commerce-gradle-plugin/issues/41
+[@iccaprar]: https://github.com/iccaprar
+
 ## [3.7.1] 2022-06-15
 
 ### Fixed
@@ -19,7 +31,8 @@ Details: [Conversation in Gradle Community Slack](https://gradle-community.slack
 
 ### Deprecated
 
-- `sap.commerce.ccv1.package` - CCv1 is sunset. The packaging plugin will be removed in the next release
+- `sap.commerce.ccv1.package` - CCv1 is sunset.\
+  The packaging plugin will be removed in the next major release
 
 ### Added
 
@@ -346,7 +359,8 @@ Shout out to [@corneleberle] for providing the fix.
 
 :tada: Initial release :tada:
 
-[Unreleased]: https://github.com/SAP/commerce-gradle-plugin/compare/v3.7.1...HEAD
+[Unreleased]: https://github.com/SAP/commerce-gradle-plugin/compare/v3.8.0...HEAD
+[3.8.0]: https://github.com/SAP/commerce-gradle-plugin/compare/v3.7.1...v3.8.0
 [3.7.1]: https://github.com/SAP/commerce-gradle-plugin/compare/v3.7.0...v3.7.1
 [3.7.0]: https://github.com/SAP/commerce-gradle-plugin/compare/v3.6.0...v3.7.0
 [3.6.0]: https://github.com/SAP/commerce-gradle-plugin/compare/v3.5.0...v3.6.0
