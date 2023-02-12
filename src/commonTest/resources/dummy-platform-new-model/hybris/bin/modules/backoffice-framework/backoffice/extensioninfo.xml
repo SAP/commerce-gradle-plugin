@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!--
+ Copyright (c) 2020 SAP SE or an SAP affiliate company. All rights reserved
+-->
+<extensioninfo xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="extensioninfo.xsd">
+
+    <extension abstractclassprefix="Generated" classprefix="Backoffice" name="backoffice" usemaven="false">
+
+        <coremodule generated="true" manager="com.hybris.backoffice.jalo.BackofficeManager" packageroot="com.hybris.backoffice"/>
+
+        <webmodule jspcompile="false" webroot="/backoffice"/>
+
+        <meta key="classpathgen" value="false"/>
+
+    </extension>
+
+</extensioninfo>
