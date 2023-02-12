@@ -1,12 +1,16 @@
 package mpern.sap.commerce.build;
 
+import org.gradle.api.Action;
 import org.gradle.api.Project;
 import org.gradle.api.provider.ListProperty;
 import org.gradle.api.provider.Property;
+import org.gradle.api.tasks.Nested;
 
 import mpern.sap.commerce.build.util.HybrisPlatform;
+import mpern.sap.commerce.build.util.SparseBootstrapSettings;
 
-public class HybrisPluginExtension {
+public abstract class HybrisPluginExtension {
+
     private final Property<String> version;
     private final Property<String> cleanGlob;
 
@@ -53,5 +57,12 @@ public class HybrisPluginExtension {
 
     public ListProperty<Object> getAntTaskDependencies() {
         return antTaskDependencies;
+    }
+
+    @Nested
+    public abstract SparseBootstrapSettings getSparseBootstrap();
+
+    public void sparseBootstrap(Action<? super SparseBootstrapSettings> action) {
+        action.execute(getSparseBootstrap());
     }
 }

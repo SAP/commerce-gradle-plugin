@@ -74,6 +74,7 @@ class BootstrapTest extends Specification {
         then: "the task is skipped"
         result.task(":cleanPlatformIfVersionChanged").outcome == SKIPPED
         result.task(":unpackPlatform").outcome == SKIPPED
+        result.task(":unpackPlatformSparse").outcome == SKIPPED
     }
 
     def "boostrap extecuted when no platform is there"() {
@@ -92,6 +93,7 @@ class BootstrapTest extends Specification {
         then:
         result.task(":bootstrapPlatform").outcome == SUCCESS
         result.task(":unpackPlatform").outcome == SUCCESS
+        result.task(":unpackPlatformSparse").outcome == SKIPPED
     }
 
     def "boostrap replaces platform if wrong version"() {
@@ -130,6 +132,7 @@ class BootstrapTest extends Specification {
         then:
 
         result.task(":bootstrapPlatform").outcome == SUCCESS
+        result.task(":unpackPlatformSparse").outcome == SKIPPED
 
         Files.exists(customFile)
         Files.exists(localProperties)
@@ -172,6 +175,7 @@ class BootstrapTest extends Specification {
 
         then:
         result.task(":bootstrapPlatform").outcome == SUCCESS
+        result.task(":unpackPlatformSparse").outcome == SKIPPED
 
         Files.exists(driverFile)
         Files.exists(lastUpdate)
