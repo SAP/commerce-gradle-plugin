@@ -45,7 +45,7 @@ public class ExtensionInfoLoader {
 
         List<Extension> customExtensions = getFromDir(customDir, ExtensionType.CUSTOM);
 
-        return Set.copyOf(customExtensions);
+        return new HashSet<>(customExtensions);
     }
 
     /**
