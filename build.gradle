@@ -147,14 +147,22 @@ pluginBundle {
 }
 
 sourceSets {
-    integrationTest {
-        groovy.srcDir file('src/integrationTest/groovy')
+    commonTest {
+        groovy.srcDir file('src/commonTest/groovy')
         compileClasspath += sourceSets.main.output + configurations.testRuntimeClasspath
         runtimeClasspath += output + compileClasspath
     }
 }
 
-task integrationTest(type: Test) {
+sourceSets {
+    integrationTest {
+        groovy.srcDir file('src/integrationTest/groovy')
+        compileClasspath += sourceSets.main.output + configurations.testRuntimeClasspath + sourceSets.commonTest.output
+        runtimeClasspath += output + compileClasspath
+    }
+}
+
+tasks.register("integrationTest", Test.class) {
     description = 'Runs the integration tests.'
     group = 'verification'
     testClassesDirs = sourceSets.integrationTest.output.classesDirs
@@ -167,12 +175,12 @@ check.dependsOn integrationTest
 sourceSets {
     functionalTest {
         groovy.srcDir file('src/functionalTest/groovy')
-        compileClasspath += sourceSets.main.output + configurations.testRuntimeClasspath
+        compileClasspath += sourceSets.main.output + configurations.testRuntimeClasspath + sourceSets.commonTest.output
         runtimeClasspath += output + compileClasspath
     }
 }
 
-task functionalTest(type: Test) {
+tasks.register("functionalTest", Test.class) {
     description = 'Runs the functional tests.'
     group = 'verification'
     testClassesDirs = sourceSets.functionalTest.output.classesDirs
