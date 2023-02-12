@@ -3,10 +3,11 @@ package mpern.sap.commerce.build.tasks;
 import java.util.HashSet;
 import java.util.Set;
 
-import mpern.sap.commerce.build.extensioninfo.ExtensionInfoLoader;
-import mpern.sap.commerce.build.util.Extension;
 import org.gradle.api.DefaultTask;
 import org.gradle.api.tasks.TaskAction;
+
+import mpern.sap.commerce.build.extensioninfo.ExtensionInfoLoader;
+import mpern.sap.commerce.build.util.Extension;
 
 /**
  * Task implementation to unpack the platform in sparse mode.
