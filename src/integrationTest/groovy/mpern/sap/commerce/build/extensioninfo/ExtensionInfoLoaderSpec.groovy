@@ -1,5 +1,10 @@
 package mpern.sap.commerce.build.extensioninfo
 
+import mpern.sap.commerce.build.ExtensionsTestUtils
+import mpern.sap.commerce.build.util.Extension
+
+import java.nio.file.FileSystems
+
 import static mpern.sap.commerce.build.HybrisPlugin.HYBRIS_PLATFORM_CONFIGURATION
 
 import java.nio.file.Files
@@ -165,5 +170,105 @@ class ExtensionInfoLoaderSpec extends Specification {
             it.relativeLocation == "platform"
             it.requiredExtensions.empty
         }
+    }
+
+    def "raise error when loading the needed extensions and platform is missing"() {
+        given:
+        def projectBuilder = ProjectBuilder.builder()
+                .withName("test")
+        project = projectBuilder.build()
+
+        loader = new ExtensionInfoLoader(project)
+
+        and: "already loaded all extensions information"
+        def allKnownExtensions = new HashSet<Extension>()
+
+        when:
+        def allNeededExtensions = loader.loadAllNeededExtensions(allKnownExtensions)
+
+        then:
+        ExtensionInfoException e = thrown()
+        e.message == "Platform extension not found"
+    }
+
+    def "correctly load the needed extensions"() {
+        given: "a Gradle project with localextensions.xml"
+        def projectBuilder = ProjectBuilder.builder()
+                .withName("test")
+                .withProjectDir(testProjectDir)
+        project = projectBuilder.build()
+        ExtensionsTestUtils.ensureLocalExtensions(testProjectDir.toPath())
+
+        loader = new ExtensionInfoLoader(project)
+
+        and: "already loaded all extensions information"
+        def allKnownExtensions = buildAllKnownExtensions()
+
+        when:
+        def allNeededExtensions = loader.loadAllNeededExtensions(allKnownExtensions)
+
+        then:
+        allNeededExtensions.size() == 8
+        allNeededExtensions.any { it.name == "platform" }
+        allNeededExtensions.any { it.name == "myextensionone" }
+        allNeededExtensions.any { it.name == "myextensiontwo" }
+        allNeededExtensions.any { it.name == "searchservices" }
+        allNeededExtensions.any { it.name == "payment" }
+        allNeededExtensions.any { it.name == "basecommerce" }
+        allNeededExtensions.any { it.name == "apiregistryservices" }
+        allNeededExtensions.any { it.name == "backoffice" }
+    }
+
+    private Set<Extension> buildAllKnownExtensions() {
+        def allKnownExtensions = new HashSet<Extension>()
+
+        allKnownExtensions.add(new Extension("platform",
+                FileSystems.default.getPath("hybris/bin/platform"),
+                "hybris/bin/platform",
+                ExtensionType.SAP_PLATFORM, Collections.emptyList()))
+
+        allKnownExtensions.add(new Extension("myextensionone",
+                FileSystems.default.getPath("hybris/bin/custom/module/myextensionone"),
+                "custom/module/myextensionone",
+                ExtensionType.CUSTOM, Collections.emptyList()))
+        allKnownExtensions.add(new Extension("myextensiontwo",
+                FileSystems.default.getPath("hybris/bin/custom/module/myextensiontwo"),
+                "custom/module/myextensiontwo",
+                ExtensionType.CUSTOM, Arrays.asList("searchservices")))
+
+        allKnownExtensions.add(new Extension("apiregistryservices",
+                FileSystems.default.getPath("hybriszip/extracted/hybris/bin/modules/api-registry/apiregistryservices"),
+                "modules/api-registry/apiregistryservices",
+                ExtensionType.SAP_MODULE, Collections.emptyList()))
+        allKnownExtensions.add(new Extension("backoffice",
+                FileSystems.default.getPath("hybriszip/extracted/hybris/bin/modules/backoffice-framework/backoffice"),
+                "modules/backoffice-framework/backoffice",
+                ExtensionType.SAP_MODULE, Collections.emptyList()))
+        allKnownExtensions.add(new Extension("ybackoffice",
+                FileSystems.default.getPath("hybriszip/extracted/hybris/bin/modules/backoffice-framework/ybackoffice"),
+                "modules/backoffice-framework/ybackoffice",
+                ExtensionType.SAP_MODULE, Arrays.asList("backoffice")))
+        allKnownExtensions.add(new Extension("basecommerce",
+                FileSystems.default.getPath("hybriszip/extracted/hybris/bin/modules/base-commerce/basecommerce"),
+                "modules/base-commerce/basecommerce",
+                ExtensionType.SAP_MODULE, Arrays.asList("apiregistryservices")))
+        allKnownExtensions.add(new Extension("payment",
+                FileSystems.default.getPath("hybriszip/extracted/hybris/bin/modules/base-commerce/payment"),
+                "modules/base-commerce/payment",
+                ExtensionType.SAP_MODULE, Arrays.asList("apiregistryservices", "basecommerce")))
+        allKnownExtensions.add(new Extension("yempty",
+                FileSystems.default.getPath("hybriszip/extracted/hybris/bin/modules/platform/yempty"),
+                "modules/platform/yempty",
+                ExtensionType.SAP_MODULE, Collections.emptyList()))
+        allKnownExtensions.add(new Extension("ruleengine",
+                FileSystems.default.getPath("hybriszip/extracted/hybris/bin/modules/rule-engine/ruleengine"),
+                "modules/rule-engine/ruleengine",
+                ExtensionType.SAP_MODULE, Collections.emptyList()))
+        allKnownExtensions.add(new Extension("searchservices",
+                FileSystems.default.getPath("hybriszip/extracted/hybris/bin/modules/search-services/searchservices"),
+                "modules/search-services/searchservices",
+                ExtensionType.SAP_MODULE, Collections.emptyList()))
+
+        return allKnownExtensions
     }
 }

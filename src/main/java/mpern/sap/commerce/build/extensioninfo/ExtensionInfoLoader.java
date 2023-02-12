@@ -44,9 +44,7 @@ public class ExtensionInfoLoader {
 
         System.out.println(project.getProjectDir().toPath());
 
-        List<Extension> customExtensions = getFromDir(customDir, ExtensionType.CUSTOM);
-
-        return new HashSet<>(customExtensions);
+        return getFromDir(customDir, ExtensionType.CUSTOM);
     }
 
     /**
@@ -78,7 +76,19 @@ public class ExtensionInfoLoader {
         return new Extension("platform", platformPath, "platform", ExtensionType.SAP_PLATFORM, Collections.emptyList());
     }
 
-    private List<Extension> getFromDir(FileTree dir, ExtensionType extensionType) {
+    public Set<Extension> loadAllNeededExtensions(Set<Extension> allKnownExtensions) {
+        Set<Extension> allNeededExtensions = new HashSet<>();
+
+        Extension platform = allKnownExtensions.stream()
+            .filter(it -> it.name == "platform" && it.extensionType == ExtensionType.SAP_PLATFORM)
+            .findFirst()
+            .orElseThrow(() -> new ExtensionInfoException("Platform extension not found"));
+        allNeededExtensions.add(platform);
+
+        return allNeededExtensions;
+    }
+
+    private Set<Extension> getFromDir(FileTree dir, ExtensionType extensionType) {
         PatternSet extInfoPattern = new PatternSet();
         extInfoPattern.include("**/extensioninfo.xml");
         extInfoPattern.exclude("**/bin/platform/**");
@@ -86,10 +96,10 @@ public class ExtensionInfoLoader {
 
         return files.stream()
                 .map(f -> ExtensionXmlUtil.loadExtensionFromExtensioninfoXml(f, HYBRIS_BIN_DIR, extensionType))
-                .collect(Collectors.toList());
+                .collect(Collectors.toSet());
     }
 
-    private List<Extension> getFromHybrisPlatformDependency(File zipFile) {
+    private Set<Extension> getFromHybrisPlatformDependency(File zipFile) {
         FileTree zip = project.zipTree(zipFile);
         return getFromDir(zip, ExtensionType.SAP_MODULE);
     }

@@ -27,8 +27,17 @@ import org.xml.sax.SAXException;
 import mpern.sap.commerce.build.util.Extension;
 import mpern.sap.commerce.build.util.ExtensionType;
 
+/**
+ * Utility functions for loading extension information from Hybris specific XML files.
+ */
 public final class ExtensionXmlUtil {
 
+    /**
+     * Loads the names of all extensions declared in localextensions.xml.
+     *
+     * @param file the localextensions.xml to be loaded
+     * @return the declared extensions names
+     */
     public static Set<String> loadExtensionNamesFromLocalExtensionsXML(File file) {
         try {
             DocumentBuilderFactory domFactory = DocumentBuilderFactory.newInstance();
@@ -44,10 +53,9 @@ public final class ExtensionXmlUtil {
                 }
             }
             return extensionNames;
-        } catch (Exception e) {
-            // ignore
+        } catch (ParserConfigurationException | SAXException | IOException e) {
+            throw new ExtensionInfoException("Error parsing localextensions.xml file " + file, e);
         }
-        return Collections.emptySet();
     }
 
     /**
