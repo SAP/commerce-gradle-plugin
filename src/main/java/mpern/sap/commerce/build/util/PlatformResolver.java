@@ -125,6 +125,7 @@ public class PlatformResolver {
             try {
                 String name = (java.lang.String) getName.invoke(o);
                 Path dir = ((java.io.File) getDirectory.invoke(o)).toPath();
+                // dependencies are not relevant here
                 return new Extension(name, dir);
             } catch (IllegalAccessException | InvocationTargetException e) {
                 throw new RuntimeException(e);
