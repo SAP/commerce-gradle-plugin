@@ -1,7 +1,7 @@
 package mpern.sap.commerce.build.tasks;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.gradle.api.DefaultTask;
 import org.gradle.api.tasks.TaskAction;
@@ -23,14 +23,14 @@ public class UnpackPlatformSparseTask extends DefaultTask {
 
         // Phase 1: gather information about all known extensions and their direct
         // dependencies
-        Set<Extension> allKnownExtensions = getAllKnownExtensions(extensionInfoLoader);
+        Map<String, Extension> allKnownExtensions = getAllKnownExtensions(extensionInfoLoader);
 
         // Phase 2: build the list of needed hybris dependencies to be present
-        Set<Extension> neededExtensions = getNeededExtensions(extensionInfoLoader);
+        Map<String, Extension> neededExtensions = getNeededExtensions(extensionInfoLoader, allKnownExtensions);
 
         // Phase 3: build the list of extensions already present in the project
         // hybris/bin folder
-        Set<Extension> alreadyExistingExtensions = getAlreadyExistingExtensions(extensionInfoLoader);
+        Map<String, Extension> alreadyExistingExtensions = getAlreadyExistingExtensions(extensionInfoLoader);
 
         // Phase 4: find the missing extensions, by removing from the needed list the
         // present ones
@@ -38,24 +38,27 @@ public class UnpackPlatformSparseTask extends DefaultTask {
         // Phase 5: extract from the dependencies zips the missing extensions
     }
 
-    private Set<Extension> getAllKnownExtensions(ExtensionInfoLoader extensionInfoLoader) {
-        Set<Extension> customExtensions = extensionInfoLoader.getExtensionsFromCustomFolder();
-        Set<Extension> hybrisDependenciesExtensions = extensionInfoLoader.getExtensionsFromHybrisPlatformDependencies();
+    private Map<String, Extension> getAllKnownExtensions(ExtensionInfoLoader extensionInfoLoader) {
+        Map<String, Extension> customExtensions = extensionInfoLoader.getExtensionsFromCustomFolder();
+        Map<String, Extension> hybrisDependenciesExtensions = extensionInfoLoader
+                .getExtensionsFromHybrisPlatformDependencies();
         Extension platformExtension = extensionInfoLoader.getPlatfromExtension();
 
-        Set<Extension> result = new HashSet<>(customExtensions.size() + hybrisDependenciesExtensions.size() + 1);
-        result.addAll(customExtensions);
-        result.addAll(hybrisDependenciesExtensions);
-        result.add(platformExtension);
+        Map<String, Extension> result = new HashMap<>(
+                customExtensions.size() + hybrisDependenciesExtensions.size() + 1);
+        result.putAll(customExtensions);
+        result.putAll(hybrisDependenciesExtensions);
+        result.put(platformExtension.name, platformExtension);
 
         return result;
     }
 
-    private Set<Extension> getNeededExtensions(ExtensionInfoLoader extensionInfoLoader) {
-        return null;
+    private Map<String, Extension> getNeededExtensions(ExtensionInfoLoader extensionInfoLoader,
+            Map<String, Extension> allKnownExtensions) {
+        return extensionInfoLoader.loadAllNeededExtensions(allKnownExtensions);
     }
 
-    private Set<Extension> getAlreadyExistingExtensions(ExtensionInfoLoader extensionInfoLoader) {
+    private Map<String, Extension> getAlreadyExistingExtensions(ExtensionInfoLoader extensionInfoLoader) {
         return null;
     }
 }

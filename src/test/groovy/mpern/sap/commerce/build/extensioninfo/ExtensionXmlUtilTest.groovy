@@ -10,7 +10,7 @@ class ExtensionXmlUtilTest extends Specification {
 
     static final ROOT_LOCATION = "/testExtensions/"
 
-    def "file parsed correctly"() {
+    def "extensioninfo xml file parsed correctly"() {
         given:
         def sourceFile = Paths.get(
                 ExtensionXmlUtil.class.getResource("${ROOT_LOCATION}module/extension/extensioninfo.xml").toURI()).toFile()
@@ -53,5 +53,18 @@ class ExtensionXmlUtilTest extends Specification {
         then:
         ExtensionInfoException exception = thrown()
         exception.message.startsWith("Full location [")
+    }
+
+    def "localextensions xml file parsed correctly"() {
+        given:
+        def sourceFile = Paths.get(
+                ExtensionXmlUtil.class.getResource("/test-localextensions.xml").toURI()).toFile()
+
+        when:
+        def extensions = ExtensionXmlUtil.loadExtensionNamesFromLocalExtensionsXML(sourceFile)
+
+        then:
+        extensions.size() == 4
+        extensions.containsAll("payment", "backoffice", "myextensionone", "myextensiontwo")
     }
 }

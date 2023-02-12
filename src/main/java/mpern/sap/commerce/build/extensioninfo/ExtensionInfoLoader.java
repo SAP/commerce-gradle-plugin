@@ -6,10 +6,7 @@ import static mpern.sap.commerce.build.HybrisPlugin.HYBRIS_PLATFORM_CONFIGURATIO
 import java.io.File;
 import java.nio.file.FileSystems;
 import java.nio.file.Path;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import org.gradle.api.Project;
@@ -28,6 +25,11 @@ public class ExtensionInfoLoader {
 
     private static final String CUSTOM_DIR = "custom";
 
+    private static final Set<String> PLATFORM_INNER_EXT_NAMES = new HashSet<>(
+            Arrays.asList("advancedsavedquery", "catalog", "comments", "commons", "core", "deliveryzone", "europe1",
+                    "hac", "impex", "maintenanceweb", "mediaweb", "oauth2", "paymentstandard", "platformservices",
+                    "processing", "scripting", "testweb", "validation", "workflow"));
+
     private final Project project;
 
     public ExtensionInfoLoader(Project project) {
@@ -39,10 +41,8 @@ public class ExtensionInfoLoader {
      *
      * @return found extensions
      */
-    public Set<Extension> getExtensionsFromCustomFolder() {
+    public Map<String, Extension> getExtensionsFromCustomFolder() {
         FileTree customDir = project.fileTree(HYBRIS_BIN_DIR + CUSTOM_DIR);
-
-        System.out.println(project.getProjectDir().toPath());
 
         return getFromDir(customDir, ExtensionType.CUSTOM);
     }
@@ -54,12 +54,12 @@ public class ExtensionInfoLoader {
      * @return found extensions
      */
 
-    public Set<Extension> getExtensionsFromHybrisPlatformDependencies() {
-        Set<Extension> extensions = new HashSet<>();
+    public Map<String, Extension> getExtensionsFromHybrisPlatformDependencies() {
+        Map<String, Extension> extensions = new HashMap<>();
 
         Set<File> hybrisZipFiles = project.getConfigurations().getByName(HYBRIS_PLATFORM_CONFIGURATION).getFiles();
         for (File zipFile : hybrisZipFiles) {
-            extensions.addAll(getFromHybrisPlatformDependency(zipFile));
+            extensions.putAll(getFromHybrisPlatformDependency(zipFile));
         }
 
         return extensions;
@@ -76,19 +76,61 @@ public class ExtensionInfoLoader {
         return new Extension("platform", platformPath, "platform", ExtensionType.SAP_PLATFORM, Collections.emptyList());
     }
 
-    public Set<Extension> loadAllNeededExtensions(Set<Extension> allKnownExtensions) {
-        Set<Extension> allNeededExtensions = new HashSet<>();
+    /**
+     * Loads all the extensions needed, based on the localextensions.xml.
+     *
+     * @param allKnownExtensions all extensions known
+     * @return the needed extensions
+     */
+    public Map<String, Extension> loadAllNeededExtensions(Map<String, Extension> allKnownExtensions) {
+        Map<String, Extension> allNeededExtensions = new HashMap<>();
 
-        Extension platform = allKnownExtensions.stream()
-            .filter(it -> it.name == "platform" && it.extensionType == ExtensionType.SAP_PLATFORM)
-            .findFirst()
-            .orElseThrow(() -> new ExtensionInfoException("Platform extension not found"));
-        allNeededExtensions.add(platform);
+        Extension platform = allKnownExtensions.get("platform");
+        if (platform == null) {
+            throw new ExtensionInfoException("Platform extension not found");
+        }
+        allNeededExtensions.put("platform", platform);
+
+        File localExtensionsXmlFile = project.file("hybris/config/localextensions.xml");
+        if (!localExtensionsXmlFile.exists()) {
+            throw new ExtensionInfoException(
+                    "localextensions.xml file not found at " + localExtensionsXmlFile.getPath());
+        }
+        Set<String> declaredExtNames = ExtensionXmlUtil
+                .loadExtensionNamesFromLocalExtensionsXML(localExtensionsXmlFile);
+        for (String declaredExtName : declaredExtNames) {
+            addExtensionAndAllDepedencies(declaredExtName, allNeededExtensions, allKnownExtensions);
+        }
 
         return allNeededExtensions;
     }
 
-    private Set<Extension> getFromDir(FileTree dir, ExtensionType extensionType) {
+    private void addExtensionAndAllDepedencies(String extName, Map<String, Extension> allNeededExtensions,
+            Map<String, Extension> allKnownExtensions) {
+
+        if (isPlatformInnerExtension(extName)) {
+            // protect from platform extensions declared by mistake
+            return;
+        }
+
+        Extension extension = checkedGetFromKnownExtensions(extName, allKnownExtensions);
+        allNeededExtensions.put(extName, extension);
+
+        for (String requiredExtName : extension.requiredExtensions) {
+            addExtensionAndAllDepedencies(requiredExtName, allNeededExtensions, allKnownExtensions);
+        }
+    }
+
+    private Extension checkedGetFromKnownExtensions(String extName, Map<String, Extension> allKnownExtensions) {
+        Extension extension = allKnownExtensions.get(extName);
+        if (extension == null) {
+            throw new ExtensionInfoException(
+                    String.format("Extension %s needed, but not found in known extensions!", extName));
+        }
+        return extension;
+    }
+
+    private Map<String, Extension> getFromDir(FileTree dir, ExtensionType extensionType) {
         PatternSet extInfoPattern = new PatternSet();
         extInfoPattern.include("**/extensioninfo.xml");
         extInfoPattern.exclude("**/bin/platform/**");
@@ -96,11 +138,15 @@ public class ExtensionInfoLoader {
 
         return files.stream()
                 .map(f -> ExtensionXmlUtil.loadExtensionFromExtensioninfoXml(f, HYBRIS_BIN_DIR, extensionType))
-                .collect(Collectors.toSet());
+                .collect(Collectors.toMap(k -> k.name, v -> v));
     }
 
-    private Set<Extension> getFromHybrisPlatformDependency(File zipFile) {
+    private Map<String, Extension> getFromHybrisPlatformDependency(File zipFile) {
         FileTree zip = project.zipTree(zipFile);
         return getFromDir(zip, ExtensionType.SAP_MODULE);
+    }
+
+    private boolean isPlatformInnerExtension(String extName) {
+        return PLATFORM_INNER_EXT_NAMES.contains(extName);
     }
 }

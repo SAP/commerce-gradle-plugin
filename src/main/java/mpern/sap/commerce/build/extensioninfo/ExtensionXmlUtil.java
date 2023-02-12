@@ -7,7 +7,6 @@ import java.io.IOException;
 import java.nio.file.FileSystems;
 import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -28,12 +27,15 @@ import mpern.sap.commerce.build.util.Extension;
 import mpern.sap.commerce.build.util.ExtensionType;
 
 /**
- * Utility functions for loading extension information from Hybris specific XML files.
+ * Utility functions for loading extension information from Hybris specific XML
+ * files.
  */
 public final class ExtensionXmlUtil {
 
     /**
-     * Loads the names of all extensions declared in localextensions.xml.
+     * Loads the names of all extensions declared in localextensions.xml. Only
+     * extensions declared with "extension" elements are supported. Autoloaded paths
+     * are not supported.
      *
      * @param file the localextensions.xml to be loaded
      * @return the declared extensions names
