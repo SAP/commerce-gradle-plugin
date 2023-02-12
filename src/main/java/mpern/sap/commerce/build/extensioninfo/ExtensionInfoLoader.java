@@ -105,6 +105,24 @@ public class ExtensionInfoLoader {
         return allNeededExtensions;
     }
 
+    /**
+     * Loads all the extensions already existing in the project folder.
+     *
+     * @return the existing extensions
+     */
+    public Map<String, Extension> loadAlreadyExistingExtensions() {
+        FileTree binDir = project.fileTree(HYBRIS_BIN_DIR);
+        Map<String, Extension> existingExtensions = getFromDir(binDir, ExtensionType.RUNTIME_INSTALLED);
+
+        // add platform if folder exists
+        if (project.file(HYBRIS_BIN_DIR + "platform").exists()) {
+            Extension platformExt = getPlatfromExtension();
+            existingExtensions.put(platformExt.name, platformExt);
+        }
+
+        return existingExtensions;
+    }
+
     private void addExtensionAndAllDepedencies(String extName, Map<String, Extension> allNeededExtensions,
             Map<String, Extension> allKnownExtensions) {
 

@@ -2,6 +2,7 @@ package mpern.sap.commerce.build.tasks;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.gradle.api.DefaultTask;
 import org.gradle.api.tasks.TaskAction;
@@ -25,8 +26,8 @@ public class UnpackPlatformSparseTask extends DefaultTask {
         // dependencies
         Map<String, Extension> allKnownExtensions = getAllKnownExtensions(extensionInfoLoader);
 
-        // Phase 2: build the list of needed hybris dependencies to be present
-        Map<String, Extension> neededExtensions = getNeededExtensions(extensionInfoLoader, allKnownExtensions);
+        // Phase 2: build the list of all needed hybris dependencies to be present
+        Map<String, Extension> allNeededExtensions = getAllNeededExtensions(extensionInfoLoader, allKnownExtensions);
 
         // Phase 3: build the list of extensions already present in the project
         // hybris/bin folder
@@ -34,6 +35,7 @@ public class UnpackPlatformSparseTask extends DefaultTask {
 
         // Phase 4: find the missing extensions, by removing from the needed list the
         // present ones
+        Map<String, Extension> missingExtensions = getMissingExtensions(allNeededExtensions, alreadyExistingExtensions);
 
         // Phase 5: extract from the dependencies zips the missing extensions
     }
@@ -53,12 +55,20 @@ public class UnpackPlatformSparseTask extends DefaultTask {
         return result;
     }
 
-    private Map<String, Extension> getNeededExtensions(ExtensionInfoLoader extensionInfoLoader,
+    private Map<String, Extension> getAllNeededExtensions(ExtensionInfoLoader extensionInfoLoader,
             Map<String, Extension> allKnownExtensions) {
         return extensionInfoLoader.loadAllNeededExtensions(allKnownExtensions);
     }
 
     private Map<String, Extension> getAlreadyExistingExtensions(ExtensionInfoLoader extensionInfoLoader) {
-        return null;
+        return extensionInfoLoader.loadAlreadyExistingExtensions();
+    }
+
+    private Map<String, Extension> getMissingExtensions(Map<String, Extension> allNeededExtensions,
+            Map<String, Extension> alreadyExistingExtensions) {
+
+        return allNeededExtensions.entrySet().stream()
+                .filter(entry -> !alreadyExistingExtensions.containsKey(entry.getKey()))
+                .collect(Collectors.toMap(e -> e.getKey(), e -> e.getValue()));
     }
 }
