@@ -4,7 +4,6 @@ import static org.w3c.dom.Node.ELEMENT_NODE;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.FileSystems;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
@@ -119,10 +118,8 @@ public final class ExtensionXmlUtil {
     }
 
     private static String getRelativeLocation(Path fullLocation, String rootLocation) {
-        String separator = FileSystems.getDefault().getSeparator();
         // normalize to a Unix path
-        System.out.println("replacing " + separator + " in path " + fullLocation.toString());
-        String fullUnixLocation = fullLocation.toString().replaceAll(separator, "/");
+        String fullUnixLocation = fullLocation.toString().replace("\\", "/");
         // get everything after last rootLocation
         int rootLocationPos = fullUnixLocation.lastIndexOf(rootLocation);
         if (rootLocationPos == -1) {
