@@ -9,7 +9,7 @@ import org.gradle.api.provider.Property;
 /**
  * Extension configuration element for HybrisPluginExtension.
  */
-public abstract class SparseBootstrapSettings {
+public class SparseBootstrapSettings {
 
     private static final String DEFAULT_CACHE_LOCATION = ".gradle/hybris-plugin-cache";
 
@@ -19,6 +19,7 @@ public abstract class SparseBootstrapSettings {
 
     private final Property<String> cacheLocation;
 
+    @javax.inject.Inject
     public SparseBootstrapSettings(Project project) {
         enabled = project.getObjects().property(Boolean.class);
         enabled.set(false);
