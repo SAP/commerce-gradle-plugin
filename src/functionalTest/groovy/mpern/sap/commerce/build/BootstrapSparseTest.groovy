@@ -6,7 +6,6 @@ import static org.gradle.testkit.runner.TaskOutcome.SUCCESS
 
 import java.nio.file.Files
 import java.nio.file.Path
-import java.nio.file.Paths
 
 import org.gradle.testkit.runner.GradleRunner
 
@@ -41,6 +40,8 @@ class BootstrapSparseTest extends Specification {
         Files.createDirectory(deps)
         TestUtils.generateDummyPlatformNewModel(deps, providedVersion)
 
+        ExtensionsTestUtils.ensureLocalExtensions(testProjectDir)
+
         runner = GradleRunner.create().withProjectDir(testProjectDir.toFile())
         def gradleVersion = System.getenv("GRADLE_VERSION")
         if (gradleVersion) {
@@ -51,97 +52,95 @@ class BootstrapSparseTest extends Specification {
         //        runner.withDebug(true)
     }
 
-    def "bootstrap skipped when build.number correct and no extensions change"() {
-        def version = '2211.0'
-        given: "correct version exists"
-        buildFile << """
-            hybris {
-                version = '$version'
-                sparseBootstrap {
-                    enabled = true
-                    alwaysIncluded = ['yempty', 'ybackoffice']
-                }
-            }
-        """
-        ensureParents(testProjectDir.resolve("hybris/bin/platform/build.number")) << """
-            version=$version
-        """
+    def "sparse bootstrap skipped when no missing extensions"() {
+        given: "project folder contains all needed extensions"
+        ProjectFolderTestUtils.prepareProjectFolder(testProjectDir, "dummy-platform-new-model")
+        ProjectFolderTestUtils.prepareProjectFolder(testProjectDir, "dummy-custom-modules")
 
-        when: "running bootstrap task"
-        def result = runner
-                .withArguments("--stacktrace", "--info", 'bootstrapPlatform')
-                .build()
-
-        then: "the task is skipped"
-        result.task(":cleanPlatformIfVersionChanged").outcome == SKIPPED
-        result.task(":unpackPlatform").outcome == SKIPPED
-        result.task(":unpackPlatformSparse").outcome == SKIPPED
-    }
-
-    def "boostrap extecuted when no platform is there"() {
-        given:
+        and: "configured project with sparse bootstrap"
         buildFile << """
             hybris {
                 version = '$providedVersion'
                 sparseBootstrap {
                     enabled = true
-                    alwaysIncluded = ['yempty', 'ybackoffice']
+                }
+            }
+        """
+        ensureParents(testProjectDir.resolve("hybris/bin/platform/build.number")) << """
+            version=$providedVersion
+        """
+
+        when: "running bootstrap task"
+        def result = runner
+                .withArguments("bootstrapPlatform", "--stacktrace")
+                .build()
+
+        println result.getOutput()
+
+        then:
+        result.task(":cleanPlatformIfVersionChanged").outcome == SKIPPED
+        result.task(":unpackPlatform").outcome == SKIPPED
+        result.task(":unpackPlatformSparse").outcome == SUCCESS
+
+        result.output.contains("No missing SAP Commerce extensions, nothing to unpack")
+
+        result.task(":bootstrapPlatform").outcome == SUCCESS
+    }
+
+    def "boostrap sparse extecuted when no platform is present"() {
+        given: "project folder contains only custom extensions"
+        ProjectFolderTestUtils.prepareProjectFolder(testProjectDir, "dummy-custom-modules")
+
+        and: "configured project with sparse bootstrap"
+        buildFile << """
+            hybris {
+                version = '$providedVersion'
+                sparseBootstrap {
+                    enabled = true
                 }
             }
         """
 
-        ExtensionsTestUtils.generateExtension(
-                testProjectDir.resolve("hybris/bin/custom/custom-module"), "myextensionone", Collections.emptyList())
-        ExtensionsTestUtils.generateExtension(
-                testProjectDir.resolve("hybris/bin/custom/custom-module"), "myextensiontwo", Collections.emptyList())
-        ExtensionsTestUtils.ensureLocalExtensions(testProjectDir)
-
         when:
         def result = runner
-                .withArguments('bootstrapPlatform', '--stacktrace')
+                .withArguments("bootstrapPlatform", "--stacktrace")
                 .build()
+
+        println result.getOutput()
 
         then:
         result.task(":bootstrapPlatform").outcome == SUCCESS
         result.task(":unpackPlatform").outcome == SKIPPED
         result.task(":unpackPlatformSparse").outcome == SUCCESS
 
-        Files.exists(testProjectDir.resolve("hybris/bin/custom/custom-module/myextensionone/extensioninfo.xml"))
-        Files.exists(testProjectDir.resolve("hybris/bin/custom/custom-module/myextensiontwo/extensioninfo.xml"))
-        Files.exists(testProjectDir.resolve("hybris/config/localextensions.xml"))
-        Files.exists(testProjectDir.resolve("hybris/bin/modules/api-registry/apiregistryservices/extensioninfo.xml"))
-        Files.exists(testProjectDir.resolve("hybris/bin/modules/backoffice-framework/backoffice/extensioninfo.xml"))
-        Files.exists(testProjectDir.resolve("hybris/bin/modules/base-commerce/basecommerce/extensioninfo.xml"))
-        Files.exists(testProjectDir.resolve("hybris/bin/modules/base-commerce/payment/extensioninfo.xml"))
-        Files.exists(testProjectDir.resolve("hybris/bin/modules/search-services/searchservices/extensioninfo.xml"))
+        result.output.contains("Some needed SAP Commerce Suite extensions are missing, copying them")
+        result.output.contains("Copying missing extensions from project dependency hybris-commerce-suite-2211.0.zip")
+        result.output.contains("Copied missing extensions from project dependency hybris-commerce-suite-2211.0.zip")
+
+        verifyProjectFilesPresent()
     }
 
     def "boostrap replaces platform if wrong version"() {
+        given: "project folder contains all custom extensions"
+        ProjectFolderTestUtils.prepareProjectFolder(testProjectDir, "dummy-custom-modules")
 
-        given:
+        and: "configured project with sparse bootstrap"
         buildFile << """
             hybris {
                 version = '$providedVersion'
                 sparseBootstrap {
                     enabled = true
-                    alwaysIncluded = ['yempty', 'ybackoffice']
                 }
             }
         """
-        def buildFile = ensureParents(testProjectDir.resolve("hybris/bin/platform/build.number"))
-        buildFile << """
-            version=19.05
+        and: "wrong platform version"
+        ensureParents(testProjectDir.resolve("hybris/bin/platform/build.number")) << """
+            version = 19.05
         """
-
-        ExtensionsTestUtils.generateExtension(
-                testProjectDir.resolve("hybris/bin/custom/custom-module", "myextensionone", Collections.emptyList()))
-
-        def localProperties = ensureParents(testProjectDir.resolve("hybris/config/local.properties"))
-        Files.createFile(localProperties)
 
         when: "running bootstrap task"
         def result = runner
-                .withArguments('bootstrapPlatform', '--stacktrace')
+                .withArguments("bootstrapPlatform", "--stacktrace")
                 .build()
 
         println(result.output)
@@ -153,50 +152,36 @@ class BootstrapSparseTest extends Specification {
         result.task(":unpackPlatform").outcome == SKIPPED
         result.task(":unpackPlatformSparse").outcome == SUCCESS
 
-        Files.exists(customFile)
-        Files.exists(localProperties)
+        result.output.contains("Some needed SAP Commerce Suite extensions are missing, copying them")
+        result.output.contains("Copying missing extensions from project dependency hybris-commerce-suite-2211.0.zip")
+        result.output.contains("Copied missing extensions from project dependency hybris-commerce-suite-2211.0.zip")
 
-        !Files.exists(dummyPlatformFile)
-        !Files.exists(dotFile)
-        !Files.exists(testProjectDir.resolve(Paths.get("hybris/bin/ext-accelerator")))
-
-        buildFile.text.contains("version=$providedVersion")
-        Files.exists(testProjectDir.resolve(Paths.get("hybris/bin/ext-template/yaccelerator/src/dummy.java")))
+        verifyProjectFilesPresent()
     }
 
     def "boostrap executed when missing extensions"() {
+        given: "project folder misses some needed extensions"
+        ProjectFolderTestUtils.prepareProjectFolder(testProjectDir, "dummy-platform-new-model")
+        ProjectFolderTestUtils.prepareProjectFolder(testProjectDir, "dummy-custom-modules")
+        ExtensionsTestUtils.removeExtension(testProjectDir, "modules/api-registry/apiregistryservices")
+        ExtensionsTestUtils.removeExtension(testProjectDir, "modules/search-services/searchservices")
 
-        given:
+        and: "configured project with sparse bootstrap"
         buildFile << """
             hybris {
                 version = '$providedVersion'
                 sparseBootstrap {
                     enabled = true
-                    alwaysIncluded = ['yempty', 'ybackoffice']
                 }
             }
         """
-        def buildFile = ensureParents(testProjectDir.resolve("hybris/bin/platform/build.number"))
-        buildFile << """
-            version=18.08
+        ensureParents(testProjectDir.resolve("hybris/bin/platform/build.number")) << """
+            version=$providedVersion
         """
-
-        def platformExtensionFolder = testProjectDir.resolve("hybris/bin/ext-accelerator/b2baddon/src")
-        Files.createDirectories(platformExtensionFolder)
-        def dummyPlatformFile = platformExtensionFolder.resolve("dummy.java")
-        Files.createFile(dummyPlatformFile)
-        def dotFile = platformExtensionFolder.resolve(".dotfile")
-        Files.createFile(dotFile)
-
-        def customFile = ensureParents(testProjectDir.resolve("hybris/bin/custom/customExtension/src/dummy.java"))
-        Files.createFile(customFile)
-
-        def localProperties = ensureParents(testProjectDir.resolve("hybris/config/local.properties"))
-        Files.createFile(localProperties)
 
         when: "running bootstrap task"
         def result = runner
-                .withArguments('bootstrapPlatform', '--stacktrace')
+                .withArguments("bootstrapPlatform", "--stacktrace")
                 .build()
 
         println(result.output)
@@ -208,14 +193,24 @@ class BootstrapSparseTest extends Specification {
         result.task(":unpackPlatform").outcome == SKIPPED
         result.task(":unpackPlatformSparse").outcome == SUCCESS
 
-        Files.exists(customFile)
-        Files.exists(localProperties)
+        result.output.contains("Some needed SAP Commerce Suite extensions are missing, copying them")
+        result.output.contains("Copying missing extensions from project dependency hybris-commerce-suite-2211.0.zip")
+        result.output.contains("Copied missing extensions from project dependency hybris-commerce-suite-2211.0.zip")
 
-        !Files.exists(dummyPlatformFile)
-        !Files.exists(dotFile)
-        !Files.exists(testProjectDir.resolve(Paths.get("hybris/bin/ext-accelerator")))
+        verifyProjectFilesPresent()
+    }
 
-        buildFile.text.contains("version=$providedVersion")
-        Files.exists(testProjectDir.resolve(Paths.get("hybris/bin/ext-template/yaccelerator/src/dummy.java")))
+    private void verifyProjectFilesPresent() {
+        Files.exists(testProjectDir.resolve("hybris/bin/custom/module/myextensionone/extensioninfo.xml"))
+        Files.exists(testProjectDir.resolve("hybris/bin/custom/module/myextensiontwo/extensioninfo.xml"))
+        Files.exists(testProjectDir.resolve("hybris/config/localextensions.xml"))
+        Files.exists(testProjectDir.resolve("hybris/bin/modules/api-registry/apiregistryservices/extensioninfo.xml"))
+        Files.exists(testProjectDir.resolve("hybris/bin/modules/backoffice-framework/backoffice/extensioninfo.xml"))
+        Files.exists(testProjectDir.resolve("hybris/bin/modules/base-commerce/basecommerce/extensioninfo.xml"))
+        Files.exists(testProjectDir.resolve("hybris/bin/modules/base-commerce/payment/extensioninfo.xml"))
+        Files.exists(testProjectDir.resolve("hybris/bin/modules/search-services/searchservices/extensioninfo.xml"))
+        Files.notExists(testProjectDir.resolve("hybris/bin/modules/backoffice-framework/ybackoffice/extensioninfo.xml"))
+        Files.notExists(testProjectDir.resolve("hybris/bin/modules/platform/yempty/extensioninfo.xml"))
+        Files.notExists(testProjectDir.resolve("hybris/bin/modules/rule-engine/ruleengine/extensioninfo.xml"))
     }
 }

@@ -37,6 +37,7 @@ public class HybrisPlugin implements Plugin<Project> {
     public static final String HYBRIS_BOOTSTRAP = "SAP Commerce Bootstrap";
     public static final String HYBRIS_PLATFORM_CONFIGURATION = "hybrisPlatform";
     public static final String HYBRIS_BIN_DIR = "hybris/bin/";
+    public static final String PLATFORM_NAME = "platform";
 
     private static boolean isDirEmpty(final Path directory) {
         try (DirectoryStream<Path> dirStream = Files.newDirectoryStream(directory)) {

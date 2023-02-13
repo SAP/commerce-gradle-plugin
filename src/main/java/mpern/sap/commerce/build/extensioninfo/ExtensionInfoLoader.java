@@ -1,7 +1,6 @@
 package mpern.sap.commerce.build.extensioninfo;
 
-import static mpern.sap.commerce.build.HybrisPlugin.HYBRIS_BIN_DIR;
-import static mpern.sap.commerce.build.HybrisPlugin.HYBRIS_PLATFORM_CONFIGURATION;
+import static mpern.sap.commerce.build.HybrisPlugin.*;
 
 import java.io.File;
 import java.nio.file.FileSystems;
@@ -53,7 +52,6 @@ public class ExtensionInfoLoader {
      *
      * @return found extensions
      */
-
     public Map<String, Extension> getExtensionsFromHybrisPlatformDependencies() {
         Map<String, Extension> extensions = new HashMap<>();
 
@@ -72,8 +70,9 @@ public class ExtensionInfoLoader {
      * @return the platform extension
      */
     public Extension getPlatfromExtension() {
-        Path platformPath = FileSystems.getDefault().getPath("hybris", "bin", "platform");
-        return new Extension("platform", platformPath, "platform", ExtensionType.SAP_PLATFORM, Collections.emptyList());
+        Path platformPath = FileSystems.getDefault().getPath("hybris/bin/platform");
+        return new Extension(PLATFORM_NAME, platformPath, "platform", ExtensionType.SAP_PLATFORM,
+                Collections.emptyList());
     }
 
     /**
@@ -85,11 +84,11 @@ public class ExtensionInfoLoader {
     public Map<String, Extension> loadAllNeededExtensions(Map<String, Extension> allKnownExtensions) {
         Map<String, Extension> allNeededExtensions = new HashMap<>();
 
-        Extension platform = allKnownExtensions.get("platform");
+        Extension platform = allKnownExtensions.get(PLATFORM_NAME);
         if (platform == null) {
             throw new ExtensionInfoException("Platform extension not found");
         }
-        allNeededExtensions.put("platform", platform);
+        allNeededExtensions.put(PLATFORM_NAME, platform);
 
         File localExtensionsXmlFile = project.file("hybris/config/localextensions.xml");
         if (!localExtensionsXmlFile.exists()) {
@@ -152,6 +151,7 @@ public class ExtensionInfoLoader {
         PatternSet extInfoPattern = new PatternSet();
         extInfoPattern.include("**/extensioninfo.xml");
         extInfoPattern.exclude("**/bin/platform/**");
+        extInfoPattern.exclude("/platform/**");
         Set<File> files = dir.matching(extInfoPattern).getFiles();
 
         return files.stream()

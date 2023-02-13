@@ -1,5 +1,6 @@
 package mpern.sap.commerce.build;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -9,6 +10,9 @@ import java.nio.file.StandardCopyOption;
 import java.nio.file.StandardOpenOption;
 import java.util.List;
 import java.util.Locale;
+import java.util.stream.Stream;
+
+import static mpern.sap.commerce.build.HybrisPlugin.HYBRIS_BIN_DIR;
 
 /**
  * Utility functions to generate extensions for the test.
@@ -52,5 +56,33 @@ public final class ExtensionsTestUtils {
         Path targetFile = projectDir.resolve("hybris/config/localextensions.xml");
         TestUtils.ensureParents(targetFile);
         Files.copy(sourceFile, targetFile, StandardCopyOption.REPLACE_EXISTING);
+    }
+
+    public static void removeExtension(Path projectDir, String relativePath) throws IOException {
+        Path extensionPath = projectDir.resolve(HYBRIS_BIN_DIR + relativePath);
+        if (Files.exists(extensionPath) && Files.isDirectory(extensionPath)) {
+            removeDirContent(extensionPath.toFile());
+        }
+    }
+
+    private static void removeDirContent(File dir) throws IOException {
+        File[] files = dir.listFiles();
+
+        // iterate over the files and delete them
+        for (File file : files) {
+            if (file.isDirectory()) {
+                // call the function recursively to delete the subdirectory
+                removeDirContent(file);
+            } else {
+                // delete the file
+                file.delete();
+            }
+        }
+        // delete the directory after deleting its contents
+        dir.delete();
+    }
+
+    private ExtensionsTestUtils() {
+        // no instances
     }
 }

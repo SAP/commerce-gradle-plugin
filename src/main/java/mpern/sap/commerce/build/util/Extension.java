@@ -56,6 +56,6 @@ public class Extension {
     @Override
     public String toString() {
         return new StringJoiner(", ", Extension.class.getSimpleName() + "[", "]").add("name='" + name + "'")
-                .add("directory=" + directory).toString();
+                .add("relativeLocation=" + relativeLocation).add("directory=" + directory).toString();
     }
 }
