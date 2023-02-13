@@ -77,6 +77,8 @@ public final class ExtensionXmlUtil {
             Document doc = builder.parse(extensioninfoXmlFile);
             Node extensionNode = doc.getDocumentElement().getElementsByTagName("extension").item(0);
 
+            System.out.println("parsed " + extensioninfoXmlFile.getName());
+
             Path extensionPath = extensioninfoXmlFile.toPath().getParent();
             return new Extension(extractExtensionNameFromNode(extensionNode, extensioninfoXmlFile), extensionPath,
                     getRelativeLocation(extensionPath, rootLocation), extensionType,
@@ -119,6 +121,7 @@ public final class ExtensionXmlUtil {
     private static String getRelativeLocation(Path fullLocation, String rootLocation) {
         String separator = FileSystems.getDefault().getSeparator();
         // normalize to a Unix path
+        System.out.println("replacing " + separator + " in path " + fullLocation.toString());
         String fullUnixLocation = fullLocation.toString().replaceAll(separator, "/");
         // get everything after last rootLocation
         int rootLocationPos = fullUnixLocation.lastIndexOf(rootLocation);
