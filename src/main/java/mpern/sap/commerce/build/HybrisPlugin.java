@@ -265,7 +265,7 @@ public class HybrisPlugin implements Plugin<Project> {
     }
 
     private boolean isSparseEnabled(HybrisPluginExtension extension, Logger logger) {
-        boolean sparseEnabled = extension.getSparseBootstrap().getEnabled().get();
+        boolean sparseEnabled = extension.getSparseBootstrap().getEnabled();
         logger.lifecycle("hybris.sparseBootstrap.enabled is {}", sparseEnabled);
         return sparseEnabled;
     }
