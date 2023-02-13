@@ -165,6 +165,10 @@ class BootstrapSparseTest extends Specification {
         ProjectFolderTestUtils.prepareProjectFolder(testProjectDir, "dummy-custom-modules")
         ExtensionsTestUtils.removeExtension(testProjectDir, "modules/api-registry/apiregistryservices")
         ExtensionsTestUtils.removeExtension(testProjectDir, "modules/search-services/searchservices")
+        // remove not needed dependencies
+        ExtensionsTestUtils.removeExtension(testProjectDir, "modules/rule-engine/ruleengine")
+        ExtensionsTestUtils.removeExtension(testProjectDir, "modules/backoffice-framework/ybackoffice")
+        ExtensionsTestUtils.removeExtension(testProjectDir, "modules/platform/yempty")
 
         and: "configured project with sparse bootstrap"
         buildFile << """
@@ -200,17 +204,64 @@ class BootstrapSparseTest extends Specification {
         verifyProjectFilesPresent()
     }
 
+    def "boostrap sparse adds always included extensions"() {
+        given: "project folder contains only custom extensions"
+        ProjectFolderTestUtils.prepareProjectFolder(testProjectDir, "dummy-custom-modules")
+
+        and: "configured project with sparse bootstrap and always included extensions"
+        buildFile << """
+            hybris {
+                version = '$providedVersion'
+                sparseBootstrap {
+                    enabled = true
+                    alwaysIncluded = [
+                        "yempty",
+                        "ybackoffice"
+                    ]
+                }
+            }
+        """
+
+        when:
+        def result = runner
+                .withArguments("bootstrapPlatform", "--stacktrace")
+                .build()
+
+        println result.getOutput()
+
+        then:
+        result.task(":bootstrapPlatform").outcome == SUCCESS
+        result.task(":unpackPlatform").outcome == SKIPPED
+        result.task(":unpackPlatformSparse").outcome == SUCCESS
+
+        result.output.contains("Some needed SAP Commerce Suite extensions are missing, copying them")
+        result.output.contains("Copying missing extensions from project dependency hybris-commerce-suite-2211.0.zip")
+        result.output.contains("Copied missing extensions from project dependency hybris-commerce-suite-2211.0.zip")
+
+        verifyProjectFilesWithAlwaysIncludedPresent()
+    }
+
     private void verifyProjectFilesPresent() {
-        Files.exists(testProjectDir.resolve("hybris/bin/custom/module/myextensionone/extensioninfo.xml"))
-        Files.exists(testProjectDir.resolve("hybris/bin/custom/module/myextensiontwo/extensioninfo.xml"))
-        Files.exists(testProjectDir.resolve("hybris/config/localextensions.xml"))
-        Files.exists(testProjectDir.resolve("hybris/bin/modules/api-registry/apiregistryservices/extensioninfo.xml"))
-        Files.exists(testProjectDir.resolve("hybris/bin/modules/backoffice-framework/backoffice/extensioninfo.xml"))
-        Files.exists(testProjectDir.resolve("hybris/bin/modules/base-commerce/basecommerce/extensioninfo.xml"))
-        Files.exists(testProjectDir.resolve("hybris/bin/modules/base-commerce/payment/extensioninfo.xml"))
-        Files.exists(testProjectDir.resolve("hybris/bin/modules/search-services/searchservices/extensioninfo.xml"))
-        Files.notExists(testProjectDir.resolve("hybris/bin/modules/backoffice-framework/ybackoffice/extensioninfo.xml"))
-        Files.notExists(testProjectDir.resolve("hybris/bin/modules/platform/yempty/extensioninfo.xml"))
-        Files.notExists(testProjectDir.resolve("hybris/bin/modules/rule-engine/ruleengine/extensioninfo.xml"))
+        verifyOnlyNeededProjectFilesPresent()
+        assert Files.notExists(testProjectDir.resolve("hybris/bin/modules/backoffice-framework/ybackoffice/extensioninfo.xml"))
+        assert Files.notExists(testProjectDir.resolve("hybris/bin/modules/platform/yempty/extensioninfo.xml"))
+    }
+
+    private void verifyProjectFilesWithAlwaysIncludedPresent() {
+        verifyOnlyNeededProjectFilesPresent()
+        assert Files.exists(testProjectDir.resolve("hybris/bin/modules/backoffice-framework/ybackoffice/extensioninfo.xml"))
+        assert Files.exists(testProjectDir.resolve("hybris/bin/modules/platform/yempty/extensioninfo.xml"))
+    }
+
+    private void verifyOnlyNeededProjectFilesPresent() {
+        assert Files.exists(testProjectDir.resolve("hybris/bin/custom/module/myextensionone/extensioninfo.xml"))
+        assert Files.exists(testProjectDir.resolve("hybris/bin/custom/module/myextensiontwo/extensioninfo.xml"))
+        assert Files.exists(testProjectDir.resolve("hybris/config/localextensions.xml"))
+        assert Files.exists(testProjectDir.resolve("hybris/bin/modules/api-registry/apiregistryservices/extensioninfo.xml"))
+        assert Files.exists(testProjectDir.resolve("hybris/bin/modules/backoffice-framework/backoffice/extensioninfo.xml"))
+        assert Files.exists(testProjectDir.resolve("hybris/bin/modules/base-commerce/basecommerce/extensioninfo.xml"))
+        assert Files.exists(testProjectDir.resolve("hybris/bin/modules/base-commerce/payment/extensioninfo.xml"))
+        assert Files.exists(testProjectDir.resolve("hybris/bin/modules/search-services/searchservices/extensioninfo.xml"))
+        assert Files.notExists(testProjectDir.resolve("hybris/bin/modules/rule-engine/ruleengine/extensioninfo.xml"))
     }
 }

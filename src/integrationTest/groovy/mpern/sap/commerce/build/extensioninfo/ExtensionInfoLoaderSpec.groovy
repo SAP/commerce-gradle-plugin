@@ -1,5 +1,6 @@
 package mpern.sap.commerce.build.extensioninfo
 
+import static mpern.sap.commerce.build.HybrisPlugin.HYBRIS_EXTENSION
 import static mpern.sap.commerce.build.HybrisPlugin.HYBRIS_PLATFORM_CONFIGURATION
 import static mpern.sap.commerce.build.HybrisPlugin.PLATFORM_NAME
 
@@ -14,6 +15,7 @@ import spock.lang.Specification
 import spock.lang.TempDir
 
 import mpern.sap.commerce.build.ExtensionsTestUtils
+import mpern.sap.commerce.build.HybrisPluginExtension
 import mpern.sap.commerce.build.ProjectFolderTestUtils
 import mpern.sap.commerce.build.TestUtils
 import mpern.sap.commerce.build.util.Extension
@@ -194,6 +196,8 @@ class ExtensionInfoLoaderSpec extends Specification {
                 .withName("test")
                 .withProjectDir(testProjectDir)
         project = projectBuilder.build()
+        HybrisPluginExtension extension = project.getExtensions().create(HYBRIS_EXTENSION, HybrisPluginExtension.class,
+                project)
         ExtensionsTestUtils.ensureLocalExtensions(testProjectDir.toPath())
 
         loader = new ExtensionInfoLoader(project)
@@ -214,6 +218,43 @@ class ExtensionInfoLoaderSpec extends Specification {
         allNeededExtensions.any { it.key == "basecommerce" }
         allNeededExtensions.any { it.key == "apiregistryservices" }
         allNeededExtensions.any { it.key == "backoffice" }
+    }
+
+    def "correctly load the needed extensions with alwaysIncluded configuration present"() {
+        given: "a Gradle project with localextensions.xml"
+        def projectBuilder = ProjectBuilder.builder()
+                .withName("test")
+                .withProjectDir(testProjectDir)
+        project = projectBuilder.build()
+        HybrisPluginExtension extension = project.getExtensions().create(HYBRIS_EXTENSION, HybrisPluginExtension.class,
+                project)
+        extension.sparseBootstrap {
+            enabled = true
+            alwaysIncluded = ["yempty", "ybackoffice"]
+        }
+
+        ExtensionsTestUtils.ensureLocalExtensions(testProjectDir.toPath())
+
+        loader = new ExtensionInfoLoader(project)
+
+        and: "already loaded all extensions information"
+        def allKnownExtensions = buildAllKnownExtensions()
+
+        when:
+        def allNeededExtensions = loader.loadAllNeededExtensions(allKnownExtensions)
+
+        then:
+        allNeededExtensions.size() == 10
+        allNeededExtensions.any { it.key == PLATFORM_NAME }
+        allNeededExtensions.any { it.key == "myextensionone" }
+        allNeededExtensions.any { it.key == "myextensiontwo" }
+        allNeededExtensions.any { it.key == "searchservices" }
+        allNeededExtensions.any { it.key == "payment" }
+        allNeededExtensions.any { it.key == "basecommerce" }
+        allNeededExtensions.any { it.key == "apiregistryservices" }
+        allNeededExtensions.any { it.key == "backoffice" }
+        allNeededExtensions.any { it.key == "ybackoffice" }
+        allNeededExtensions.any { it.key == "yempty" }
     }
 
     def "load platform in existing extensions when platform folder is present"() {

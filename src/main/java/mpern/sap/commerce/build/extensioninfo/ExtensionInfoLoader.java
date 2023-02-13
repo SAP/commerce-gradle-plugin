@@ -14,6 +14,7 @@ import org.gradle.api.logging.Logger;
 import org.gradle.api.logging.Logging;
 import org.gradle.api.tasks.util.PatternSet;
 
+import mpern.sap.commerce.build.HybrisPluginExtension;
 import mpern.sap.commerce.build.util.Extension;
 import mpern.sap.commerce.build.util.ExtensionType;
 import mpern.sap.commerce.build.util.Stopwatch;
@@ -115,6 +116,14 @@ public class ExtensionInfoLoader {
                 .loadExtensionNamesFromLocalExtensionsXML(localExtensionsXmlFile);
         for (String declaredExtName : declaredExtNames) {
             addExtensionAndAllDepedencies(declaredExtName, allNeededExtensions, allKnownExtensions);
+        }
+
+        // add alwaysIncluded extensions
+        HybrisPluginExtension hybrisPluginExtension = (HybrisPluginExtension) project.getExtensions()
+                .getByName(HYBRIS_EXTENSION);
+        List<String> alwaysIncluded = hybrisPluginExtension.getSparseBootstrap().getAlwaysIncluded();
+        for (String alwaysIncludedExtName : alwaysIncluded) {
+            addExtensionAndAllDepedencies(alwaysIncludedExtName, allNeededExtensions, allKnownExtensions);
         }
 
         LOG.info("Loaded all needed extensions from localextensions.xml in {} ms", stopwatch.stop());
