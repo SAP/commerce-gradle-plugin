@@ -1,6 +1,5 @@
 package mpern.sap.commerce.build;
 
-import org.gradle.api.Action;
 import org.gradle.api.Project;
 import org.gradle.api.provider.ListProperty;
 import org.gradle.api.provider.Property;
