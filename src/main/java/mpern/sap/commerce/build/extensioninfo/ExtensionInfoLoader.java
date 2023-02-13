@@ -10,10 +10,13 @@ import java.util.stream.Collectors;
 
 import org.gradle.api.Project;
 import org.gradle.api.file.FileTree;
+import org.gradle.api.logging.Logger;
+import org.gradle.api.logging.Logging;
 import org.gradle.api.tasks.util.PatternSet;
 
 import mpern.sap.commerce.build.util.Extension;
 import mpern.sap.commerce.build.util.ExtensionType;
+import mpern.sap.commerce.build.util.Stopwatch;
 
 /**
  * Responsible for the creation of
@@ -29,6 +32,8 @@ public class ExtensionInfoLoader {
                     "hac", "impex", "maintenanceweb", "mediaweb", "oauth2", "paymentstandard", "platformservices",
                     "processing", "scripting", "testweb", "validation", "workflow"));
 
+    private static final Logger LOG = Logging.getLogger(ExtensionInfoLoader.class);
+
     private final Project project;
 
     public ExtensionInfoLoader(Project project) {
@@ -41,9 +46,14 @@ public class ExtensionInfoLoader {
      * @return found extensions
      */
     public Map<String, Extension> getExtensionsFromCustomFolder() {
-        FileTree customDir = project.fileTree(HYBRIS_BIN_DIR + CUSTOM_DIR);
+        Stopwatch stopwatch = new Stopwatch();
 
-        return getFromDir(customDir, ExtensionType.CUSTOM);
+        FileTree customDir = project.fileTree(HYBRIS_BIN_DIR + CUSTOM_DIR);
+        Map<String, Extension> result = getFromDir(customDir, ExtensionType.CUSTOM);
+
+        LOG.info("Loaded extensions information from project custom folder in {} ms", stopwatch.stop());
+
+        return result;
     }
 
     /**
@@ -53,12 +63,16 @@ public class ExtensionInfoLoader {
      * @return found extensions
      */
     public Map<String, Extension> getExtensionsFromHybrisPlatformDependencies() {
+        Stopwatch stopwatch = new Stopwatch();
+
         Map<String, Extension> extensions = new HashMap<>();
 
         Set<File> hybrisZipFiles = project.getConfigurations().getByName(HYBRIS_PLATFORM_CONFIGURATION).getFiles();
         for (File zipFile : hybrisZipFiles) {
             extensions.putAll(getFromHybrisPlatformDependency(zipFile));
         }
+
+        LOG.info("Loaded extensions information from hybrisPlatform dependencies in {} ms", stopwatch.stop());
 
         return extensions;
     }
@@ -82,6 +96,8 @@ public class ExtensionInfoLoader {
      * @return the needed extensions
      */
     public Map<String, Extension> loadAllNeededExtensions(Map<String, Extension> allKnownExtensions) {
+        Stopwatch stopwatch = new Stopwatch();
+
         Map<String, Extension> allNeededExtensions = new HashMap<>();
 
         Extension platform = allKnownExtensions.get(PLATFORM_NAME);
@@ -101,6 +117,8 @@ public class ExtensionInfoLoader {
             addExtensionAndAllDepedencies(declaredExtName, allNeededExtensions, allKnownExtensions);
         }
 
+        LOG.info("Loaded all needed extensions from localextensions.xml in {} ms", stopwatch.stop());
+
         return allNeededExtensions;
     }
 
@@ -110,6 +128,8 @@ public class ExtensionInfoLoader {
      * @return the existing extensions
      */
     public Map<String, Extension> loadAlreadyExistingExtensions() {
+        Stopwatch stopwatch = new Stopwatch();
+
         FileTree binDir = project.fileTree(HYBRIS_BIN_DIR);
         Map<String, Extension> existingExtensions = getFromDir(binDir, ExtensionType.RUNTIME_INSTALLED);
 
@@ -118,6 +138,8 @@ public class ExtensionInfoLoader {
             Extension platformExt = getPlatfromExtension();
             existingExtensions.put(platformExt.name, platformExt);
         }
+
+        LOG.info("Loaded existing extensions information from project folder in {} ms", stopwatch.stop());
 
         return existingExtensions;
     }
