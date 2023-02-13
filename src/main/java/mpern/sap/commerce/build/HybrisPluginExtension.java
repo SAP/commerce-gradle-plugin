@@ -2,7 +2,6 @@ package mpern.sap.commerce.build;
 
 import org.gradle.api.Action;
 import org.gradle.api.Project;
-import org.gradle.api.model.ObjectFactory;
 import org.gradle.api.provider.ListProperty;
 import org.gradle.api.provider.Property;
 
@@ -24,7 +23,7 @@ public class HybrisPluginExtension {
     private final HybrisPlatform platform;
 
     @javax.inject.Inject
-    public HybrisPluginExtension(Project project, ObjectFactory objectFactory) {
+    public HybrisPluginExtension(Project project) {
         version = project.getObjects().property(String.class);
         version.set("6.6.0.0");
 
@@ -37,7 +36,7 @@ public class HybrisPluginExtension {
 
         platform = project.getObjects().newInstance(HybrisPlatform.class, project);
 
-        sparseBootstrap = objectFactory.newInstance(SparseBootstrap.class);
+        sparseBootstrap = project.getObjects().newInstance(SparseBootstrap.class);
     }
 
     public Property<String> getVersion() {
