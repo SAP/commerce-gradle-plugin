@@ -142,8 +142,11 @@ public class ExtensionInfoLoader {
         FileTree binDir = project.fileTree(HYBRIS_BIN_DIR);
         Map<String, Extension> existingExtensions = getFromDir(binDir, ExtensionType.RUNTIME_INSTALLED);
 
-        // add platform if folder exists
-        if (project.file(HYBRIS_BIN_DIR + "platform").exists()) {
+        /*
+         * add platform if ext/core folder exists (other tasks may copy in platform, so
+         * only platform check is not enough)
+         */
+        if (project.file(HYBRIS_BIN_DIR + "platform/ext/core").exists()) {
             Extension platformExt = getPlatfromExtension();
             existingExtensions.put(platformExt.name, platformExt);
         }

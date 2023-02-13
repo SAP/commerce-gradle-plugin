@@ -257,7 +257,34 @@ class ExtensionInfoLoaderSpec extends Specification {
         allNeededExtensions.any { it.key == "yempty" }
     }
 
-    def "load platform in existing extensions when platform folder is present"() {
+    def "load platform in existing extensions when platform is present"() {
+        given:
+        def projectBuilder = ProjectBuilder.builder()
+                .withName("test")
+                .withProjectDir(testProjectDir)
+        project = projectBuilder.build()
+
+        loader = new ExtensionInfoLoader(project)
+
+        and: "platform folder is present"
+        def platformDir = testProjectDir.toPath().resolve("hybris/bin/platform/ext/core")
+        Files.createDirectories(platformDir)
+
+        when:
+        def extensions = loader.loadAlreadyExistingExtensions()
+
+        then:
+        extensions.size() == 1
+        extensions.containsKey(PLATFORM_NAME)
+        with (extensions.get(PLATFORM_NAME)) {
+            it.name == PLATFORM_NAME
+            it.extensionType == ExtensionType.SAP_PLATFORM
+            it.relativeLocation == "platform"
+            it.requiredExtensions.isEmpty()
+        }
+    }
+
+    def "do not load platform in existing extensions when platform only folder is present"() {
         given:
         def projectBuilder = ProjectBuilder.builder()
                 .withName("test")
@@ -274,14 +301,7 @@ class ExtensionInfoLoaderSpec extends Specification {
         def extensions = loader.loadAlreadyExistingExtensions()
 
         then:
-        extensions.size() == 1
-        extensions.containsKey(PLATFORM_NAME)
-        with (extensions.get(PLATFORM_NAME)) {
-            it.name == PLATFORM_NAME
-            it.extensionType == ExtensionType.SAP_PLATFORM
-            it.relativeLocation == "platform"
-            it.requiredExtensions.isEmpty()
-        }
+        extensions.isEmpty()
     }
 
     def "load existing extensions from project folder"() {

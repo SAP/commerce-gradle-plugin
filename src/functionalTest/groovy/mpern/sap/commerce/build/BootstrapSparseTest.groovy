@@ -254,14 +254,17 @@ class BootstrapSparseTest extends Specification {
     }
 
     private void verifyOnlyNeededProjectFilesPresent() {
+        assert Files.exists(testProjectDir.resolve("hybris/config/localextensions.xml"))
         assert Files.exists(testProjectDir.resolve("hybris/bin/custom/module/myextensionone/extensioninfo.xml"))
         assert Files.exists(testProjectDir.resolve("hybris/bin/custom/module/myextensiontwo/extensioninfo.xml"))
-        assert Files.exists(testProjectDir.resolve("hybris/config/localextensions.xml"))
         assert Files.exists(testProjectDir.resolve("hybris/bin/modules/api-registry/apiregistryservices/extensioninfo.xml"))
         assert Files.exists(testProjectDir.resolve("hybris/bin/modules/backoffice-framework/backoffice/extensioninfo.xml"))
         assert Files.exists(testProjectDir.resolve("hybris/bin/modules/base-commerce/basecommerce/extensioninfo.xml"))
         assert Files.exists(testProjectDir.resolve("hybris/bin/modules/base-commerce/payment/extensioninfo.xml"))
         assert Files.exists(testProjectDir.resolve("hybris/bin/modules/search-services/searchservices/extensioninfo.xml"))
         assert Files.notExists(testProjectDir.resolve("hybris/bin/modules/rule-engine/ruleengine/extensioninfo.xml"))
+        assert Files.exists(testProjectDir.resolve("hybris/bin/platform/build.number"))
+        assert Files.exists(testProjectDir.resolve("hybris/bin/platform/ext/commons/extensioninfo.xml"))
+        assert Files.exists(testProjectDir.resolve("hybris/bin/platform/ext/core/extensioninfo.xml"))
     }
 }
