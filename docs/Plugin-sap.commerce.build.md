@@ -55,8 +55,6 @@ hybris {
          "yocc",
          "ybackoffice"
       ]
-      // the location where the cache information for the sparse build is stored 
-      cacheLocation = ".gradle/hybris-plugin-cache"
    }
 }
 
@@ -67,6 +65,7 @@ dependencies {
     //  `bootstrapInclude` and `bootstrapExclude` define what is unpacked.
     //  "de.hybris.platform:hybris-commerce-suite:${hybris.version}@zip" is added as default dependency when the plugin is not in CCV2 mode.
     hybrisPlatform "de.hybris.platform:hybris-commerce-suite:${hybris.version.get()}@zip"
+    hybrisPlatform "de.hybris.platform:hybris-commerce-integrations:2211.3@zip"
     
     //JDBC Drivers. 
     //  Automatically downloaded and configured during bootstrap, if a dependency is configured.
