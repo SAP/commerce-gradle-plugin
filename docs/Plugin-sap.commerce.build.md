@@ -22,6 +22,9 @@ hybris {
     //SAP Commerce version to use (ignored in CCv2 mode)
     version = "2205.0"
     
+    //SAP Commerce Integration Extension Pack version to use (ignored in CCv2 mode), optional
+    intExtPackVersion = "2205.1"
+    
     //What files should be deleted when cleaning up the platform?
     cleanGlob = "glob:**hybris/bin/{ext-**,platform**}"
     
@@ -42,8 +45,8 @@ hybris {
    
    //Control the sparse platform bootstrap.
    //  When enabled, the commerce extensions are extracted from the distribution zip on the need basis.
-   //  Only extensions that are actually used in the project (either directly mentioned in the localextensions.xml or used by other
-   //  used extensions) are extracted.
+   //  Only extensions that are actually used in the project (either directly listed in the localextensions.xml or
+   //  required by other extensions) are extracted.
    //  The platform itself is always extracted.
    //  When this mode is enabled, the bootstrapInclude configuration property is ignored.
    sparseBootstrap {
@@ -63,9 +66,12 @@ dependencies {
     //  Define zip file dependencies that are unpacked into the project root folder.
     //  You can define more than one zip file to unpack.
     //  `bootstrapInclude` and `bootstrapExclude` define what is unpacked.
-    //  "de.hybris.platform:hybris-commerce-suite:${hybris.version}@zip" is added as default dependency when the plugin is not in CCV2 mode.
+    //  "de.hybris.platform:hybris-commerce-suite:${hybris.version}@zip" is added as default dependency
+    //  when the plugin is not in CCV2 mode.
+    //  "de.hybris.platform:hybris-commerce-integrations:${hybris.intExtPackVersion}@zip" is added as default dependency
+    //  when the plugin is not in CCV2 mode, if intExtPackVersion is defined.
     hybrisPlatform "de.hybris.platform:hybris-commerce-suite:${hybris.version.get()}@zip"
-    hybrisPlatform "de.hybris.platform:hybris-commerce-integrations:2211.3@zip"
+    hybrisPlatform "de.hybris.platform:hybris-commerce-integrations:${hybris.intExtPackVersion.get()}@zip"
     
     //JDBC Drivers. 
     //  Automatically downloaded and configured during bootstrap, if a dependency is configured.

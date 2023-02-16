@@ -80,6 +80,14 @@ public class HybrisPlugin implements Plugin<Project> {
             Version version = Version.parseVersion(v);
             dependencies.add(project.getDependencies()
                     .create("de.hybris.platform:hybris-commerce-suite:" + version.getDependencyVersion() + "@zip"));
+
+            // optional, add intExtPack if defined
+            v = extension.getIntExtPackVersion().get();
+            if (v.length() > 0) {
+                version = Version.parseVersion(v);
+                dependencies.add(project.getDependencies().create(
+                        "de.hybris.platform:hybris-commerce-integrations:" + version.getDependencyVersion() + "@zip"));
+            }
         });
 
         Task bootstrap = project.task("bootstrapPlatform");

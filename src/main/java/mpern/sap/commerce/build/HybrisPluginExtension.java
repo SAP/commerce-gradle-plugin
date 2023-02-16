@@ -11,6 +11,7 @@ import mpern.sap.commerce.build.util.SparseBootstrap;
 public class HybrisPluginExtension {
 
     private final Property<String> version;
+    private final Property<String> intExtPackVersion;
     private final Property<String> cleanGlob;
 
     private final ListProperty<String> bootstrapInclude;
@@ -25,7 +26,10 @@ public class HybrisPluginExtension {
     @javax.inject.Inject
     public HybrisPluginExtension(Project project) {
         version = project.getObjects().property(String.class);
-        version.set("6.6.0.0");
+        version.set("2105.0");
+
+        intExtPackVersion = project.getObjects().property(String.class);
+        intExtPackVersion.set("");
 
         cleanGlob = project.getObjects().property(String.class);
 
@@ -41,6 +45,10 @@ public class HybrisPluginExtension {
 
     public Property<String> getVersion() {
         return version;
+    }
+
+    public Property<String> getIntExtPackVersion() {
+        return intExtPackVersion;
     }
 
     public HybrisPlatform getPlatform() {

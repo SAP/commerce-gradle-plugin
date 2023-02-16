@@ -51,7 +51,7 @@ class CleanupTest extends Specification {
     }
 
 
-    def "cleanPlatformIfVersionChanged skipped when same platfrom version"() {
+    def "cleanPlatformIfVersionChanged skipped when same platform version"() {
         def version = '1811.0'
 
         given: "correct version exists"

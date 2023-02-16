@@ -87,7 +87,7 @@ class BootstrapSparseTest extends Specification {
         result.task(":bootstrapPlatform").outcome == SUCCESS
     }
 
-    def "boostrap sparse extecuted when no platform is present"() {
+    def "boostrap sparse executed when no platform is present"() {
         given: "project folder contains only custom extensions"
         ProjectFolderTestUtils.prepareProjectFolder(testProjectDir, "dummy-custom-modules")
 
