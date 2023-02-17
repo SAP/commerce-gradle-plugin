@@ -3,11 +3,8 @@ package mpern.sap.commerce.build;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
-import java.nio.file.StandardOpenOption;
+import java.nio.file.*;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.util.List;
 import java.util.Locale;
 import java.util.stream.Stream;
@@ -61,25 +58,22 @@ public final class ExtensionsTestUtils {
     public static void removeExtension(Path projectDir, String relativePath) throws IOException {
         Path extensionPath = projectDir.resolve(HYBRIS_BIN_DIR + relativePath);
         if (Files.exists(extensionPath) && Files.isDirectory(extensionPath)) {
-            removeDirContent(extensionPath.toFile());
-        }
-    }
+            Files.walkFileTree(extensionPath, new SimpleFileVisitor<Path>() {
+                @Override
+                public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+                    // delete the file
+                    Files.delete(file);
+                    return FileVisitResult.CONTINUE;
+                }
 
-    private static void removeDirContent(File dir) throws IOException {
-        File[] files = dir.listFiles();
-
-        // iterate over the files and delete them
-        for (File file : files) {
-            if (file.isDirectory()) {
-                // call the function recursively to delete the subdirectory
-                removeDirContent(file);
-            } else {
-                // delete the file
-                file.delete();
-            }
+                @Override
+                public FileVisitResult postVisitDirectory(Path dir, IOException exc) throws IOException {
+                    // delete the directory after deleting its contents
+                    Files.delete(dir);
+                    return FileVisitResult.CONTINUE;
+                }
+            });
         }
-        // delete the directory after deleting its contents
-        dir.delete();
     }
 
     private ExtensionsTestUtils() {

@@ -1,7 +1,6 @@
 package mpern.sap.commerce.build.util;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 /**
  * Extension configuration element for HybrisPluginExtension.
@@ -10,11 +9,11 @@ public class SparseBootstrap {
 
     private boolean enabled;
 
-    private List<String> alwaysIncluded;
+    private Set<String> alwaysIncluded;
 
     public SparseBootstrap() {
         enabled = false;
-        alwaysIncluded = new ArrayList<>();
+        alwaysIncluded = new HashSet<>();
     }
 
     public boolean getEnabled() {
@@ -25,11 +24,11 @@ public class SparseBootstrap {
         this.enabled = enabled;
     }
 
-    public List<String> getAlwaysIncluded() {
+    public Set<String> getAlwaysIncluded() {
         return alwaysIncluded;
     }
 
-    public void setAlwaysIncluded(List<String> alwaysIncluded) {
-        this.alwaysIncluded = alwaysIncluded;
+    public void setAlwaysIncluded(Collection<String> alwaysIncluded) {
+        this.alwaysIncluded = new HashSet<>(alwaysIncluded);
     }
 }
