@@ -28,7 +28,7 @@ public class SparseBootstrap {
         return alwaysIncluded;
     }
 
-    public void setAlwaysIncluded(Collection<String> alwaysIncluded) {
-        this.alwaysIncluded = new HashSet<>(alwaysIncluded);
+    public void setAlwaysIncluded(Set<String> alwaysIncluded) {
+        this.alwaysIncluded = alwaysIncluded;
     }
 }

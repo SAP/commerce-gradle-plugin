@@ -52,7 +52,7 @@ hybris {
    sparseBootstrap {
       // default is disabled
       enabled = true
-      // list of extensions that are always extracted, default is an empty list
+      // set of extensions that are always extracted, default is an empty set
       alwaysIncluded = [
          "yempty",
          "yocc",
