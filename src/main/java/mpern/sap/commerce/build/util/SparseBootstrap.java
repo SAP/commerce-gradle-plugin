@@ -1,34 +1,14 @@
 package mpern.sap.commerce.build.util;
 
-import java.util.*;
+import org.gradle.api.provider.Property;
+import org.gradle.api.provider.SetProperty;
 
 /**
  * Extension configuration element for HybrisPluginExtension.
  */
-public class SparseBootstrap {
+public abstract class SparseBootstrap {
 
-    private boolean enabled;
+    public abstract Property<Boolean> getEnabled();
 
-    private Set<String> alwaysIncluded;
-
-    public SparseBootstrap() {
-        enabled = false;
-        alwaysIncluded = new HashSet<>();
-    }
-
-    public boolean getEnabled() {
-        return enabled;
-    }
-
-    public void setEnabled(boolean enabled) {
-        this.enabled = enabled;
-    }
-
-    public Set<String> getAlwaysIncluded() {
-        return alwaysIncluded;
-    }
-
-    public void setAlwaysIncluded(Set<String> alwaysIncluded) {
-        this.alwaysIncluded = alwaysIncluded;
-    }
+    public abstract SetProperty<String> getAlwaysIncluded();
 }

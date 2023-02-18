@@ -121,7 +121,7 @@ public class ExtensionInfoLoader {
         // add alwaysIncluded extensions
         HybrisPluginExtension hybrisPluginExtension = (HybrisPluginExtension) project.getExtensions()
                 .getByName(HYBRIS_EXTENSION);
-        Set<String> alwaysIncluded = hybrisPluginExtension.getSparseBootstrap().getAlwaysIncluded();
+        Set<String> alwaysIncluded = hybrisPluginExtension.getSparseBootstrap().getAlwaysIncluded().get();
         for (String alwaysIncludedExtName : alwaysIncluded) {
             addExtensionAndAllDepedencies(alwaysIncludedExtName, allNeededExtensions, allKnownExtensions);
         }

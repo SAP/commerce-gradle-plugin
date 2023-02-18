@@ -8,6 +8,7 @@ import java.nio.file.*;
 import java.nio.file.attribute.FileTime;
 import java.time.Instant;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -51,6 +52,8 @@ public class HybrisPlugin implements Plugin<Project> {
     public void apply(Project project) {
         HybrisPluginExtension extension = project.getExtensions().create(HYBRIS_EXTENSION, HybrisPluginExtension.class,
                 project);
+        extension.getSparseBootstrap().getEnabled().convention(false);
+        extension.getSparseBootstrap().getAlwaysIncluded().convention(Collections.emptySet());
 
         extension.getCleanGlob().set("glob:**hybris/bin/{ext-**,platform**,modules**}");
 
@@ -273,7 +276,7 @@ public class HybrisPlugin implements Plugin<Project> {
     }
 
     private boolean isSparseEnabled(HybrisPluginExtension extension, Logger logger) {
-        boolean sparseEnabled = extension.getSparseBootstrap().getEnabled();
+        boolean sparseEnabled = extension.getSparseBootstrap().getEnabled().get();
         logger.lifecycle("hybris.sparseBootstrap.enabled is {}", sparseEnabled);
         return sparseEnabled;
     }

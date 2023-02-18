@@ -4,6 +4,8 @@ The goal for this plugin is to automate the most common steps when setting up a 
 environment and  allows you to call the platform ant build as a Gradle task (in your script, or from
 the command line).
 
+The plugin is compatible with Gradle versions > 5.6.4.
+
 ## Modes
 
 The plugin can operate in standard mode, driven by the configuration, or in CCv2 mode.
