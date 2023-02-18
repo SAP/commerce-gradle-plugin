@@ -98,6 +98,7 @@ public class HybrisPlugin implements Plugin<Project> {
         bootstrap.setDescription("Bootstraps the configured hybris distribution with the configured DB drivers");
 
         File hybrisBin = project.file("hybris/bin");
+        hybrisBin.mkdirs();
 
         project.getTasks().register("cleanPlatform", GlobClean.class, t -> {
             t.setGroup(HYBRIS_BOOTSTRAP);

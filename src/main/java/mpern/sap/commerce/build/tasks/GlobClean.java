@@ -57,7 +57,7 @@ public class GlobClean extends DefaultTask {
         return glob;
     }
 
-    @Input
+    @InputDirectory
     public DirectoryProperty getBaseFolder() {
         return baseFolder;
     }
