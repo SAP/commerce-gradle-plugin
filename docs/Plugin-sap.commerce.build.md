@@ -46,7 +46,7 @@ hybris {
    antTaskDependencies = []
    
    //Control the sparse platform bootstrap.
-   //  When enabled, the commerce extensions are extracted from the distribution zip on the need basis.
+   //  When enabled, the commerce extensions are extracted from the distribution zip on a as-needed basis.
    //  Only extensions that are actually used in the project (either directly listed in the localextensions.xml or
    //  required by other extensions) are extracted.
    //  The platform itself is always extracted.

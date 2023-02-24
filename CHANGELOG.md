@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [3.9.0]
+
+### Added
+
+- Commerce plugin: Add `sparseBootstrap` mode.
+
+Only unpack the extensions your project needs instead of the whole zip.
+Details can be found in the [Documentation](./docs/Plugin-sap.commerce.build.md)
+
+A huge **Thank You** to [@iccaprar] for designing and implementing `sparseBootstrap`!
+
 ## [3.8.0]
 
 ### Added
@@ -359,7 +370,8 @@ Shout out to [@corneleberle] for providing the fix.
 
 :tada: Initial release :tada:
 
-[Unreleased]: https://github.com/SAP/commerce-gradle-plugin/compare/v3.8.0...HEAD
+[Unreleased]: https://github.com/SAP/commerce-gradle-plugin/compare/v3.9.0...HEAD
+[3.9.0]: https://github.com/SAP/commerce-gradle-plugin/compare/v3.8.0...v3.9.0
 [3.8.0]: https://github.com/SAP/commerce-gradle-plugin/compare/v3.7.1...v3.8.0
 [3.7.1]: https://github.com/SAP/commerce-gradle-plugin/compare/v3.7.0...v3.7.1
 [3.7.0]: https://github.com/SAP/commerce-gradle-plugin/compare/v3.6.0...v3.7.0
