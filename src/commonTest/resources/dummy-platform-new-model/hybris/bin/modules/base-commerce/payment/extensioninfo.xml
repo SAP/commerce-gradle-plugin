@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+
+<extensioninfo xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="extensioninfo.xsd">
+
+    <extension abstractclassprefix="Generated" classprefix="Payment" description="payment extension" managername="PaymentManager"
+               managersuperclass="de.hybris.platform.jalo.extension.Extension" name="payment">
+
+        <requires-extension name="basecommerce"/>
+        <requires-extension name="apiregistryservices"/>
+
+        <coremodule generated="true" manager="de.hybris.platform.payment.jalo.PaymentManager" packageroot="de.hybris.platform.payment"/>
+
+    </extension>
+
+</extensioninfo>

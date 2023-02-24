@@ -6,21 +6,20 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-
-import org.w3c.dom.Document;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-
 import groovy.lang.Tuple2;
 
+import mpern.sap.commerce.build.extensioninfo.ExtensionXmlUtil;
 import mpern.sap.commerce.build.util.Extension;
 import mpern.sap.commerce.build.util.PlatformResolver;
 import mpern.sap.commerce.ccv2.model.Manifest;
 import mpern.sap.commerce.ccv2.validation.Error;
 import mpern.sap.commerce.ccv2.validation.ExtensionsResolver;
 
+/**
+ * Resolves extension information from the build manifest, using the information
+ * from the de.hybris.bootstrap.config.PlatformConfig and
+ * de.hybris.bootstrap.config.ExtensionInfo.
+ */
 public class ManifestExtensionsResolver implements ExtensionsResolver {
 
     public static Set<String> CLOUD_ONLY_EXTENSIONS = Collections.unmodifiableSet(new HashSet<>(Arrays.asList(
@@ -67,7 +66,8 @@ public class ManifestExtensionsResolver implements ExtensionsResolver {
             Tuple2<Path, List<Error>> xmlFile = validateAndNormalizePath(this.projectRoot, "", extensionsLocation);
             if (xmlFile.getFirst() != null) {
                 locations.add(String.format("useConfig.extensions.location (%s)", extensionsLocation));
-                extensionNames.addAll(loadExtensionNamesFromExtensionsXML(xmlFile.getFirst()));
+                extensionNames
+                        .addAll(ExtensionXmlUtil.loadExtensionNamesFromLocalExtensionsXML(xmlFile.getFirst().toFile()));
                 extensionNames.removeAll(manifest.useConfig.extensions.exclude);
             }
         }
@@ -78,24 +78,4 @@ public class ManifestExtensionsResolver implements ExtensionsResolver {
         return new Tuple2<>(extensionNames, locations);
     }
 
-    private Set<String> loadExtensionNamesFromExtensionsXML(Path file) {
-        try {
-            DocumentBuilderFactory domFactory = DocumentBuilderFactory.newInstance();
-            DocumentBuilder builder = domFactory.newDocumentBuilder();
-            Document doc = builder.parse(file.toFile());
-            Set<String> extensionNames = new LinkedHashSet<>();
-            NodeList extensions = doc.getDocumentElement().getElementsByTagName("extension");
-            for (int i = 0; i < extensions.getLength(); i++) {
-                Node extension = extensions.item(i);
-                Node name = extension.getAttributes().getNamedItem("name");
-                if (name != null && name.getNodeValue() != null && !name.getNodeValue().isEmpty()) {
-                    extensionNames.add(name.getNodeValue());
-                }
-            }
-            return extensionNames;
-        } catch (Exception e) {
-            // ignore
-        }
-        return Collections.emptySet();
-    }
 }

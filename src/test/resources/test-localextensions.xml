@@ -1,0 +1,14 @@
+<hybrisconfig xsi:noNamespaceSchemaLocation="../bin/platform/resources/schemas/extensions.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <extensions>
+        <path dir="${HYBRIS_BIN_DIR}" autoload="false" depth="4"/>
+
+        <!-- should include basecommerce, apiregistryservices -->
+        <extension name="payment"/>
+        <!-- should not include anything else -->
+        <extension name="backoffice"/>
+        <!-- should not include anything else -->
+        <extension name="myextensionone"/>
+        <!-- should include searchservices -->
+        <extension name="myextensiontwo"/>
+    </extensions>
+</hybrisconfig>

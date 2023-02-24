@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+
+<extensioninfo xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="extensioninfo.xsd">
+
+    <extension abstractclassprefix="Generated" classprefix="YEmpty" jaloLogicFree="true" managername="YEmptyManager"
+               managersuperclass="de.hybris.platform.jalo.extension.Extension" name="yempty" usemaven="false">
+
+        <coremodule generated="true" manager="yemptypackage.jalo.YEmptyManager" packageroot="yemptypackage"/>
+
+        <webmodule jspcompile="false" webroot="/yempty"/>
+
+        <meta key="extgen-template-extension" value="true"/>
+
+    </extension>
+
+</extensioninfo>

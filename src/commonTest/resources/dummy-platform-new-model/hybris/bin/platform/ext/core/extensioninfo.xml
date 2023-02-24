@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+
+<extensioninfo xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="extensioninfo.xsd">
+
+    <extension abstractclassprefix="Generated" classprefix="Core" isoldstyleextension="true" managername="CoreManager" name="core" usemaven="false">
+
+        <coremodule generated="true" manager="de.hybris.platform.servicelayer.internal.jalo.ServicelayerManager" packageroot="de.hybris.platform"/>
+
+    </extension>
+
+</extensioninfo>

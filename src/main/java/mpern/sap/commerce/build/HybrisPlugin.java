@@ -8,6 +8,7 @@ import java.nio.file.*;
 import java.nio.file.attribute.FileTime;
 import java.time.Instant;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -26,6 +27,7 @@ import org.gradle.api.tasks.TaskProvider;
 import mpern.sap.commerce.build.rules.HybrisAntRule;
 import mpern.sap.commerce.build.tasks.GlobClean;
 import mpern.sap.commerce.build.tasks.HybrisAntTask;
+import mpern.sap.commerce.build.tasks.UnpackPlatformSparseTask;
 import mpern.sap.commerce.build.util.Extension;
 import mpern.sap.commerce.build.util.PlatformResolver;
 import mpern.sap.commerce.build.util.Version;
@@ -35,6 +37,8 @@ public class HybrisPlugin implements Plugin<Project> {
     public static final String HYBRIS_EXTENSION = "hybris";
     public static final String HYBRIS_BOOTSTRAP = "SAP Commerce Bootstrap";
     public static final String HYBRIS_PLATFORM_CONFIGURATION = "hybrisPlatform";
+    public static final String HYBRIS_BIN_DIR = "hybris/bin/";
+    public static final String PLATFORM_NAME = "platform";
 
     private static boolean isDirEmpty(final Path directory) {
         try (DirectoryStream<Path> dirStream = Files.newDirectoryStream(directory)) {
@@ -48,6 +52,8 @@ public class HybrisPlugin implements Plugin<Project> {
     public void apply(Project project) {
         HybrisPluginExtension extension = project.getExtensions().create(HYBRIS_EXTENSION, HybrisPluginExtension.class,
                 project);
+        extension.getSparseBootstrap().getEnabled().convention(false);
+        extension.getSparseBootstrap().getAlwaysIncluded().convention(Collections.emptySet());
 
         extension.getCleanGlob().set("glob:**hybris/bin/{ext-**,platform**,modules**}");
 
@@ -77,6 +83,14 @@ public class HybrisPlugin implements Plugin<Project> {
             Version version = Version.parseVersion(v);
             dependencies.add(project.getDependencies()
                     .create("de.hybris.platform:hybris-commerce-suite:" + version.getDependencyVersion() + "@zip"));
+
+            // optional, add intExtPack if defined
+            v = extension.getIntExtPackVersion().get();
+            if (v.length() > 0) {
+                version = Version.parseVersion(v);
+                dependencies.add(project.getDependencies().create(
+                        "de.hybris.platform:hybris-commerce-integrations:" + version.getDependencyVersion() + "@zip"));
+            }
         });
 
         Task bootstrap = project.task("bootstrapPlatform");
@@ -102,8 +116,15 @@ public class HybrisPlugin implements Plugin<Project> {
 
         TaskProvider<Task> unpackPlatform = project.getTasks().register("unpackPlatform", t -> {
             t.onlyIf(o -> versionMismatch(extension, t.getLogger()));
+            t.onlyIf(o -> !isSparseEnabled(extension, t.getLogger()));
             t.mustRunAfter(cleanOnVersionChange);
         });
+
+        TaskProvider<UnpackPlatformSparseTask> unpackPlatformSparse = project.getTasks()
+                .register("unpackPlatformSparse", UnpackPlatformSparseTask.class, t -> {
+                    t.onlyIf(o -> isSparseEnabled(extension, t.getLogger()));
+                    t.mustRunAfter(cleanOnVersionChange);
+                });
 
         project.afterEvaluate(p -> unpackPlatform.get().doLast(t -> project.copy(c -> {
             c.from(project.provider(
@@ -141,7 +162,8 @@ public class HybrisPlugin implements Plugin<Project> {
             });
         });
 
-        bootstrap.dependsOn(cleanOnVersionChange, unpackPlatform, setupDBDriver, touchDbDriverLastUpdate);
+        bootstrap.dependsOn(cleanOnVersionChange, unpackPlatform, unpackPlatformSparse, setupDBDriver,
+                touchDbDriverLastUpdate);
 
         project.getTasks().addRule(new HybrisAntRule(project));
         // sensible defaults
@@ -251,5 +273,11 @@ public class HybrisPlugin implements Plugin<Project> {
                     current.equals(required) ? "MATCH" : "MISMATCH");
         }
         return !(exactMatch || nearMatch);
+    }
+
+    private boolean isSparseEnabled(HybrisPluginExtension extension, Logger logger) {
+        boolean sparseEnabled = extension.getSparseBootstrap().getEnabled().get();
+        logger.lifecycle("hybris.sparseBootstrap.enabled is {}", sparseEnabled);
+        return sparseEnabled;
     }
 }

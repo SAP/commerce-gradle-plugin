@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+
+<extensioninfo xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="extensioninfo.xsd">
+
+    <extension abstractclassprefix="Generated" classprefix="Basecommerce" description="basecommerce extension"
+               managername="BasecommerceManager" managersuperclass="de.hybris.platform.jalo.extension.Extension" name="basecommerce"
+               usemaven="false">
+
+        <requires-extension name="apiregistryservices"/>
+
+        <coremodule generated="true" manager="de.hybris.platform.basecommerce.jalo.BasecommerceManager"
+                    packageroot="de.hybris.platform.basecommerce"/>
+
+    </extension>
+
+</extensioninfo>

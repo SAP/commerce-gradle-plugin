@@ -1,13 +1,18 @@
 package mpern.sap.commerce.build;
 
+import org.gradle.api.Action;
 import org.gradle.api.Project;
 import org.gradle.api.provider.ListProperty;
 import org.gradle.api.provider.Property;
+import org.gradle.api.tasks.Nested;
 
 import mpern.sap.commerce.build.util.HybrisPlatform;
+import mpern.sap.commerce.build.util.SparseBootstrap;
 
-public class HybrisPluginExtension {
+public abstract class HybrisPluginExtension {
+
     private final Property<String> version;
+    private final Property<String> intExtPackVersion;
     private final Property<String> cleanGlob;
 
     private final ListProperty<String> bootstrapInclude;
@@ -19,7 +24,10 @@ public class HybrisPluginExtension {
 
     public HybrisPluginExtension(Project project) {
         version = project.getObjects().property(String.class);
-        version.set("6.6.0.0");
+        version.set("2105.0");
+
+        intExtPackVersion = project.getObjects().property(String.class);
+        intExtPackVersion.set("");
 
         cleanGlob = project.getObjects().property(String.class);
 
@@ -33,6 +41,10 @@ public class HybrisPluginExtension {
 
     public Property<String> getVersion() {
         return version;
+    }
+
+    public Property<String> getIntExtPackVersion() {
+        return intExtPackVersion;
     }
 
     public HybrisPlatform getPlatform() {
@@ -53,5 +65,12 @@ public class HybrisPluginExtension {
 
     public ListProperty<Object> getAntTaskDependencies() {
         return antTaskDependencies;
+    }
+
+    @Nested
+    public abstract SparseBootstrap getSparseBootstrap();
+
+    public void sparseBootstrap(Action<? super SparseBootstrap> action) {
+        action.execute(getSparseBootstrap());
     }
 }

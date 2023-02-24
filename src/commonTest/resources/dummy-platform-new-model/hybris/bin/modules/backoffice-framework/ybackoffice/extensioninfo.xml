@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+
+<extensioninfo xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="extensioninfo.xsd">
+
+    <extension abstractclassprefix="Generated" classprefix="YBackoffice" name="ybackoffice" usemaven="false">
+
+        <requires-extension name="backoffice"/>
+
+        <coremodule generated="true" manager="ybackofficepackage.jalo.YBackofficeManager" packageroot="ybackofficepackage"/>
+
+        <meta key="backoffice-module" value="true"/>
+
+        <meta key="extgen-template-extension" value="true"/>
+
+    </extension>
+
+</extensioninfo>
