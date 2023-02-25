@@ -243,7 +243,7 @@ to changed/corrupted values after build and deploy.
 
 ## <a id="w003"></a>:warning: W-003 Cloud Hot Folder without configuration for processing nodes
 
-If you use the Cloud Hot Fodlers feature of the Commerce cloud, you also have to configure the 
+If you use the Cloud Hot Folders feature of the Commerce cloud, you also have to configure the 
 `backgroundProcessing` nodes to process the incoming files.
 
 ### Relevant Documentation
