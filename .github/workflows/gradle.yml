@@ -82,15 +82,10 @@ jobs:
   verify:
     strategy:
       matrix:
+        # https://gradle.org/releases/
         GRADLE_VERSION:
-        - "6.9.4"
-        - "7.0.2"
-        - "7.1.1"
-        - "7.2"
-        - "7.3.3"
-        - "7.4.2"
-        - "7.5.1"
-        - "7.6.2"
+        - "7.6.1"
+        - "8.0.1"
     runs-on: ubuntu-latest
     needs: [basic, compliance]
     name: with Gradle ${{ matrix.GRADLE_VERSION }}

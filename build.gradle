@@ -1,10 +1,10 @@
 plugins {
-    id 'com.gradle.plugin-publish' version '0.15.0'
-    id 'pl.allegro.tech.build.axion-release' version '1.13.14'
-    id 'java-gradle-plugin'
     id 'groovy'
-    id 'com.diffplug.spotless' version '6.7.2'
-    id 'com.github.ben-manes.versions' version '0.42.0'
+    id 'com.gradle.plugin-publish' version '1.1.0'
+
+    id 'pl.allegro.tech.build.axion-release' version '1.14.4'
+    id 'com.diffplug.spotless' version '6.15.0'
+    id 'com.github.ben-manes.versions' version '0.46.0'
 }
 
 scmVersion {
@@ -78,35 +78,23 @@ dependencies {
 }
 
 java {
-    sourceCompatibility = JavaVersion.VERSION_1_8
-    targetCompatibility = JavaVersion.VERSION_1_8
+    sourceCompatibility = JavaVersion.VERSION_11
+    targetCompatibility = JavaVersion.VERSION_11
 }
 
+
 gradlePlugin {
-    plugins {
-        hybrisPlugin {
-            id = 'sap.commerce.build'
-            implementationClass = 'mpern.sap.commerce.build.HybrisPlugin'
-        }
-        hybrisCCv1Packaging {
-            id = 'sap.commerce.ccv1.package'
-            implementationClass = 'mpern.sap.commerce.ccv1.CloudServicesPackagingPlugin'
-        }
-        ccv2BuildSupport {
-            id = 'sap.commerce.build.ccv2'
-            implementationClass = 'mpern.sap.commerce.ccv2.CloudV2Plugin'
-        }
-    }
-}
-pluginBundle {
     website = 'https://github.com/SAP/commerce-gradle-plugin'
     vcsUrl = 'https://github.com/SAP/commerce-gradle-plugin'
 
     plugins {
         hybrisPlugin {
+            id = 'sap.commerce.build'
+            implementationClass = 'mpern.sap.commerce.build.HybrisPlugin'
+
             displayName = 'SAP Commerce Bootstrap & Build Plugin'
             description = """Manage the whole development lifecycle of your SAP Commerce Project with Gradle"""
-            tags = [
+            tags.set([
                 'sap commerce',
                 'sap hybris commerce',
                 'hybris',
@@ -114,25 +102,15 @@ pluginBundle {
                 'commerce',
                 'bootstrap',
                 'build'
-            ]
-        }
-        hybrisCCv1Packaging {
-            displayName = "SAP Commerce CCv1 Packaging Plugin"
-            description = """Package your SAP Commerce project according to the CCv1 Deployment Packaging Guidelines"""
-            tags = [
-                'sap commerce',
-                'sap hybris commerce',
-                'hybris',
-                'sap',
-                'commerce',
-                'ccv1',
-                'package'
-            ]
+            ])
         }
         ccv2BuildSupport {
+            id = 'sap.commerce.build.ccv2'
+            implementationClass = 'mpern.sap.commerce.ccv2.CloudV2Plugin'
+
             displayName = "SAP Commerce Cloud in the Public Cloud Build Support Plugin"
             description = """Use the CCv2 manifest.json to configure and build your local development environment"""
-            tags = [
+            tags.set([
                 'sap commerce',
                 'sap hybris commerce',
                 'hybris',
@@ -141,7 +119,7 @@ pluginBundle {
                 'ccv2',
                 'public cloud',
                 'manifest'
-            ]
+            ])
         }
     }
 }
