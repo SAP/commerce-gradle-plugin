@@ -2,6 +2,8 @@ name: Gradle CI
 
 on:
   push:
+    branches:
+      - main
   pull_request:
     branches:
       - main
@@ -16,7 +18,7 @@ jobs:
     name: Gradle wrapper validation
     steps:
       - name: Check out repo
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
       - name: Validate Gradle wrapper
         uses: gradle/wrapper-validation-action@v1
 
@@ -28,7 +30,7 @@ jobs:
     needs: validation
     steps:
       - name: Check out repo
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           fetch-depth: 0
       - name: REUSE Compliance Check
@@ -55,7 +57,7 @@ jobs:
     needs: validation
     steps:
       - name: Check out repo
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
       - name: Set up Java
         uses: actions/setup-java@v3
         with:
@@ -67,9 +69,9 @@ jobs:
         with:
           arguments: check -x spotlessCheck
       - uses: actions/upload-artifact@v3
-        if: always() # always run even if the previous step fails
+        if: ${{ failure() }}
         with:
-          name: ${{ matrix.os }}-build-artifact
+          name: ${{ matrix.os }}-test-result
           path: |
             build/reports
             build/test-results
@@ -99,7 +101,7 @@ jobs:
     name: with Gradle ${{ matrix.GRADLE_VERSION }}
     steps:
       - name: Check out repo
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
       - name: Setup Java JDK
         uses: actions/setup-java@v3
         with:
@@ -112,6 +114,13 @@ jobs:
           GRADLE_VERSION: ${{ matrix.GRADLE_VERSION }}
         with:
           arguments: check
+      - uses: actions/upload-artifact@v3
+        if: ${{ failure() }}
+        with:
+          name: ${{ matrix.GRADLE_VERSION }}-test-result
+          path: |
+            build/reports
+            build/test-results
 
   publish:
     runs-on: ubuntu-latest
@@ -119,7 +128,7 @@ jobs:
     if: startsWith(github.ref, 'refs/tags/v')
     steps:
       - name: Check out repo
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
       - name: Setup Java JDK
         uses: actions/setup-java@v3
         with:
