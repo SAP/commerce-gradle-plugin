@@ -138,7 +138,7 @@ class CCv2Tests extends Specification {
     }
 
     def "useCloudExtensionPack triggers unpack and setup of extension pack"() {
-        given: "manifest with enabled cloud extenison pack"
+        given: "manifest with enabled cloud extension pack"
         enableCep()
 
 
