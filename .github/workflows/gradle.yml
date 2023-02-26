@@ -69,9 +69,9 @@ jobs:
         with:
           arguments: check -x spotlessCheck
       - uses: actions/upload-artifact@v3
-        if: always() # always run even if the previous step fails
+        if: ${{ failure() }}
         with:
-          name: ${{ matrix.os }}-build-artifact
+          name: ${{ matrix.os }}-test-result
           path: |
             build/reports
             build/test-results
@@ -114,6 +114,13 @@ jobs:
           GRADLE_VERSION: ${{ matrix.GRADLE_VERSION }}
         with:
           arguments: check
+      - uses: actions/upload-artifact@v3
+        if: ${{ failure() }}
+        with:
+          name: ${{ matrix.GRADLE_VERSION }}-test-result
+          path: |
+            build/reports
+            build/test-results
 
   publish:
     runs-on: ubuntu-latest
