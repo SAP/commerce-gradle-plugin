@@ -67,7 +67,7 @@ public class HybrisAntTask extends JavaExec {
                 final HybrisPluginExtension plugin = (HybrisPluginExtension) t.getProject().getExtensions()
                         .getByName(HYBRIS_EXTENSION);
 
-                Version current = Version.parseVersion(plugin.getPlatform().getVersion().get());
+                Version current = Version.parseVersion(platform.getVersion().get());
 
                 // ref. hybris/bin/platform/setantenv.sh in 2205
                 if (current.compareTo(V_2205) >= 0) {
