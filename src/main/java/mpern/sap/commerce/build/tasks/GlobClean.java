@@ -9,28 +9,27 @@ import java.nio.file.PathMatcher;
 import java.nio.file.attribute.BasicFileAttributes;
 
 import org.gradle.api.DefaultTask;
-import org.gradle.api.file.DirectoryProperty;
 import org.gradle.api.provider.Property;
 import org.gradle.api.tasks.*;
 
 public class GlobClean extends DefaultTask {
     final Property<String> glob;
-    final DirectoryProperty baseFolder;
+    final Property<String> baseFolder;
 
     public GlobClean() {
         glob = getProject().getObjects().property(String.class);
-        baseFolder = getProject().getObjects().directoryProperty();
+        baseFolder = getProject().getObjects().property(String.class);
     }
 
     @TaskAction
     public void cleanup() {
         PathMatcher matcher = FileSystems.getDefault().getPathMatcher(glob.getOrNull());
-        Path path = baseFolder.get().getAsFile().toPath();
+        Path path = Path.of(baseFolder.get());
         if (!Files.exists(path)) {
             return;
         }
         try {
-            Files.walkFileTree(path, new java.nio.file.SimpleFileVisitor<Path>() {
+            Files.walkFileTree(path, new java.nio.file.SimpleFileVisitor<>() {
                 @Override
                 public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
                     if (matcher.matches(file)) {
@@ -58,7 +57,7 @@ public class GlobClean extends DefaultTask {
     }
 
     @Input
-    public DirectoryProperty getBaseFolder() {
+    public Property<String> getBaseFolder() {
         return baseFolder;
     }
 }

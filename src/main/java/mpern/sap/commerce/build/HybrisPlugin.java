@@ -7,7 +7,6 @@ import java.io.IOException;
 import java.nio.file.*;
 import java.nio.file.attribute.FileTime;
 import java.time.Instant;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -57,9 +56,9 @@ public class HybrisPlugin implements Plugin<Project> {
 
         extension.getCleanGlob().set("glob:**hybris/bin/{ext-**,platform**,modules**}");
 
-        extension.getBootstrapInclude().set(project.provider(() -> Arrays.asList("hybris/**")));
+        extension.getBootstrapInclude().set(project.provider(() -> List.of("hybris/**")));
         // this folder contains some utf-8 filenames that lead to issues on linux
-        extension.getBootstrapExclude().set(project.provider(() -> Arrays.asList(
+        extension.getBootstrapExclude().set(project.provider(() -> List.of(
                 "hybris/bin/ext-content/npmancillary/resources/npm/node_modules/http-server/node_modules/ecstatic/test/**")));
 
         final Configuration hybrisPlatform = project.getConfigurations().create(HYBRIS_PLATFORM_CONFIGURATION)
@@ -103,13 +102,13 @@ public class HybrisPlugin implements Plugin<Project> {
             t.setGroup(HYBRIS_BOOTSTRAP);
             t.setDescription("Cleans all hybris platform artifacts");
 
-            t.getBaseFolder().set(hybrisBin);
+            t.getBaseFolder().set(hybrisBin.getAbsolutePath());
             t.getGlob().set(extension.getCleanGlob());
         });
 
         TaskProvider<GlobClean> cleanOnVersionChange = project.getTasks().register("cleanPlatformIfVersionChanged",
                 GlobClean.class, t -> {
-                    t.getBaseFolder().set(hybrisBin);
+                    t.getBaseFolder().set(hybrisBin.getAbsolutePath());
                     t.getGlob().set(extension.getCleanGlob());
                     t.onlyIf(o -> versionMismatch(extension, t.getLogger()));
                 });
@@ -229,7 +228,7 @@ public class HybrisPlugin implements Plugin<Project> {
                 // @formatter:on
                 project.delete(files);
                 try {
-                    Files.walkFileTree(bin, new SimpleFileVisitor<Path>() {
+                    Files.walkFileTree(bin, new SimpleFileVisitor<>() {
                         @Override
                         public FileVisitResult postVisitDirectory(Path dir, IOException exc) throws IOException {
                             if (isDirEmpty(dir)) {

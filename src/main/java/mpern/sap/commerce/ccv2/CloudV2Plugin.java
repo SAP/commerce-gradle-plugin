@@ -175,9 +175,8 @@ public class CloudV2Plugin implements Plugin<Project> {
         if (!useCloudExtensionPack) {
             return;
         }
-        TaskProvider<Delete> cleanCep = project.getTasks().register("cleanCloudExtensionPack", Delete.class, d -> {
-            d.delete(extension.getCloudExtensionPackFolder().getAsFile());
-        });
+        TaskProvider<Delete> cleanCep = project.getTasks().register("cleanCloudExtensionPack", Delete.class,
+                d -> d.delete(extension.getCloudExtensionPackFolder().getAsFile()));
         TaskProvider<Copy> unpackCep = project.getTasks().register("unpackCloudExtensionPack", Copy.class, c -> {
             c.dependsOn(cleanCep);
             c.from(project.provider(() -> project.getConfigurations().getByName(EXTENSION_PACK).getFiles().stream()
@@ -202,7 +201,8 @@ public class CloudV2Plugin implements Plugin<Project> {
         TaskProvider<PatchLocalExtensions> patch = project.getTasks().register("patchLocalExtensions",
                 PatchLocalExtensions.class, p -> {
                     p.getTarget().set(project.file("hybris/config/localextensions.xml"));
-                    p.getCepFolder().set(extension.getCloudExtensionPackFolder());
+                    p.getCepFolder()
+                            .set(extension.getCloudExtensionPackFolder().map(d -> d.getAsFile().getAbsolutePath()));
                 });
         bootstrapPlatform.configure(t -> t.dependsOn(patch));
     }

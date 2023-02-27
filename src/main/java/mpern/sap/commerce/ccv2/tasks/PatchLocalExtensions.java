@@ -14,9 +14,10 @@ import javax.xml.transform.stream.StreamResult;
 
 import org.gradle.api.DefaultTask;
 import org.gradle.api.GradleException;
-import org.gradle.api.file.DirectoryProperty;
 import org.gradle.api.file.RegularFileProperty;
+import org.gradle.api.provider.Property;
 import org.gradle.api.tasks.Input;
+import org.gradle.api.tasks.InputFiles;
 import org.gradle.api.tasks.TaskAction;
 import org.w3c.dom.Comment;
 import org.w3c.dom.Document;
@@ -28,21 +29,21 @@ import org.w3c.dom.Text;
 public class PatchLocalExtensions extends DefaultTask {
 
     private final RegularFileProperty target;
-    private final DirectoryProperty cepFolder;
+    private final Property<String> cepFolder;
 
     public PatchLocalExtensions() {
         this.target = getProject().getObjects().fileProperty();
-        this.cepFolder = getProject().getObjects().directoryProperty();
+        this.cepFolder = getProject().getObjects().property(String.class);
     }
 
     @TaskAction
     public void addCepLoadDir() throws Exception {
 
         Path hybrisBin = getProject().getRootDir().toPath().resolve(Paths.get("hybris", "bin"));
-        Path cepPath = cepFolder.get().getAsFile().toPath();
+        Path cepPath = Path.of(cepFolder.get());
 
         Path relativize = hybrisBin.relativize(cepPath);
-        String cepPathString = "${HYBRIS_BIN_DIR}" + File.separator + relativize.toString();
+        String cepPathString = "${HYBRIS_BIN_DIR}" + File.separator + relativize;
 
         patchLocalExtensions(cepPathString);
     }
@@ -50,7 +51,7 @@ public class PatchLocalExtensions extends DefaultTask {
     private void patchLocalExtensions(String cepPathString) throws Exception {
         Path localExtensions = target.get().getAsFile().toPath();
         if (!(Files.exists(localExtensions))) {
-            getLogger().debug("{} not found; nothing to do", localExtensions.toString());
+            getLogger().debug("{} not found; nothing to do", localExtensions);
             return;
         }
 
@@ -99,13 +100,13 @@ public class PatchLocalExtensions extends DefaultTask {
         transformer.transform(source, result);
     }
 
-    @Input
+    @InputFiles
     public RegularFileProperty getTarget() {
         return target;
     }
 
     @Input
-    public DirectoryProperty getCepFolder() {
+    public Property<String> getCepFolder() {
         return cepFolder;
     }
 }
