@@ -186,6 +186,7 @@ public class ExtensionInfoLoader {
         extInfoPattern.include("**/extensioninfo.xml");
         extInfoPattern.exclude("**/bin/platform/**");
         extInfoPattern.exclude("/platform/**");
+        extInfoPattern.exclude("**/node_modules/**");
         Set<File> files = dir.matching(extInfoPattern).getFiles();
 
         return files.stream()
