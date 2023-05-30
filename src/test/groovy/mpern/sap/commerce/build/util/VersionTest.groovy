@@ -24,7 +24,19 @@ class VersionTest extends Specification {
         v.major == 19
         v.minor == 05
         v.release == 0
-        v.patch == Integer.MAX_VALUE
+        v.patch == Version.UNDEFINED_PART
         v.toString() == "1905"
+    }
+
+    def "preview version can be parsed"() {
+        when:
+        def v = Version.parseVersion("2211.FP1")
+
+        then:
+        v.preview
+        v.major == 22
+        v.minor == 11
+        v.patch == Integer.MIN_VALUE
+        v.toString() == "2211.FP1 (PREVIEW)"
     }
 }
