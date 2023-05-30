@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Commerce build: preliminary support of preview versions, e.g. `2211.FP1` ([#48])
+- Commerce build, sparse bootstrap: fix performance extension scan performance degradation when including smartedittools
+  ([#49])
+
+[#48]: https://github.com/SAP/commerce-gradle-plugin/issues/48
+[#49]: https://github.com/SAP/commerce-gradle-plugin/issues/49
+
 ## [3.9.0]
 
 ### Added

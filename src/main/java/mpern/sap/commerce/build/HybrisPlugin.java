@@ -252,15 +252,10 @@ public class HybrisPlugin implements Plugin<Project> {
         try {
             current = Version.parseVersion(extension.getPlatform().getVersion().get());
         } catch (IllegalArgumentException e) {
+
             current = Version.UNDEFINED;
         }
-        Version required;
-
-        try {
-            required = Version.parseVersion(extension.getVersion().get());
-        } catch (IllegalArgumentException e) {
-            required = Version.UNDEFINED;
-        }
+        Version required = Version.parseVersion(extension.getVersion().get());
 
         boolean exactMatch = current.equals(required);
         boolean nearMatch = current.equalsIgnorePatch(required) && required.getPatch() == Version.UNDEFINED_PART;
