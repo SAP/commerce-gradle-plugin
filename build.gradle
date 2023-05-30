@@ -1,9 +1,9 @@
 plugins {
     id 'groovy'
-    id 'com.gradle.plugin-publish' version '1.1.0'
+    id 'com.gradle.plugin-publish' version '1.2.0'
 
-    id 'pl.allegro.tech.build.axion-release' version '1.14.4'
-    id 'com.diffplug.spotless' version '6.15.0'
+    id 'pl.allegro.tech.build.axion-release' version '1.15.3'
+    id 'com.diffplug.spotless' version '6.19.0'
     id 'com.github.ben-manes.versions' version '0.46.0'
 }
 
@@ -26,17 +26,6 @@ scmVersion {
     }
     ignoreUncommittedChanges = false
 }
-
-//tocme {
-//    doc 'docs/ccv2-validation.md'
-//}
-//
-//tasks.named('assemble') {
-//    dependsOn('insertTocs')
-//}
-//tasks.named('checkTocs') {
-//    mustRunAfter('insertTocs')
-//}
 
 spotless {
     format 'misc', {
