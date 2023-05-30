@@ -13,6 +13,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Commerce build, sparse bootstrap: fix performance extension scan performance degradation when including smartedittools
   ([#49])
 
+**Thank You** to [@iccaprar] for his continued support.
+
 [#48]: https://github.com/SAP/commerce-gradle-plugin/issues/48
 [#49]: https://github.com/SAP/commerce-gradle-plugin/issues/49
 
