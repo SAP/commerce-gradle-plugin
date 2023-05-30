@@ -10,11 +10,11 @@ Bootstrap, configure and build your SAP Commerce (Hybris) project using Gradle 5
 
 The plugins are published to https://plugins.gradle.org/.
 
-|Published Plugin|Documentation|Description|
-|---|---|---|
-|[`sap.commerce.build`][build]|[Documentation][build-doc]|Automates the developer setup and allows you to interact with the platform build using Gradle|
-|[`sap.commerce.build.ccv2`][ccv2]|[Documentation][ccv2-doc]|Use `manifest.json` to configure and build your "SAP Commerce Cloud in the Public Cloud" (aka CCv2) project locally|
-|[`sap.commerce.ccv1.package`][package]|[Documentation][package-doc]|Creates CCv1 compliant deployment packages (Deployment Packaging Guidelines v.2.3.3)|
+| Published Plugin                       | Documentation                | Description                                                                                                         |
+| -------------------------------------- | ---------------------------- | ------------------------------------------------------------------------------------------------------------------- |
+| [`sap.commerce.build`][build]          | [Documentation][build-doc]   | Automates the developer setup and allows you to interact with the platform build using Gradle                       |
+| [`sap.commerce.build.ccv2`][ccv2]      | [Documentation][ccv2-doc]    | Use `manifest.json` to configure and build your "SAP Commerce Cloud in the Public Cloud" (aka CCv2) project locally |
+| [`sap.commerce.ccv1.package`][package] | [Documentation][package-doc] | Creates CCv1 compliant deployment packages (Deployment Packaging Guidelines v.2.3.3)                                |
 
 This project uses [Semantic Versioning 2.0.0](https://semver.org/spec/v2.0.0.html)
 
