@@ -1,6 +1,7 @@
 package mpern.sap.commerce.build.util;
 
 import java.util.Comparator;
+import java.util.Map;
 import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -33,16 +34,20 @@ public class Version implements Comparable<Version> {
         this.preview = false;
     }
 
-    private Version(int major, int minor, boolean preview, String original) {
+    private Version(int major, int minor, int patch, boolean preview, String original) {
         this.major = major;
         this.minor = minor;
         this.preview = preview;
         this.release = 0;
-        this.patch = Integer.MIN_VALUE;
+        this.patch = patch;
         this.original = original;
     }
 
     public static Version parseVersion(String versionString) {
+        return parseVersion(versionString, Map.of());
+    }
+
+    public static Version parseVersion(String versionString, Map<String, Integer> previewToPlatformPatch) {
         Objects.requireNonNull(versionString);
 
         Matcher oldV = OLD_VERSION.matcher(versionString);
@@ -50,8 +55,8 @@ public class Version implements Comparable<Version> {
         Matcher previewV = PREVIEW_VERSION.matcher(versionString);
 
         if (previewV.matches()) {
-            return new Version(Integer.parseInt(previewV.group(1)), Integer.parseInt(previewV.group(2)), true,
-                    versionString);
+            return new Version(Integer.parseInt(previewV.group(1)), Integer.parseInt(previewV.group(2)),
+                    previewToPlatformPatch.getOrDefault(versionString, UNDEFINED_PART), true, versionString);
         }
         if (newV.matches()) {
             int patch = UNDEFINED_PART;
@@ -93,18 +98,12 @@ public class Version implements Comparable<Version> {
 
     @Override
     public int compareTo(Version o) {
-        if ((this.isPreview() || o.isPreview()) && this.original.equalsIgnoreCase(o.original)) {
-            return 0;
-        }
         return VERSION_COMPARATOR.compare(this, o);
     }
 
     public boolean equalsIgnorePatch(Version version) {
         if (this == version) {
             return true;
-        }
-        if (this.isPreview() || version.isPreview()) {
-            return false;
         }
         return major == version.major && minor == version.minor && release == version.release;
     }
@@ -118,9 +117,6 @@ public class Version implements Comparable<Version> {
             return false;
         }
         Version version = (Version) o;
-        if ((this.isPreview() || version.isPreview()) && this.original.equalsIgnoreCase(version.original)) {
-            return true;
-        }
         return major == version.major && minor == version.minor && release == version.release && patch == version.patch;
     }
 
@@ -131,7 +127,15 @@ public class Version implements Comparable<Version> {
 
     @Override
     public String toString() {
-        return this.preview ? this.original + " (PREVIEW)" : this.original;
+        return this.preview ? buildPreviewString() : this.original;
+    }
+
+    private String buildPreviewString() {
+        if (this.patch == UNDEFINED_PART) {
+            return String.format("%s (PREVIEW)", this.original);
+        } else {
+            return String.format("%s (PREVIEW) [%d%d.%d]", this.original, this.major, this.minor, this.patch);
+        }
     }
 
     public int getMajor() {

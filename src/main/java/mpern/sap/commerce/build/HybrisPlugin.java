@@ -250,9 +250,9 @@ public class HybrisPlugin implements Plugin<Project> {
     private boolean versionMismatch(HybrisPluginExtension extension, Logger logger) {
         Version current;
         try {
-            current = Version.parseVersion(extension.getPlatform().getVersion().get());
+            current = Version.parseVersion(extension.getPlatform().getVersion().get(),
+                    extension.getPreviewToPatchLevel().get());
         } catch (IllegalArgumentException e) {
-
             current = Version.UNDEFINED;
         }
         Version required = Version.parseVersion(extension.getVersion().get());
