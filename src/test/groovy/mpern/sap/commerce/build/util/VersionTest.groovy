@@ -4,11 +4,10 @@ import spock.lang.Specification
 
 class VersionTest extends Specification {
 
-    private static final Map<String, Integer> PREVIEW_TO_PLATFORM_PATCH = Map.of(
-    "2211.FP0", 4,
-    "2211.FP1", 8
-    );
-
+    static Map<String, Integer> PREVIEW_TO_PLATFORM_PATCH = [
+        "2211.FP0": 4,
+        "2211.FP1": 8
+    ]
 
     def "version parsed correctly"() {
         when:

@@ -1,5 +1,6 @@
 package mpern.sap.commerce.build.util;
 
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.Map;
 import java.util.Objects;
@@ -44,7 +45,7 @@ public class Version implements Comparable<Version> {
     }
 
     public static Version parseVersion(String versionString) {
-        return parseVersion(versionString, Map.of());
+        return parseVersion(versionString, Collections.emptyMap());
     }
 
     public static Version parseVersion(String versionString, Map<String, Integer> previewToPlatformPatch) {
