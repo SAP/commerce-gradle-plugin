@@ -3,6 +3,7 @@ package mpern.sap.commerce.build;
 import org.gradle.api.Action;
 import org.gradle.api.Project;
 import org.gradle.api.provider.ListProperty;
+import org.gradle.api.provider.MapProperty;
 import org.gradle.api.provider.Property;
 import org.gradle.api.tasks.Nested;
 
@@ -20,6 +21,8 @@ public abstract class HybrisPluginExtension {
 
     private final ListProperty<Object> antTaskDependencies;
 
+    private final MapProperty<String, Integer> previewToPatchLevel;
+
     private final HybrisPlatform platform;
 
     public HybrisPluginExtension(Project project) {
@@ -35,6 +38,8 @@ public abstract class HybrisPluginExtension {
         bootstrapExclude = project.getObjects().listProperty(String.class);
 
         antTaskDependencies = project.getObjects().listProperty(Object.class);
+
+        previewToPatchLevel = project.getObjects().mapProperty(String.class, Integer.class);
 
         platform = project.getObjects().newInstance(HybrisPlatform.class, project);
     }
@@ -65,6 +70,10 @@ public abstract class HybrisPluginExtension {
 
     public ListProperty<Object> getAntTaskDependencies() {
         return antTaskDependencies;
+    }
+
+    public MapProperty<String, Integer> getPreviewToPatchLevel() {
+        return previewToPatchLevel;
     }
 
     @Nested

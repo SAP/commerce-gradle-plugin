@@ -23,6 +23,8 @@ class BootstrapSparseTest extends Specification {
 
     GradleRunner runner
 
+    Path deps
+
     def setup() {
         buildFile = testProjectDir.resolve('build.gradle')
 
@@ -36,7 +38,7 @@ class BootstrapSparseTest extends Specification {
                 }
             }
         """
-        def deps = testProjectDir.resolve("dependencies")
+        deps = testProjectDir.resolve("dependencies")
         Files.createDirectory(deps)
         TestUtils.generateDummyPlatformNewModel(deps, providedVersion)
 
@@ -239,6 +241,92 @@ class BootstrapSparseTest extends Specification {
         result.output.contains("Copied missing extensions from project dependency hybris-commerce-suite-2211.0.zip")
 
         verifyProjectFilesWithAlwaysIncludedPresent()
+    }
+
+    def "sparse bootstrap skipped when no missing extensions with preview patch mapping"() {
+        given: "project folder contains all needed extensions"
+        ProjectFolderTestUtils.prepareProjectFolder(testProjectDir, "dummy-platform-new-model")
+        ProjectFolderTestUtils.prepareProjectFolder(testProjectDir, "dummy-custom-modules")
+
+        and: "configured project with sparse bootstrap"
+        buildFile << """
+            hybris {
+                version = '2211.8'
+                previewToPatchLevel = [
+                    '2211.FP1': 8
+                ]
+                sparseBootstrap {
+                    enabled = true
+                }
+            }
+        """
+        ensureParents(testProjectDir.resolve("hybris/bin/platform/build.number")) << """
+            version=2211.FP1
+        """
+
+        and: "dependency present"
+        TestUtils.generateDummyPlatformNewModel(deps, "2211.8")
+
+        when: "running bootstrap task"
+        def result = runner
+                .withArguments("bootstrapPlatform", "--stacktrace")
+                .build()
+
+        println result.getOutput()
+
+        then:
+        result.task(":cleanPlatformIfVersionChanged").outcome == SKIPPED
+        result.task(":unpackPlatform").outcome == SKIPPED
+        result.task(":unpackPlatformSparse").outcome == SUCCESS
+
+        result.output.contains("No missing SAP Commerce extensions, nothing to unpack")
+
+        result.task(":bootstrapPlatform").outcome == SUCCESS
+    }
+
+    def "boostrap replaces platform if wrong version with preview patch mapping"() {
+        given: "project folder contains all custom extensions"
+        ProjectFolderTestUtils.prepareProjectFolder(testProjectDir, "dummy-custom-modules")
+
+        and: "configured project with sparse bootstrap and preview patch mapping"
+        buildFile << """
+            hybris {
+                version = '2211.8'
+                previewToPatchLevel = [
+                    '2211.FP1': 8
+                ]
+                sparseBootstrap {
+                    enabled = true
+                }
+            }
+        """
+        and: "wrong platform version"
+        ensureParents(testProjectDir.resolve("hybris/bin/platform/build.number")) << """
+            version = 2211.6
+        """
+
+        and: "dependency present"
+        TestUtils.generateDummyPlatformNewModel(deps, "2211.8")
+
+        when: "running bootstrap task"
+        def result = runner
+                .withArguments("bootstrapPlatform", "--stacktrace")
+                .build()
+
+        println(result.output)
+
+        then:
+
+        result.task(":bootstrapPlatform").outcome == SUCCESS
+        result.task(":cleanPlatformIfVersionChanged").outcome == SUCCESS
+        result.task(":unpackPlatform").outcome == SKIPPED
+        result.task(":unpackPlatformSparse").outcome == SUCCESS
+
+        result.output.contains("Some needed SAP Commerce Suite extensions are missing, copying them")
+        result.output.contains("Copying missing extensions from project dependency hybris-commerce-suite-2211.8.zip")
+        result.output.contains("Copied missing extensions from project dependency hybris-commerce-suite-2211.8.zip")
+
+        verifyProjectFilesPresent()
     }
 
     private void verifyProjectFilesPresent() {

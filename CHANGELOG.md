@@ -7,7 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-TBD
+### Added
+
+- Commerce build: improve support of preview versions, e.g. `2211.FP1` with mapping to patch levels ([#53])
+
+[#53]: https://github.com/SAP/commerce-gradle-plugin/issues/53
 
 ## [3.9.1] 2023-05-30
 
