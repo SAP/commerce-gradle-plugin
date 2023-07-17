@@ -7,11 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+TBD
+
+## [3.10.0] 2023-07-17
+
 ### Added
 
 - Commerce build: improve support of preview versions, e.g. `2211.FP1` with mapping to patch levels ([#53])
 
 [#53]: https://github.com/SAP/commerce-gradle-plugin/issues/53
+
+**Thank You** to [@iccaprar] for his continued support.
 
 ## [3.9.1] 2023-05-30
 
@@ -389,7 +395,8 @@ Shout out to [@corneleberle] for providing the fix.
 
 :tada: Initial release :tada:
 
-[Unreleased]: https://github.com/SAP/commerce-gradle-plugin/compare/v3.9.1...HEAD
+[Unreleased]: https://github.com/SAP/commerce-gradle-plugin/compare/v3.10.0...HEAD
+[3.10.0]: https://github.com/SAP/commerce-gradle-plugin/compare/v3.9.1...v3.10.0
 [3.9.1]: https://github.com/SAP/commerce-gradle-plugin/compare/v3.9.0...v3.9.1
 [3.9.0]: https://github.com/SAP/commerce-gradle-plugin/compare/v3.8.0...v3.9.0
 [3.8.0]: https://github.com/SAP/commerce-gradle-plugin/compare/v3.7.1...v3.8.0
