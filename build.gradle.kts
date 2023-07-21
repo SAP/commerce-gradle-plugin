@@ -1,42 +1,31 @@
+import pl.allegro.tech.build.axion.release.domain.hooks.HookContext
+
 plugins {
     id("groovy")
     id("com.gradle.plugin-publish") version "1.2.0"
 
     id("pl.allegro.tech.build.axion-release") version "1.15.3"
-    id("com.diffplug.spotless") version "6.19.0"
-    id("com.github.ben-manes.versions") version "0.46.0"
+    id("com.diffplug.spotless") version "6.20.0"
+    id("com.github.ben-manes.versions") version "0.47.0"
 }
 
-// scmVersion {
-//     localOnly.set(true)
-//     ignoreUncommittedChanges.set(true)
-
-//     checks {
-//         aheadOfRemote.set(false)
-//     }
-
-//     hooks {
-//         preRelease {
-//             fileUpdate {
-//                 file("README.md")
-//                 pattern = {v, _ -> "$v"}
-//                 replacement ={v, _ -> "$v"}
-//             }
-//             pre("commit")
-//         }
-//     }
-// }
-
 scmVersion {
+    localOnly = true
+    ignoreUncommittedChanges = true
+
+    checks {
+        aheadOfRemote = false
+    }
     hooks {
-        preRelease {
-            fileUpdate {
-                file("README.md")
-                encoding = "utf-8"
-                pattern = { pv, _ -> "v$pv" }
-                replacement = { cv, _ -> "v$cv" }
-            }
-        }
+        pre(
+            "fileUpdate",
+            mapOf(
+                "encoding" to "utf-8",
+                "file" to file("README.md"),
+                "pattern" to KotlinClosure2({ pv: String, _: HookContext -> "$pv" }),
+                "replacement" to KotlinClosure2({ cv: String, _: HookContext -> "$cv" }),
+            ),
+        )
         pre("commit")
     }
 }
@@ -85,8 +74,8 @@ java {
 }
 
 gradlePlugin {
-    website.set("https://github.com/SAP/commerce-gradle-plugin")
-    vcsUrl.set("https://github.com/SAP/commerce-gradle-plugin")
+    website = "https://github.com/SAP/commerce-gradle-plugin"
+    vcsUrl = "https://github.com/SAP/commerce-gradle-plugin"
 
     plugins {
         create("hybrisPlugin") {
@@ -95,16 +84,14 @@ gradlePlugin {
 
             displayName = "SAP Commerce Bootstrap & Build Plugin"
             description = """Manage the whole development lifecycle of your SAP Commerce Project with Gradle"""
-            tags.set(
-                setOf(
-                    "sap commerce",
-                    "sap hybris commerce",
-                    "hybris",
-                    "sap",
-                    "commerce",
-                    "bootstrap",
-                    "build",
-                ),
+            tags = setOf(
+                "sap commerce",
+                "sap hybris commerce",
+                "hybris",
+                "sap",
+                "commerce",
+                "bootstrap",
+                "build",
             )
         }
         create("ccv2BuildSupport") {
@@ -113,17 +100,15 @@ gradlePlugin {
 
             displayName = "SAP Commerce Cloud in the Public Cloud Build Support Plugin"
             description = """Use the CCv2 manifest.json to configure and build your local development environment"""
-            tags.set(
-                setOf(
-                    "sap commerce",
-                    "sap hybris commerce",
-                    "hybris",
-                    "sap",
-                    "commerce",
-                    "ccv2",
-                    "public cloud",
-                    "manifest",
-                ),
+            tags = setOf(
+                "sap commerce",
+                "sap hybris commerce",
+                "hybris",
+                "sap",
+                "commerce",
+                "ccv2",
+                "public cloud",
+                "manifest",
             )
         }
     }
