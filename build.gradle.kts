@@ -2,6 +2,7 @@ import pl.allegro.tech.build.axion.release.domain.hooks.HookContext
 
 plugins {
     id("groovy")
+    `jvm-test-suite`
     id("com.gradle.plugin-publish") version "1.2.0"
 
     id("pl.allegro.tech.build.axion-release") version "1.15.3"
@@ -63,11 +64,6 @@ repositories {
     mavenCentral()
 }
 
-dependencies {
-    testImplementation(platform("org.spockframework:spock-bom:2.1-groovy-3.0"))
-    testImplementation("org.spockframework:spock-core")
-}
-
 java {
     sourceCompatibility = JavaVersion.VERSION_11
     targetCompatibility = JavaVersion.VERSION_11
@@ -125,50 +121,61 @@ val commonTestImplementation by configurations.getting {
     extendsFrom(configurations.implementation.get())
 }
 
-sourceSets {
-    create("integrationTest") {
-        compileClasspath += sourceSets.main.get().output + configurations.testRuntimeClasspath.get() + sourceSets["commonTest"].output
-        runtimeClasspath += output + compileClasspath
-    }
-}
+testing {
+    suites {
+        configureEach {
+            if (this is JvmTestSuite) {
+                useJUnitJupiter()
+                dependencies {
+                    implementation(platform("org.spockframework:spock-bom:2.2-groovy-3.0"))
+                    implementation("org.spockframework:spock-core")
 
-tasks.register<Test>("integrationTest") {
-    description = "Runs the integration tests."
-    group = "verification"
-    testClassesDirs = sourceSets["integrationTest"].output.classesDirs
-    classpath = sourceSets["integrationTest"].runtimeClasspath
-    mustRunAfter("test")
+                    implementation(project())
+                }
+                sources {
+                    compileClasspath += sourceSets["commonTest"].output
+                    runtimeClasspath += sourceSets["commonTest"].output
+                }
+                targets {
+                    all {
+                        testTask.configure {
+                            testLogging {
+                                events("passed", "failed", "skipped", "standardError")
+                                showStandardStreams = true
+                                showStackTraces = true
+                                showExceptions = true
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        val integrationTest by registering(JvmTestSuite::class) {
+            targets {
+                all {
+                    testTask.configure {
+                        shouldRunAfter("test")
+                    }
+                }
+            }
+        }
+        val functionalTest by registering(JvmTestSuite::class) {
+            targets {
+                all {
+                    testTask.configure {
+                        shouldRunAfter("test", integrationTest)
+                    }
+                }
+            }
+        }
+    }
 }
 
 tasks.named("check") {
-    dependsOn("integrationTest")
+    dependsOn(testing.suites.named("integrationTest"), testing.suites.named("functionalTest"))
 }
 
-sourceSets {
-    create("functionalTest") {
-        compileClasspath += sourceSets.main.get().output + configurations.testRuntimeClasspath.get() + sourceSets["commonTest"].output
-        runtimeClasspath += output + compileClasspath
-    }
-}
-
-tasks.register<Test>("functionalTest") {
-    description = "Runs the functional tests."
-    group = "verification"
-    testClassesDirs = sourceSets["functionalTest"].output.classesDirs
-    classpath = sourceSets["functionalTest"].runtimeClasspath
-    mustRunAfter("test", "integrationTest")
-}
-
-tasks.named("check") {
-    dependsOn("functionalTest")
-}
-
-tasks.withType<Test>().configureEach {
-    useJUnitPlatform()
-    testLogging {
-        events("passed", "failed", "skipped", "standardError")
-        showStandardStreams = true
-        showStackTraces = true
-        showExceptions = true
-    }
+gradlePlugin {
+    testSourceSets(sourceSets.get("functionalTest"))
 }
