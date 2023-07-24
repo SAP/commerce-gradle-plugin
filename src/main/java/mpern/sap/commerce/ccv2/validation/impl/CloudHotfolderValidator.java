@@ -28,14 +28,14 @@ public class CloudHotfolderValidator implements Validator {
     @Override
     public List<Error> validate(Manifest manifest) throws Exception {
         Tuple2<Set<String>, List<String>> listing = resolver.listAllConfiguredExtensions(manifest);
-        if (listing.getFirst().contains(HOTFOLDER_EXTENSION)) {
+        if (listing.getV1().contains(HOTFOLDER_EXTENSION)) {
             Map<String, String> effectiveProperties = new HashMap<>();
             manifest.aspects.stream().filter(a -> BACKGROUND_ASPECT.equals(a.name)).flatMap(a -> a.properties.stream())
                     .forEach(p -> effectiveProperties.put(p.key, p.value));
 
             manifest.useConfig.properties.stream().filter(p -> BACKGROUND_ASPECT.equals(p.aspect))
                     .map(p -> ValidationUtils.validateAndNormalizePath(this.projectRoot, "", p.location))
-                    .filter(p -> p.getFirst() != null).map(Tuple2::getFirst).forEach(p -> {
+                    .filter(p -> p.getV1() != null).map(Tuple2::getV1).forEach(p -> {
                         try (InputStream stream = Files.newInputStream(p)) {
                             Properties props = new Properties();
                             props.load(stream);

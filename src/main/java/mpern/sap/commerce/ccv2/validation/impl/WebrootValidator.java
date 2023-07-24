@@ -47,8 +47,8 @@ public class WebrootValidator implements Validator {
             Properties properties = manifest.useConfig.properties.get(i);
             Tuple2<Path, List<Error>> result = ValidationUtils.validateAndNormalizePath(this.projectRoot, "",
                     properties.location);
-            if (result.getFirst() != null) {
-                try (InputStream stream = Files.newInputStream(result.getFirst())) {
+            if (result.getV1() != null) {
+                try (InputStream stream = Files.newInputStream(result.getV1())) {
                     java.util.Properties props = new java.util.Properties();
                     props.load(stream);
                     String location = String.format("useConfig.properties[%d].location (%s)", i, properties.location);

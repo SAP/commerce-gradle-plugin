@@ -3,7 +3,6 @@ package mpern.sap.commerce.ccv2.model;
 import static mpern.sap.commerce.ccv2.model.util.ParseUtils.validateNullOrWhitespace;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class Aspect {
 
@@ -27,15 +26,16 @@ public class Aspect {
         return properties;
     }
 
+    @SuppressWarnings("unchecked")
     public static Aspect fromMap(Map<String, Object> jsonMap) {
         String name = validateNullOrWhitespace((String) jsonMap.get("name"), "Aspect.name must have a value");
 
         List<Map<String, Object>> raw = Optional.ofNullable((List<Map<String, Object>>) jsonMap.get("properties"))
                 .orElse(Collections.emptyList());
-        List<Property> properties = raw.stream().map(Property::fromMap).collect(Collectors.toList());
+        List<Property> properties = raw.stream().map(Property::fromMap).toList();
 
         raw = Optional.ofNullable((List<Map<String, Object>>) jsonMap.get("webapps")).orElse(Collections.emptyList());
-        List<Webapp> webapps = raw.stream().map(Webapp::fromMap).collect(Collectors.toList());
+        List<Webapp> webapps = raw.stream().map(Webapp::fromMap).toList();
 
         return new Aspect(name, properties, webapps);
     }

@@ -25,6 +25,7 @@ public class TestConfiguration {
         this.excludedPackages = Collections.unmodifiableSet(excludedPackages);
     }
 
+    @SuppressWarnings("unchecked")
     public static TestConfiguration fromMap(Map<String, Object> jsonMap) {
         Set<String> ext = ParseUtils.emptyOrSet((List<String>) jsonMap.get("extensions"));
         Set<String> anot = ParseUtils.emptyOrSet((List<String>) jsonMap.get("annotations"));

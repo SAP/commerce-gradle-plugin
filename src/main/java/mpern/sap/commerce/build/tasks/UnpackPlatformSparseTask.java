@@ -88,8 +88,7 @@ public class UnpackPlatformSparseTask extends DefaultTask {
          * as it would fail when loading the needed extensions)
          */
         List<String> allMissingCustomExtensions = allMissingExtensions.values().stream()
-                .filter(ext -> ext.extensionType == ExtensionType.CUSTOM).map(ext -> ext.name)
-                .collect(Collectors.toList());
+                .filter(ext -> ext.extensionType == ExtensionType.CUSTOM).map(ext -> ext.name).toList();
         if (!allMissingCustomExtensions.isEmpty()) {
             getLogger().lifecycle("Some custom extensions are missing: {}, aborting", allMissingCustomExtensions);
             throw new InvalidUserDataException(

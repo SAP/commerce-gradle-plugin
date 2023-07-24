@@ -38,7 +38,7 @@ public class ManifestExtensionsResolver implements ExtensionsResolver {
     @Override
     public Result determineEffectiveExtensions(Manifest manifest) {
         Tuple2<Set<String>, List<String>> listing = listAllConfiguredExtensions(manifest);
-        Set<String> extensionNames = listing.getFirst();
+        Set<String> extensionNames = listing.getV1();
         Set<String> configuredCloudOnly = new LinkedHashSet<>(extensionNames);
         configuredCloudOnly.retainAll(CLOUD_ONLY_EXTENSIONS);
         extensionNames.removeAll(CLOUD_ONLY_EXTENSIONS);
@@ -46,11 +46,11 @@ public class ManifestExtensionsResolver implements ExtensionsResolver {
         try {
             PlatformResolver resolver = new PlatformResolver(
                     this.projectRoot.resolve(Paths.get("hybris/bin/platform")));
-            List<Extension> extensions = resolver.loadListOfExtensions(extensionNames);
+            List<Extension> extensions = new ArrayList<>(resolver.loadListOfExtensions(extensionNames));
             for (String cloudOnly : configuredCloudOnly) {
                 extensions.add(new Extension(cloudOnly, Paths.get("dummy", cloudOnly)));
             }
-            return new Result(extensions, listing.getSecond());
+            return new Result(extensions, listing.getV2());
         } catch (Exception e) {
             // ignore
         }
@@ -64,10 +64,10 @@ public class ManifestExtensionsResolver implements ExtensionsResolver {
         String extensionsLocation = manifest.useConfig.extensions.location;
         if (!extensionsLocation.isEmpty()) {
             Tuple2<Path, List<Error>> xmlFile = validateAndNormalizePath(this.projectRoot, "", extensionsLocation);
-            if (xmlFile.getFirst() != null) {
+            if (xmlFile.getV1() != null) {
                 locations.add(String.format("useConfig.extensions.location (%s)", extensionsLocation));
                 extensionNames
-                        .addAll(ExtensionXmlUtil.loadExtensionNamesFromLocalExtensionsXML(xmlFile.getFirst().toFile()));
+                        .addAll(ExtensionXmlUtil.loadExtensionNamesFromLocalExtensionsXML(xmlFile.getV1().toFile()));
                 extensionNames.removeAll(manifest.useConfig.extensions.exclude);
             }
         }

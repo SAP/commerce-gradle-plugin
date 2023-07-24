@@ -3,7 +3,6 @@ package mpern.sap.commerce.ccv2.model;
 import static mpern.sap.commerce.ccv2.model.util.ParseUtils.*;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class Manifest {
     public final String commerceSuiteVersion;
@@ -51,6 +50,7 @@ public class Manifest {
         this.webTests = webTests;
     }
 
+    @SuppressWarnings("unchecked")
     public static Manifest fromMap(Map<String, Object> jsonMap) {
         String version = validateNullOrWhitespace((String) jsonMap.get("commerceSuiteVersion"),
                 "Manifest.commerceSuiteVersion must have a value");
@@ -71,7 +71,7 @@ public class Manifest {
         if (raw == null) {
             extensionPacks = Collections.emptyList();
         } else {
-            extensionPacks = raw.stream().map(ExtensionPack::fromMap).collect(Collectors.toList());
+            extensionPacks = raw.stream().map(ExtensionPack::fromMap).toList();
         }
 
         rawBool = jsonMap.get("troubleshootingModeEnabled");
@@ -89,7 +89,7 @@ public class Manifest {
         if (raw == null) {
             addons = Collections.emptyList();
         } else {
-            addons = raw.stream().map(Addon::fromMap).collect(Collectors.toList());
+            addons = raw.stream().map(Addon::fromMap).toList();
         }
 
         raw = (List<Map<String, Object>>) jsonMap.get("properties");
@@ -97,7 +97,7 @@ public class Manifest {
         if (raw == null) {
             properties = Collections.emptyList();
         } else {
-            properties = raw.stream().map(Property::fromMap).collect(Collectors.toList());
+            properties = raw.stream().map(Property::fromMap).toList();
         }
 
         raw = (List<Map<String, Object>>) jsonMap.get("aspects");
@@ -105,7 +105,7 @@ public class Manifest {
         if (raw == null) {
             aspects = Collections.emptyList();
         } else {
-            aspects = raw.stream().map(Aspect::fromMap).collect(Collectors.toList());
+            aspects = raw.stream().map(Aspect::fromMap).toList();
         }
 
         Map<String, Object> rawConfig = (Map<String, Object>) jsonMap.get("tests");

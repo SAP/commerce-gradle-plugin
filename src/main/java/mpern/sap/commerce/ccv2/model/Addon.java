@@ -22,6 +22,7 @@ public class Addon {
         this.storefronts = storefronts;
     }
 
+    @SuppressWarnings("unchecked")
     public static Addon fromMap(Map<String, Object> jsonMap) {
         return new Addon(toEmpty((String) jsonMap.get("addon")), toEmpty((String) jsonMap.get("storefront")),
                 toEmpty((String) jsonMap.get("template")), emptyOrList((List<String>) jsonMap.get("addons")),

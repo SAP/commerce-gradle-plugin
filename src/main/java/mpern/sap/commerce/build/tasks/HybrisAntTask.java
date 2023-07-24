@@ -46,8 +46,7 @@ public class HybrisAntTask extends JavaExec {
     public static class HybrisAntConfigureAdapter extends TaskExecutionAdapter {
         @Override
         public void beforeExecute(Task task) {
-            if (task instanceof HybrisAntTask) {
-                HybrisAntTask t = (HybrisAntTask) task;
+            if (task instanceof HybrisAntTask t) {
                 ConfigurableFileTree files = buildPlatformAntClasspath(t);
                 t.setClasspath(files);
                 t.setMain("org.apache.tools.ant.launch.Launcher");

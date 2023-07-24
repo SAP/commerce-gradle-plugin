@@ -21,7 +21,7 @@ public class AddonValidator extends ExtensionValidator {
     @Override
     protected List<Error> validateWithExtensions(Manifest manifest, ExtensionsResolver.Result effectiveExtensions) {
         Set<String> extensionNames = effectiveExtensions.extensions.stream().map(e -> e.name)
-                .collect(Collectors.toSet());
+                .collect(Collectors.toUnmodifiableSet());
         List<Error> errors = new ArrayList<>();
         for (int i = 0; i < manifest.storefrontAddons.size(); i++) {
             Addon addon = manifest.storefrontAddons.get(i);

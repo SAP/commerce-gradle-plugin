@@ -23,7 +23,7 @@ public class AspectWebappValidator extends ExtensionValidator {
     protected List<Error> validateWithExtensions(Manifest manifest, ExtensionsResolver.Result effectiveExtensions) {
         List<Error> errors = new ArrayList<>();
         Set<String> extensionNames = effectiveExtensions.extensions.stream().map(e -> e.name)
-                .collect(Collectors.toSet());
+                .collect(Collectors.toUnmodifiableSet());
         for (int i = 0; i < manifest.aspects.size(); i++) {
             Aspect aspect = manifest.aspects.get(i);
             if (ADMIN_ASPECT.equals(aspect.name)) {

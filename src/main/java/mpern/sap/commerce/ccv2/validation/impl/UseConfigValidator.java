@@ -54,7 +54,7 @@ public class UseConfigValidator implements Validator {
             Properties properties = manifest.useConfig.properties.get(i);
             Tuple2<Path, List<Error>> result = validateAndNormalizePath(this.projectRoot,
                     String.format("useConfig.properties[%d]", i), properties.location);
-            errors.addAll(result.getSecond());
+            errors.addAll(result.getV2());
             if (!properties.aspect.isEmpty() && !ALLOWED_ASPECTS.contains(properties.aspect)) {
                 errors.add(new Error.Builder().setLocation("useConfig.properties[%d]", i)
                         .setMessage("Aspect `%s` not supported", properties.aspect).setCode("E-002").createError());
@@ -63,8 +63,8 @@ public class UseConfigValidator implements Validator {
                 errors.add(new Error.Builder().setLocation("useConfig.properties[%d]", i)
                         .setMessage("Persona `%s` not supported", properties.persona).setCode("E-008").createError());
             }
-            if (result.getFirst() != null) {
-                try (InputStream stream = Files.newInputStream(result.getFirst())) {
+            if (result.getV1() != null) {
+                try (InputStream stream = Files.newInputStream(result.getV1())) {
                     new java.util.Properties().load(stream);
                 } catch (Exception e) {
                     errors.add(new Error.Builder().setLocation("useConfig.properties[%d]", i)
@@ -74,8 +74,8 @@ public class UseConfigValidator implements Validator {
                 try {
                     // ref. java doc of java.util.Properties.load(InputStream)
                     String defaultCharset = String.join("\n",
-                            Files.readAllLines(result.getFirst(), StandardCharsets.ISO_8859_1));
-                    String utf8 = String.join("\n", Files.readAllLines(result.getFirst(), StandardCharsets.UTF_8));
+                            Files.readAllLines(result.getV1(), StandardCharsets.ISO_8859_1));
+                    String utf8 = String.join("\n", Files.readAllLines(result.getV1(), StandardCharsets.UTF_8));
                     if (!defaultCharset.equals(utf8)) {
                         errors.add(new Error.Builder().setLocation("useConfig.properties[%d]", i)
                                 .setLevel(Level.WARNING)
@@ -104,12 +104,12 @@ public class UseConfigValidator implements Validator {
         if (!localExtensionsLocation.isEmpty()) {
             Tuple2<Path, List<Error>> localExtensions = validateAndNormalizePath(this.projectRoot,
                     "useConfig.extensions.location", localExtensionsLocation);
-            errors.addAll(localExtensions.getSecond());
-            if (localExtensions.getFirst() != null) {
+            errors.addAll(localExtensions.getV2());
+            if (localExtensions.getV1() != null) {
                 try {
                     DocumentBuilderFactory domFactory = DocumentBuilderFactory.newInstance();
                     DocumentBuilder builder = domFactory.newDocumentBuilder();
-                    Document doc = builder.parse(localExtensions.getFirst().toFile());
+                    Document doc = builder.parse(localExtensions.getV1().toFile());
                     if (!"hybrisconfig".equals(doc.getDocumentElement().getTagName())) {
                         errors.add(new Error.Builder().setLocation("useConfig.extensions.location")
                                 .setMessage("File `%s` is not a valid localextensions.xml file",
@@ -145,9 +145,9 @@ public class UseConfigValidator implements Validator {
         if (!solrCustom.isEmpty()) {
             Tuple2<Path, List<Error>> solrCustomPath = validateAndNormalizePath(this.projectRoot,
                     "useConfig.solr.location", solrCustom);
-            errors.addAll(solrCustomPath.getSecond());
-            if (solrCustomPath.getFirst() != null) {
-                Path expected = solrCustomPath.getFirst().resolve(Paths.get("server/solr/configsets/default/conf"));
+            errors.addAll(solrCustomPath.getV2());
+            if (solrCustomPath.getV1() != null) {
+                Path expected = solrCustomPath.getV1().resolve(Paths.get("server/solr/configsets/default/conf"));
                 if (!Files.exists(expected)) {
                     errors.add(new Error.Builder().setLocation("useConfig.solr.location").setMessage(
                             "Location `%s` does not contain the required folder structure `server/solr/configsets/default/conf`",

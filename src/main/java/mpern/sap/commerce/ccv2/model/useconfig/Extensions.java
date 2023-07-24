@@ -18,6 +18,7 @@ public class Extensions {
         this.exclude = Collections.unmodifiableSet(exclude);
     }
 
+    @SuppressWarnings("unchecked")
     public static Extensions fromMap(Map<String, Object> input) {
         if (input == null) {
             return NO_VALUE;

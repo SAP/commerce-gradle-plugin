@@ -23,7 +23,7 @@ public class MediaConversionValidator implements Validator {
     @Override
     public List<Error> validate(Manifest manifest) throws Exception {
         Tuple2<Set<String>, List<String>> result = resolver.listAllConfiguredExtensions(manifest);
-        boolean extensionFound = result.getFirst().contains(CONVERSION_EXTENSION);
+        boolean extensionFound = result.getV1().contains(CONVERSION_EXTENSION);
         boolean conversionEnabled = manifest.enableImageProcessingService;
 
         if (extensionFound && !conversionEnabled) {

@@ -9,7 +9,6 @@ import java.nio.file.attribute.FileTime;
 import java.time.Instant;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.apache.tools.ant.DirectoryScanner;
 import org.gradle.api.Plugin;
@@ -126,8 +125,7 @@ public class HybrisPlugin implements Plugin<Project> {
                 });
 
         project.afterEvaluate(p -> unpackPlatform.get().doLast(t -> project.copy(c -> {
-            c.from(project.provider(
-                    () -> hybrisPlatform.getFiles().stream().map(project::zipTree).collect(Collectors.toList())));
+            c.from(project.provider(() -> hybrisPlatform.getFiles().stream().map(project::zipTree).toList()));
             c.into(t.getProject().getProjectDir());
             c.include(extension.getBootstrapInclude().get());
             c.exclude(extension.getBootstrapExclude().get());

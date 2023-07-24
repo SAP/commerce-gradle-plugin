@@ -13,6 +13,7 @@ import java.nio.file.Path;
 import java.util.*;
 import java.util.concurrent.Callable;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import groovy.lang.Tuple2;
 
@@ -34,7 +35,10 @@ public class PlatformResolver {
         if (!Files.exists(bootstrap)) {
             return Optional.empty();
         }
-        List<Path> entries = Files.list(bootstrap.resolve("bin")).collect(Collectors.toCollection(ArrayList::new));
+        List<Path> entries;
+        try (Stream<Path> bin = Files.list(bootstrap.resolve("bin"))) {
+            entries = bin.collect(Collectors.toCollection(ArrayList::new));
+        }
         entries.add(bootstrap.resolve("resources"));
         try {
             URL[] classpathEntries = entries.stream().map(p -> {
@@ -77,8 +81,8 @@ public class PlatformResolver {
                 try {
                     System.setProperty("platform.extensions", String.join(",", extensionNames));
                     Tuple2<Class<?>, Object> platformConfig = platformConfig(urlClassLoader.get());
-                    List<?> extensions = (List<?>) platformConfig.getFirst()
-                            .getDeclaredMethod("getExtensionInfosInBuildOrder").invoke(platformConfig.getSecond());
+                    List<?> extensions = (List<?>) platformConfig.getV1()
+                            .getDeclaredMethod("getExtensionInfosInBuildOrder").invoke(platformConfig.getV2());
                     return convertToExtensionInfo(urlClassLoader.get(), extensions);
                 } finally {
                     System.clearProperty("platform.extensions");
@@ -107,8 +111,8 @@ public class PlatformResolver {
             Optional<URLClassLoader> urlClassLoader = bootstrapClassLoader();
             if (urlClassLoader.isPresent()) {
                 Tuple2<Class<?>, Object> platformConfig = platformConfig(urlClassLoader.get());
-                List<?> extensions = (List<?>) platformConfig.getFirst()
-                        .getDeclaredMethod("getExtensionInfosInBuildOrder").invoke(platformConfig.getSecond());
+                List<?> extensions = (List<?>) platformConfig.getV1().getDeclaredMethod("getExtensionInfosInBuildOrder")
+                        .invoke(platformConfig.getV2());
                 return convertToExtensionInfo(urlClassLoader.get(), extensions);
             } else {
                 return Collections.emptyList();
@@ -130,6 +134,6 @@ public class PlatformResolver {
             } catch (IllegalAccessException | InvocationTargetException e) {
                 throw new RuntimeException(e);
             }
-        }).collect(Collectors.toList());
+        }).toList();
     }
 }

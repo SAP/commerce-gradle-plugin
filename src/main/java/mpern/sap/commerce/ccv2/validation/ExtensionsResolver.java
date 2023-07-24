@@ -39,8 +39,8 @@ public interface ExtensionsResolver {
         public final List<String> locations;
 
         public Result(List<Extension> extensions, List<String> locations) {
-            this.extensions = extensions;
-            this.locations = locations;
+            this.extensions = Collections.unmodifiableList(extensions);
+            this.locations = Collections.unmodifiableList(locations);
         }
 
         public List<Extension> getExtensions() {

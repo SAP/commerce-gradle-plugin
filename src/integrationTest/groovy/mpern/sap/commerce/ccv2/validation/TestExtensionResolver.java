@@ -18,7 +18,7 @@ public class TestExtensionResolver implements ExtensionsResolver {
 
     @Override
     public Tuple2<Set<String>, List<String>> listAllConfiguredExtensions(Manifest manifest) {
-        return new Tuple2<>(extensions.stream().map(e -> e.name).collect(Collectors.toSet()), Collections.singletonList("test.extensions"));
+        return new Tuple2<>(extensions.stream().map(e -> e.name).collect(Collectors.toUnmodifiableSet()), Collections.singletonList("test.extensions"));
     }
 
     public void addExtension(String name) {

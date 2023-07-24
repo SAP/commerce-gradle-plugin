@@ -18,7 +18,7 @@ class PlatformResolverSpec extends Specification {
     @IgnoreIf({ !Files.exists(instance.platformHome) })
     def "load extensions correctly"() {
         when:
-        def extensions = resolver.getConfiguredExtensions()
+        def extensions = resolver.getConfiguredExtensions().collect()
         println(extensions.size())
         println(extensions.sort{it.name}.collect{"${it.name} - ${it.directory}"}.join('\n'))
 
