@@ -6,7 +6,7 @@ plugins {
     id("com.gradle.plugin-publish") version "1.2.0"
 
     id("pl.allegro.tech.build.axion-release") version "1.15.3"
-    id("com.diffplug.spotless") version "6.20.0"
+    id("com.diffplug.spotless")
     id("com.github.ben-manes.versions") version "0.47.0"
 }
 
@@ -71,17 +71,6 @@ java {
     }
 }
 
-sourceSets {
-    create("commonTest") {
-        compileClasspath += sourceSets.main.get().output + configurations.testRuntimeClasspath.get()
-        runtimeClasspath += output + compileClasspath
-    }
-}
-
-val commonTestImplementation by configurations.getting {
-    extendsFrom(configurations.implementation.get())
-}
-
 testing {
     suites {
         configureEach {
@@ -92,10 +81,7 @@ testing {
                     implementation("org.spockframework:spock-core")
 
                     implementation(project())
-                }
-                sources {
-                    compileClasspath += sourceSets["commonTest"].output
-                    runtimeClasspath += sourceSets["commonTest"].output
+                    implementation(project(":test-utils"))
                 }
                 targets {
                     all {

@@ -13,6 +13,8 @@ import org.gradle.testkit.runner.TaskOutcome
 import spock.lang.Specification
 import spock.lang.TempDir
 
+import mpern.sap.commerce.test.TestConstants
+
 class CCv2Tests extends Specification {
 
     @TempDir
@@ -36,7 +38,7 @@ class CCv2Tests extends Specification {
         TestUtils.generateDummyPlatform(deps, "2005.0")
         TestUtils.generateDummyIntegrationPack(deps, '2005.0')
 
-        Path dummy = Paths.get(TestUtils.class.getResource("/ccv2-test-manifest.json").toURI())
+        Path dummy =TestConstants.testResource("ccv2-test-manifest.json");
         Files.copy(dummy, testProjectPath.resolve("manifest.json"))
 
         buildFile << """
@@ -133,7 +135,7 @@ class CCv2Tests extends Specification {
     }
 
     def enableCep() {
-        Path dummy = Paths.get(TestUtils.class.getResource("/cloud-extension-pack-manifest.json").toURI())
+        Path dummy = TestConstants.testResource("cloud-extension-pack-manifest.json")
         Files.copy(dummy, testProjectPath.resolve("manifest.json"), StandardCopyOption.REPLACE_EXISTING)
     }
 
@@ -185,7 +187,7 @@ class CCv2Tests extends Specification {
 
     def "extensionPacks are automatically bootstrapped"() {
         given: "manifest with enabled integration-extension-pack pack"
-        Path dummy = Paths.get(TestUtils.class.getResource("/manifest.2005.json").toURI())
+        Path dummy = TestConstants.testResource("manifest.2005.json")
         Files.copy(dummy, testProjectPath.resolve("manifest.json"), StandardCopyOption.REPLACE_EXISTING)
 
         when: "running bootstrap task"

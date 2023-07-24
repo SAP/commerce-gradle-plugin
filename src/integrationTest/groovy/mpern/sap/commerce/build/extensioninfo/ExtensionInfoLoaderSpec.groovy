@@ -20,6 +20,7 @@ import mpern.sap.commerce.build.ProjectFolderTestUtils
 import mpern.sap.commerce.build.TestUtils
 import mpern.sap.commerce.build.util.Extension
 import mpern.sap.commerce.build.util.ExtensionType
+import mpern.sap.commerce.test.TestConstants
 
 class ExtensionInfoLoaderSpec extends Specification {
 
@@ -40,7 +41,7 @@ class ExtensionInfoLoaderSpec extends Specification {
         given: "a Hybris project with some custom modules"
         def projectBuilder = ProjectBuilder.builder()
                 .withName("test")
-                .withProjectDir(Paths.get(ExtensionInfoLoader.class.getResource("/dummy-custom-modules").toURI()).toFile())
+                .withProjectDir(TestConstants.testResource("dummy-custom-modules").toFile())
         project = projectBuilder.build()
 
         loader = new ExtensionInfoLoader(project)

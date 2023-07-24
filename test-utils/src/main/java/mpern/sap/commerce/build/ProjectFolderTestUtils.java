@@ -1,23 +1,25 @@
 package mpern.sap.commerce.build;
 
-import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.nio.file.*;
 import java.util.stream.Stream;
 
+import mpern.sap.commerce.test.TestConstants;
+
 public class ProjectFolderTestUtils {
 
     /**
-     * Copies the content of a source test project folder (containing the hybris folder) to a destination project folder.
+     * Copies the content of a source test project folder (containing the hybris
+     * folder) to a destination project folder.
      *
      * @param projectDir where to copy
-     * @param template the name of the source test project folder template
+     * @param template   the name of the source test project folder template
      * @throws IOException
      * @throws URISyntaxException
      */
     public static void prepareProjectFolder(Path projectDir, String template) throws IOException, URISyntaxException {
-        Path sourceDir = Paths.get(ProjectFolderTestUtils.class.getResource("/" + template).toURI());
+        Path sourceDir = TestConstants.testResource(template);
 
         // Iterate over the direct subdirectories of the source directory
         try (DirectoryStream<Path> sourceDs = Files.newDirectoryStream(sourceDir)) {

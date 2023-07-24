@@ -8,30 +8,32 @@ import java.nio.file.FileSystems;
 import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.StandardOpenOption;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.HashMap;
 import java.util.Map;
 
+import mpern.sap.commerce.test.TestConstants;
+
 public class TestUtils {
 
     public static void generateDummyPlatform(Path destination, String version) throws IOException, URISyntaxException {
-        generateDummyPlatformFromTemplate(destination, version, "/dummy-platform");
+        generateDummyPlatformFromTemplate(destination, version, "dummy-platform");
     }
 
-    public static void generateDummyPlatformNewModel(Path destination, String version) throws IOException, URISyntaxException {
-        generateDummyPlatformFromTemplate(destination, version, "/dummy-platform-new-model");
+    public static void generateDummyPlatformNewModel(Path destination, String version)
+            throws IOException, URISyntaxException {
+        generateDummyPlatformFromTemplate(destination, version, "dummy-platform-new-model");
     }
 
     private static void generateDummyPlatformFromTemplate(Path destination, String version, String template)
-        throws IOException, URISyntaxException {
+            throws IOException, URISyntaxException {
         Path targetZip = destination.resolve(String.format("hybris-commerce-suite-%s.zip", version));
         Map<String, String> env = new HashMap<>();
         env.put("create", "true");
-        try (FileSystem zipfs = FileSystems.newFileSystem(URI.create("jar:" + targetZip.toUri().toString()), env, null)) {
-            Path sourceDir = Paths.get(TestUtils.class.getResource(template).toURI());
+        try (FileSystem zipfs = FileSystems.newFileSystem(URI.create("jar:" + targetZip.toUri()), env, null)) {
+            Path sourceDir = TestConstants.testResource(template);
             processSourceDir(zipfs, sourceDir);
             String build = String.format("version=%s\n", version);
             Path buildNumber = zipfs.getPath("hybris", "bin", "platform", "build.number");
@@ -43,8 +45,9 @@ public class TestUtils {
         Path targetZip = destination.resolve(String.format("hybris-cloud-extension-pack-%s.zip", version));
         Map<String, String> env = new HashMap<>();
         env.put("create", "true");
-        try (FileSystem zipfs = FileSystems.newFileSystem(URI.create("jar:" + targetZip.toUri().toString()), env, null)) {
-            Path sourceDir = Paths.get(TestUtils.class.getResource("/dummy-cloud-extension-pack").toURI());
+        try (FileSystem zipfs = FileSystems.newFileSystem(URI.create("jar:" + targetZip.toUri().toString()), env,
+                null)) {
+            Path sourceDir = TestConstants.testResource("dummy-cloud-extension-pack");
             processSourceDir(zipfs, sourceDir);
         }
     }
@@ -53,8 +56,8 @@ public class TestUtils {
         Path targetZip = destination.resolve(String.format("hybris-commerce-integrations-%s.zip", version));
         Map<String, String> env = new HashMap<>();
         env.put("create", "true");
-        try (FileSystem zipfs = FileSystems.newFileSystem(URI.create("jar:" + targetZip.toUri().toString()), env, null)) {
-            Path sourceDir = Paths.get(TestUtils.class.getResource("/dummy-integration-pack").toURI());
+        try (FileSystem zipfs = FileSystems.newFileSystem(URI.create("jar:" + targetZip.toUri()), env, null)) {
+            Path sourceDir = TestConstants.testResource("dummy-integration-pack");
             processSourceDir(zipfs, sourceDir);
         }
     }
