@@ -22,6 +22,7 @@ import mpern.sap.commerce.ccv2.model.*;
 import mpern.sap.commerce.ccv2.tasks.GenerateLocalextensions;
 import mpern.sap.commerce.ccv2.tasks.PatchLocalExtensions;
 import mpern.sap.commerce.ccv2.tasks.ValidateManifest;
+import org.jetbrains.annotations.NotNull;
 
 public class CloudV2Plugin implements Plugin<Project> {
 
@@ -38,9 +39,7 @@ public class CloudV2Plugin implements Plugin<Project> {
         if (!manifestFile.exists()) {
             throw new InvalidUserDataException(MANIFEST_PATH + " not found!");
         }
-        JsonSlurper slurper = new JsonSlurper();
-        Map<String, Object> parsed = (Map<String, Object>) slurper.parse(manifestFile);
-        Manifest manifest = Manifest.fromMap(parsed);
+        Manifest manifest = parseManifest(manifestFile);
 
         extension = project.getExtensions().create(CCV2_EXTENSION, CCv2Extension.class, project, manifest);
         extension.getGeneratedConfiguration().set(project.file("generated-configuration"));
@@ -57,9 +56,9 @@ public class CloudV2Plugin implements Plugin<Project> {
         });
 
         project.getPlugins().withType(HybrisPlugin.class, hybrisPlugin -> {
-            Object byName = project.getExtensions().getByName(HybrisPlugin.HYBRIS_EXTENSION);
-            if (byName instanceof HybrisPluginExtension) {
-                configureDefaultDependencies(((HybrisPluginExtension) byName), project, manifest);
+            Object o = project.getExtensions().getByName(HybrisPlugin.HYBRIS_EXTENSION);
+            if (o instanceof HybrisPluginExtension hybrisPluginExtension) {
+                configureDefaultDependencies(hybrisPluginExtension, project, manifest);
                 configureAddonInstall(project, manifest.storefrontAddons);
                 configureTests(project, manifest.tests);
                 configureWebTests(project, manifest.webTests);
@@ -73,6 +72,14 @@ public class CloudV2Plugin implements Plugin<Project> {
             t.setGroup(GROUP);
             t.setDescription("Validate manifest.json for common errors");
         });
+    }
+
+    @NotNull
+    @SuppressWarnings("unchecked")
+    private Manifest parseManifest(File manifestFile) {
+        JsonSlurper slurper = new JsonSlurper();
+        Map<String, Object> parsed = (Map<String, Object>) slurper.parse(manifestFile);
+        return Manifest.fromMap(parsed);
     }
 
     private void configureDefaultDependencies(HybrisPluginExtension extension, Project project, Manifest manifest) {
@@ -235,7 +242,7 @@ public class CloudV2Plugin implements Plugin<Project> {
             TaskProvider<WriteProperties> w = project.getTasks().register("write_" + properties.getKey(),
                     WriteProperties.class, t -> {
                         t.setEncoding("UTF-8");
-                        t.setOutputFile(
+                        t.getDestinationFile().set(
                                 extension.getGeneratedConfiguration().file(properties.getKey() + ".properties"));
                         t.setProperties(properties.getValue());
                         t.getInputs().file(project.file(MANIFEST_PATH));

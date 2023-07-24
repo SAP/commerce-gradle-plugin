@@ -54,11 +54,11 @@ public class HybrisPlugin implements Plugin<Project> {
         extension.getSparseBootstrap().getEnabled().convention(false);
         extension.getSparseBootstrap().getAlwaysIncluded().convention(Collections.emptySet());
 
-        extension.getCleanGlob().set("glob:**hybris/bin/{ext-**,platform**,modules**}");
+        extension.getCleanGlob().convention("glob:**hybris/bin/{ext-**,platform**,modules**}");
 
-        extension.getBootstrapInclude().set(project.provider(() -> List.of("hybris/**")));
+        extension.getBootstrapInclude().convention(project.provider(() -> List.of("hybris/**")));
         // this folder contains some utf-8 filenames that lead to issues on linux
-        extension.getBootstrapExclude().set(project.provider(() -> List.of(
+        extension.getBootstrapExclude().convention(project.provider(() -> List.of(
                 "hybris/bin/ext-content/npmancillary/resources/npm/node_modules/http-server/node_modules/ecstatic/test/**")));
 
         final Configuration hybrisPlatform = project.getConfigurations().create(HYBRIS_PLATFORM_CONFIGURATION)
