@@ -16,7 +16,7 @@ repositories {
         }
     }
     flatDir { dirs("platform") }
-    jcenter()
+    mavenCentral()
 }
 
 hybris {

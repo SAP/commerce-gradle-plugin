@@ -1,10 +1,10 @@
 {
-  "commerceSuiteVersion": "2011",
+  "commerceSuiteVersion": "2211",
   "enableImageProcessingService": true,
   "extensionPacks": [
     {
       "name": "hybris-commerce-integrations",
-      "version": "2005.0"
+      "version": "2211.7"
     },
     { "artifact": "de.hybris.platform:hybris-datahub-integration-suite:2005.0@zip" }
   ],
