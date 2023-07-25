@@ -2,7 +2,6 @@ package mpern.sap.commerce.ccv2.validation
 
 import java.nio.file.Files
 import java.nio.file.Path
-import java.nio.file.Paths
 
 import groovy.json.JsonSlurper
 import spock.lang.IgnoreIf
@@ -13,7 +12,7 @@ import mpern.sap.commerce.ccv2.validation.impl.ManifestExtensionsResolver
 
 class ExtensionResolverSpec extends Specification {
 
-    Path projectRoot = Paths.get("manualTest")
+    Path projectRoot = Path.of("manualTest")
 
     @IgnoreIf({ !Files.exists(instance.projectRoot.resolve("hybris/bin/platform")) })
     def "test extension resolver"() {

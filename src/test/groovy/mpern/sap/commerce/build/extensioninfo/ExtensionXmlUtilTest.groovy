@@ -1,6 +1,6 @@
 package mpern.sap.commerce.build.extensioninfo
 
-import java.nio.file.Paths
+import java.nio.file.Path
 
 import spock.lang.Specification
 
@@ -12,7 +12,7 @@ class ExtensionXmlUtilTest extends Specification {
 
     def "extensioninfo xml file parsed correctly"() {
         given:
-        def sourceFile = Paths.get(
+        def sourceFile = Path.of(
                 ExtensionXmlUtil.class.getResource("${ROOT_LOCATION}module/extension/extensioninfo.xml").toURI()).toFile()
 
         when:
@@ -31,7 +31,7 @@ class ExtensionXmlUtilTest extends Specification {
 
     def "extension without name generates error"() {
         given:
-        def sourceFile = Paths.get(
+        def sourceFile = Path.of(
                 ExtensionXmlUtil.class.getResource("${ROOT_LOCATION}module/brokenextension/extensioninfo.xml").toURI()).toFile()
 
         when:
@@ -44,7 +44,7 @@ class ExtensionXmlUtilTest extends Specification {
 
     def "extension location not containing root location generates error"() {
         given:
-        def sourceFile = Paths.get(
+        def sourceFile = Path.of(
                 ExtensionXmlUtil.class.getResource("${ROOT_LOCATION}module/extension/extensioninfo.xml").toURI()).toFile()
 
         when:
@@ -57,7 +57,7 @@ class ExtensionXmlUtilTest extends Specification {
 
     def "localextensions xml file parsed correctly"() {
         given:
-        def sourceFile = Paths.get(
+        def sourceFile = Path.of(
                 ExtensionXmlUtil.class.getResource("/test-localextensions.xml").toURI()).toFile()
 
         when:

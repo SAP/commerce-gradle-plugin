@@ -10,7 +10,6 @@ import java.nio.charset.MalformedInputException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -147,7 +146,7 @@ public class UseConfigValidator implements Validator {
                     "useConfig.solr.location", solrCustom);
             errors.addAll(solrCustomPath.getV2());
             if (solrCustomPath.getV1() != null) {
-                Path expected = solrCustomPath.getV1().resolve(Paths.get("server/solr/configsets/default/conf"));
+                Path expected = solrCustomPath.getV1().resolve(Path.of("server/solr/configsets/default/conf"));
                 if (!Files.exists(expected)) {
                     errors.add(new Error.Builder().setLocation("useConfig.solr.location").setMessage(
                             "Location `%s` does not contain the required folder structure `server/solr/configsets/default/conf`",

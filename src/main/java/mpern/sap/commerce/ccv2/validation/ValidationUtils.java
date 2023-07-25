@@ -2,8 +2,9 @@ package mpern.sap.commerce.ccv2.validation;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -21,7 +22,7 @@ public class ValidationUtils {
                     input).setCode("E-009").createError()));
         } else {
             List<Error> errors = new ArrayList<>();
-            Path inputPath = Paths.get(input);
+            Path inputPath = Path.of(input);
             if (inputPath.isAbsolute() || inputPath.startsWith("/")) {
                 errors.add(new Error.Builder().setLocation(location)
                         .setMessage("Location `%s` is absolute (starts with `/`).", input).setCode("E-009")

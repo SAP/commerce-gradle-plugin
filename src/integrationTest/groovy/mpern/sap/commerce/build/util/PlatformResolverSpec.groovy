@@ -1,14 +1,14 @@
 package mpern.sap.commerce.build.util
 
 import java.nio.file.Files
-import java.nio.file.Paths
+import java.nio.file.Path
 
 import spock.lang.IgnoreIf
 import spock.lang.Specification
 
 class PlatformResolverSpec extends Specification {
 
-    def platformHome = Paths.get("manualTest/hybris/bin/platform");
+    def platformHome = Path.of("manualTest/hybris/bin/platform");
     PlatformResolver resolver
 
     def setup() {

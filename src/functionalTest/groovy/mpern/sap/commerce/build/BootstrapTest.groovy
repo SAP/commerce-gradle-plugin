@@ -1,11 +1,11 @@
 package mpern.sap.commerce.build
 
 import static mpern.sap.commerce.build.TestUtils.ensureParents
-import static org.gradle.testkit.runner.TaskOutcome.*
+import static org.gradle.testkit.runner.TaskOutcome.SKIPPED
+import static org.gradle.testkit.runner.TaskOutcome.SUCCESS
 
 import java.nio.file.Files
 import java.nio.file.Path
-import java.nio.file.Paths
 import java.time.Instant
 import java.time.temporal.ChronoUnit
 
@@ -139,10 +139,10 @@ class BootstrapTest extends Specification {
 
         !Files.exists(dummyPlatformFile)
         !Files.exists(dotFile)
-        !Files.exists(testProjectDir.resolve(Paths.get("hybris/bin/ext-accelerator")))
+        !Files.exists(testProjectDir.resolve(Path.of("hybris/bin/ext-accelerator")))
 
         buildFile.text.contains("version=$providedVersion")
-        Files.exists(testProjectDir.resolve(Paths.get( "hybris/bin/ext-template/yaccelerator/src/dummy.java")))
+        Files.exists(testProjectDir.resolve(Path.of( "hybris/bin/ext-template/yaccelerator/src/dummy.java")))
     }
 
     def "boostrap sets up db drivers"() {

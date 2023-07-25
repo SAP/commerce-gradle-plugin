@@ -3,7 +3,6 @@ package mpern.sap.commerce.ccv2.validation.impl;
 import static mpern.sap.commerce.ccv2.validation.ValidationUtils.validateAndNormalizePath;
 
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.*;
 
 import groovy.lang.Tuple2;
@@ -44,11 +43,10 @@ public class ManifestExtensionsResolver implements ExtensionsResolver {
         extensionNames.removeAll(CLOUD_ONLY_EXTENSIONS);
         // try to load
         try {
-            PlatformResolver resolver = new PlatformResolver(
-                    this.projectRoot.resolve(Paths.get("hybris/bin/platform")));
+            PlatformResolver resolver = new PlatformResolver(this.projectRoot.resolve(Path.of("hybris/bin/platform")));
             List<Extension> extensions = new ArrayList<>(resolver.loadListOfExtensions(extensionNames));
             for (String cloudOnly : configuredCloudOnly) {
-                extensions.add(new Extension(cloudOnly, Paths.get("dummy", cloudOnly)));
+                extensions.add(new Extension(cloudOnly, Path.of("dummy", cloudOnly)));
             }
             return new Result(extensions, listing.getV2());
         } catch (Exception e) {

@@ -4,8 +4,11 @@ import groovy.lang.Tuple2;
 import mpern.sap.commerce.build.util.Extension;
 import mpern.sap.commerce.ccv2.model.Manifest;
 
-import java.nio.file.Paths;
-import java.util.*;
+import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 public class TestExtensionResolver implements ExtensionsResolver {
@@ -22,7 +25,7 @@ public class TestExtensionResolver implements ExtensionsResolver {
     }
 
     public void addExtension(String name) {
-        extensions.add(new Extension(name, Paths.get("test", name)));
+        extensions.add(new Extension(name, Path.of("test", name)));
     }
 
 }

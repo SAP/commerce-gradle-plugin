@@ -3,7 +3,6 @@ package mpern.sap.commerce.ccv2.tasks;
 import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -19,19 +18,14 @@ import org.gradle.api.provider.Property;
 import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.InputFiles;
 import org.gradle.api.tasks.TaskAction;
-import org.w3c.dom.Comment;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-import org.w3c.dom.Text;
+import org.w3c.dom.*;
 
 public abstract class PatchLocalExtensions extends DefaultTask {
 
     @TaskAction
     public void addCepLoadDir() throws Exception {
 
-        Path hybrisBin = getProject().getRootDir().toPath().resolve(Paths.get("hybris", "bin"));
+        Path hybrisBin = getProject().getRootDir().toPath().resolve(Path.of("hybris", "bin"));
         Path cepPath = Path.of(getCepFolder().get());
 
         Path relativize = hybrisBin.relativize(cepPath);

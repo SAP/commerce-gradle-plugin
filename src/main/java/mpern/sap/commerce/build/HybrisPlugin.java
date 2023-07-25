@@ -10,7 +10,6 @@ import java.time.Instant;
 import java.util.Collections;
 import java.util.List;
 
-import org.apache.tools.ant.DirectoryScanner;
 import org.gradle.api.*;
 import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.file.ConfigurableFileTree;

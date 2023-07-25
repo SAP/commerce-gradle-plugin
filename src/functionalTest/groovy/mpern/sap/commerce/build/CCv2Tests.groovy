@@ -4,7 +4,6 @@ import static mpern.sap.commerce.build.TestUtils.ensureParents
 
 import java.nio.file.Files
 import java.nio.file.Path
-import java.nio.file.Paths
 import java.nio.file.StandardCopyOption
 
 import org.gradle.testkit.runner.GradleRunner
@@ -175,14 +174,14 @@ class CCv2Tests extends Specification {
         def local = new XmlSlurper().parse(localExtensions.toFile())
 
         then: "plugin patches localextensions.xml to load cloud extension pack first"
-        local.extensions.path[0].'@dir' == Paths.get('${HYBRIS_BIN_DIR}/../../cloud-extension-pack')
+        local.extensions.path[0].'@dir' == Path.of('${HYBRIS_BIN_DIR}/../../cloud-extension-pack')
         local.extensions.path[1].'@dir' == '${HYBRIS_BIN_DIR}'
         cepDirResolvesCorrectly(local.extensions.path[0].'@dir'.toString())
     }
 
     void cepDirResolvesCorrectly(folderName) {
         folderName = folderName.replace('${HYBRIS_BIN_DIR}', testProjectPath.resolve("hybris/bin").toString())
-        assert Files.exists(Paths.get(folderName))
+        assert Files.exists(Path.of(folderName))
     }
 
     def "extensionPacks are automatically bootstrapped"() {
