@@ -20,7 +20,7 @@ class PlatformResolverSpec extends Specification {
         when:
         def extensions = resolver.getConfiguredExtensions().collect()
         println(extensions.size())
-        println(extensions.sort{it.name}.collect{"${it.name} - ${it.directory}"}.join('\n'))
+        println(extensions.sort{it.name}.collect{"${it.name} - ${it.relativeLocation}"}.join('\n'))
 
         then:
         extensions.size() > 0

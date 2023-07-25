@@ -24,5 +24,7 @@ public enum ExtensionType {
      * Used for all extensions installed already in the system and discovered from
      * the platform system config.
      */
-    RUNTIME_INSTALLED
+    RUNTIME_INSTALLED,
+
+    UNKNOWN
 }

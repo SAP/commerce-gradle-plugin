@@ -22,8 +22,8 @@ class ExtensionXmlUtilTest extends Specification {
         with(extension) {
             name == "configurablebundlefacades"
             extensionType == ExtensionType.CUSTOM
-            directory.endsWith("module/extension")
-            relativeLocation == "module/extension"
+
+            relativeLocation == Path.of("module/extension")
             requiredExtensions.size() == 2
             requiredExtensions.containsAll("configurablebundleservices", "commercefacades")
         }

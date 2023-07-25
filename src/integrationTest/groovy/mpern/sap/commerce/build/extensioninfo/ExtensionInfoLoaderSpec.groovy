@@ -4,9 +4,8 @@ import static mpern.sap.commerce.build.HybrisPlugin.HYBRIS_EXTENSION
 import static mpern.sap.commerce.build.HybrisPlugin.HYBRIS_PLATFORM_CONFIGURATION
 import static mpern.sap.commerce.build.HybrisPlugin.PLATFORM_NAME
 
-import java.nio.file.FileSystems
 import java.nio.file.Files
-import java.nio.file.Paths
+import java.nio.file.Path
 
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
@@ -54,15 +53,13 @@ class ExtensionInfoLoaderSpec extends Specification {
 
         with(extensions.get("myextensionone" )) {
             it.extensionType == ExtensionType.CUSTOM
-            it.directory.endsWith("custom/module/myextensionone")
-            it.relativeLocation == "custom/module/myextensionone"
+            it.relativeLocation == Path.of("custom/module/myextensionone")
             it.requiredExtensions.empty
         }
 
         with(extensions.get("myextensiontwo")) {
             it.extensionType == ExtensionType.CUSTOM
-            it.directory.endsWith("custom/module/myextensiontwo")
-            it.relativeLocation == "custom/module/myextensiontwo"
+            it.relativeLocation == Path.of("custom/module/myextensiontwo")
             it.requiredExtensions.size() == 1
             it.requiredExtensions.containsAll("searchservices")
         }
@@ -93,60 +90,52 @@ class ExtensionInfoLoaderSpec extends Specification {
 
         with(extensions.get("apiregistryservices")) {
             it.extensionType == ExtensionType.SAP_MODULE
-            it.directory.endsWith("modules/api-registry/apiregistryservices")
-            it.relativeLocation == "modules/api-registry/apiregistryservices"
+            it.relativeLocation == Path.of("modules/api-registry/apiregistryservices")
             it.requiredExtensions.empty
         }
 
         with(extensions.get("backoffice")) {
             it.extensionType == ExtensionType.SAP_MODULE
-            it.directory.endsWith("modules/backoffice-framework/backoffice")
-            it.relativeLocation == "modules/backoffice-framework/backoffice"
+            it.relativeLocation == Path.of("modules/backoffice-framework/backoffice")
             it.requiredExtensions.empty
         }
 
         with(extensions.get("ybackoffice")) {
             it.extensionType == ExtensionType.SAP_MODULE
-            it.directory.endsWith("modules/backoffice-framework/ybackoffice")
-            it.relativeLocation == "modules/backoffice-framework/ybackoffice"
+            it.relativeLocation == Path.of("modules/backoffice-framework/ybackoffice")
             it.requiredExtensions.size() == 1
             it.requiredExtensions.containsAll("backoffice")
         }
 
         with(extensions.get("basecommerce")) {
             it.extensionType == ExtensionType.SAP_MODULE
-            it.directory.endsWith("modules/base-commerce/basecommerce")
-            it.relativeLocation == "modules/base-commerce/basecommerce"
+            it.relativeLocation == Path.of("modules/base-commerce/basecommerce")
             it.requiredExtensions.size() == 1
             it.requiredExtensions.containsAll("apiregistryservices")
         }
 
         with(extensions.get("payment")) {
             it.extensionType == ExtensionType.SAP_MODULE
-            it.directory.endsWith("modules/base-commerce/payment")
-            it.relativeLocation == "modules/base-commerce/payment"
+            it.relativeLocation == Path.of("modules/base-commerce/payment")
             it.requiredExtensions.size() == 2
             it.requiredExtensions.containsAll("apiregistryservices", "basecommerce")
         }
 
         with(extensions.get("yempty")) {
             it.extensionType == ExtensionType.SAP_MODULE
-            it.directory.endsWith("modules/platform/yempty")
-            it.relativeLocation == "modules/platform/yempty"
+            it.relativeLocation == Path.of("modules/platform/yempty")
             it.requiredExtensions.empty
         }
 
         with(extensions.get("ruleengine")) {
             it.extensionType == ExtensionType.SAP_MODULE
-            it.directory.endsWith("modules/rule-engine/ruleengine")
-            it.relativeLocation == "modules/rule-engine/ruleengine"
+            it.relativeLocation == Path.of("modules/rule-engine/ruleengine")
             it.requiredExtensions.empty
         }
 
         with(extensions.get("searchservices")) {
             it.extensionType == ExtensionType.SAP_MODULE
-            it.directory.endsWith("modules/search-services/searchservices")
-            it.relativeLocation == "modules/search-services/searchservices"
+            it.relativeLocation == Path.of("modules/search-services/searchservices")
             it.requiredExtensions.empty
         }
     }
@@ -166,8 +155,7 @@ class ExtensionInfoLoaderSpec extends Specification {
         with(platformExt) {
             it.name == PLATFORM_NAME
             it.extensionType == ExtensionType.SAP_PLATFORM
-            it.directory.endsWith("platform")
-            it.relativeLocation == "platform"
+            it.relativeLocation == Path.of("platform")
             it.requiredExtensions.empty
         }
     }
@@ -280,7 +268,7 @@ class ExtensionInfoLoaderSpec extends Specification {
         with (extensions.get(PLATFORM_NAME)) {
             it.name == PLATFORM_NAME
             it.extensionType == ExtensionType.SAP_PLATFORM
-            it.relativeLocation == "platform"
+            it.relativeLocation == Path.of("platform")
             it.requiredExtensions.isEmpty()
         }
     }
@@ -329,67 +317,59 @@ class ExtensionInfoLoaderSpec extends Specification {
 
         with(extensions.get("apiregistryservices")) {
             it.extensionType == ExtensionType.RUNTIME_INSTALLED
-            it.directory.endsWith("modules/api-registry/apiregistryservices")
-            it.relativeLocation == "modules/api-registry/apiregistryservices"
+            it.relativeLocation == Path.of("modules/api-registry/apiregistryservices")
             it.requiredExtensions.empty
         }
 
         with(extensions.get("backoffice")) {
             it.extensionType == ExtensionType.RUNTIME_INSTALLED
-            it.directory.endsWith("modules/backoffice-framework/backoffice")
-            it.relativeLocation == "modules/backoffice-framework/backoffice"
+            it.relativeLocation == Path.of("modules/backoffice-framework/backoffice")
             it.requiredExtensions.empty
         }
 
         with(extensions.get("ybackoffice")) {
             it.extensionType == ExtensionType.RUNTIME_INSTALLED
-            it.directory.endsWith("modules/backoffice-framework/ybackoffice")
-            it.relativeLocation == "modules/backoffice-framework/ybackoffice"
+            it.relativeLocation == Path.of("modules/backoffice-framework/ybackoffice")
             it.requiredExtensions.size() == 1
             it.requiredExtensions.containsAll("backoffice")
         }
 
         with(extensions.get("basecommerce")) {
             it.extensionType == ExtensionType.RUNTIME_INSTALLED
-            it.directory.endsWith("modules/base-commerce/basecommerce")
-            it.relativeLocation == "modules/base-commerce/basecommerce"
+            it.relativeLocation == Path.of("modules/base-commerce/basecommerce")
             it.requiredExtensions.size() == 1
             it.requiredExtensions.containsAll("apiregistryservices")
         }
 
         with(extensions.get("payment")) {
             it.extensionType == ExtensionType.RUNTIME_INSTALLED
-            it.directory.endsWith("modules/base-commerce/payment")
-            it.relativeLocation == "modules/base-commerce/payment"
+            it.relativeLocation == Path.of("modules/base-commerce/payment")
             it.requiredExtensions.size() == 2
             it.requiredExtensions.containsAll("apiregistryservices", "basecommerce")
         }
 
         with(extensions.get("yempty")) {
             it.extensionType == ExtensionType.RUNTIME_INSTALLED
-            it.directory.endsWith("modules/platform/yempty")
-            it.relativeLocation == "modules/platform/yempty"
+            it.relativeLocation == Path.of("modules/platform/yempty")
             it.requiredExtensions.empty
         }
 
         with(extensions.get("ruleengine")) {
             it.extensionType == ExtensionType.RUNTIME_INSTALLED
-            it.directory.endsWith("modules/rule-engine/ruleengine")
-            it.relativeLocation == "modules/rule-engine/ruleengine"
+            it.relativeLocation == Path.of("modules/rule-engine/ruleengine")
             it.requiredExtensions.empty
         }
 
         with(extensions.get("searchservices")) {
             it.extensionType == ExtensionType.RUNTIME_INSTALLED
-            it.directory.endsWith("modules/search-services/searchservices")
-            it.relativeLocation == "modules/search-services/searchservices"
+            it.relativeLocation == Path.of("modules/search-services/searchservices")
             it.requiredExtensions.empty
         }
 
         with (extensions.get(PLATFORM_NAME)) {
             it.name == PLATFORM_NAME
             it.extensionType == ExtensionType.SAP_PLATFORM
-            it.relativeLocation == "platform"
+            it.relativeLocation == Path.of("platform")
             it.requiredExtensions.isEmpty()
         }
     }
@@ -403,50 +383,39 @@ class ExtensionInfoLoaderSpec extends Specification {
         def allKnownExtensions = new HashMap<String, Extension>()
 
         allKnownExtensions.put(PLATFORM_NAME, new Extension(PLATFORM_NAME,
-                FileSystems.default.getPath("hybris/bin/platform"),
-                "hybris/bin/platform",
+                Path.of("hybris/bin/platform"),
                 ExtensionType.SAP_PLATFORM, Collections.emptyList()))
 
         allKnownExtensions.put("myextensionone", new Extension("myextensionone",
-                FileSystems.default.getPath("hybris/bin/custom/module/myextensionone"),
-                "custom/module/myextensionone",
+                Path.of("custom/module/myextensionone"),
                 ExtensionType.CUSTOM, Collections.emptyList()))
         allKnownExtensions.put("myextensiontwo", new Extension("myextensiontwo",
-                FileSystems.default.getPath("hybris/bin/custom/module/myextensiontwo"),
-                "custom/module/myextensiontwo",
+                Path.of("custom/module/myextensiontwo"),
                 ExtensionType.CUSTOM, Arrays.asList("searchservices")))
 
         allKnownExtensions.put("apiregistryservices", new Extension("apiregistryservices",
-                FileSystems.default.getPath("hybriszip/extracted/hybris/bin/modules/api-registry/apiregistryservices"),
-                "modules/api-registry/apiregistryservices",
+                Path.of("modules/api-registry/apiregistryservices"),
                 ExtensionType.SAP_MODULE, Collections.emptyList()))
         allKnownExtensions.put("backoffice", new Extension("backoffice",
-                FileSystems.default.getPath("hybriszip/extracted/hybris/bin/modules/backoffice-framework/backoffice"),
-                "modules/backoffice-framework/backoffice",
+                Path.of("modules/backoffice-framework/backoffice"),
                 ExtensionType.SAP_MODULE, Collections.emptyList()))
         allKnownExtensions.put("ybackoffice", new Extension("ybackoffice",
-                FileSystems.default.getPath("hybriszip/extracted/hybris/bin/modules/backoffice-framework/ybackoffice"),
-                "modules/backoffice-framework/ybackoffice",
+                Path.of("modules/backoffice-framework/ybackoffice"),
                 ExtensionType.SAP_MODULE, Arrays.asList("backoffice")))
         allKnownExtensions.put("basecommerce", new Extension("basecommerce",
-                FileSystems.default.getPath("hybriszip/extracted/hybris/bin/modules/base-commerce/basecommerce"),
-                "modules/base-commerce/basecommerce",
+                Path.of("modules/base-commerce/basecommerce"),
                 ExtensionType.SAP_MODULE, Arrays.asList("apiregistryservices")))
         allKnownExtensions.put("payment", new Extension("payment",
-                FileSystems.default.getPath("hybriszip/extracted/hybris/bin/modules/base-commerce/payment"),
-                "modules/base-commerce/payment",
+                Path.of("modules/base-commerce/payment"),
                 ExtensionType.SAP_MODULE, Arrays.asList("apiregistryservices", "basecommerce")))
         allKnownExtensions.put("yempty", new Extension("yempty",
-                FileSystems.default.getPath("hybriszip/extracted/hybris/bin/modules/platform/yempty"),
-                "modules/platform/yempty",
+                Path.of("modules/platform/yempty"),
                 ExtensionType.SAP_MODULE, Collections.emptyList()))
         allKnownExtensions.put("ruleengine", new Extension("ruleengine",
-                FileSystems.default.getPath("hybriszip/extracted/hybris/bin/modules/rule-engine/ruleengine"),
-                "modules/rule-engine/ruleengine",
+                Path.of("modules/rule-engine/ruleengine"),
                 ExtensionType.SAP_MODULE, Collections.emptyList()))
         allKnownExtensions.put("searchservices", new Extension("searchservices",
-                FileSystems.default.getPath("hybriszip/extracted/hybris/bin/modules/search-services/searchservices"),
-                "modules/search-services/searchservices",
+                Path.of("modules/search-services/searchservices"),
                 ExtensionType.SAP_MODULE, Collections.emptyList()))
 
         return allKnownExtensions

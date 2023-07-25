@@ -86,8 +86,7 @@ public class ExtensionInfoLoader {
      */
     public Extension getPlatfromExtension() {
         Path platformPath = FileSystems.getDefault().getPath("hybris/bin/platform");
-        return new Extension(PLATFORM_NAME, platformPath, "platform", ExtensionType.SAP_PLATFORM,
-                Collections.emptyList());
+        return new Extension(PLATFORM_NAME, Path.of("platform"), ExtensionType.SAP_PLATFORM, Collections.emptyList());
     }
 
     /**

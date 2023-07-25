@@ -201,14 +201,13 @@ public class HybrisPlugin implements Plugin<Project> {
                 if (configured.isEmpty()) {
                     return;
                 }
-                Path bin = project.file("hybris/bin").toPath();
+                Path bin = project.file(HYBRIS_BIN_DIR).toPath();
                 ConfigurableFileTree files = project.fileTree(bin);
                 files.exclude("platform/");
                 files.exclude("custom/");
                 // @formatter:off
                 configured.stream()
-                        .map(e -> e.directory)
-                        .map(bin::relativize)
+                        .map(e -> e.relativeLocation)
                         .map(p -> p + "/")
                         .filter(p -> !p.startsWith("platform/"))
                         .filter(p -> !p.startsWith("custom/"))

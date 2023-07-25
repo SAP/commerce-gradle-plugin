@@ -26,8 +26,12 @@ public class PlatformResolver {
 
     private final Path platformHome;
 
+    private final Path hybrisBin;
+
     public PlatformResolver(Path platformHome) {
         this.platformHome = platformHome;
+
+        this.hybrisBin = platformHome.resolve("..").toAbsolutePath();
     }
 
     private Optional<URLClassLoader> bootstrapClassLoader() throws Exception {
@@ -130,8 +134,8 @@ public class PlatformResolver {
                 String name = (java.lang.String) getName.invoke(o);
                 Path dir = ((java.io.File) getDirectory.invoke(o)).toPath();
                 // dependencies are not relevant here
-                return new Extension(name, dir);
-            } catch (IllegalAccessException | InvocationTargetException e) {
+                return new Extension(name, hybrisBin.relativize(dir));
+            } catch (IllegalAccessException | InvocationTargetException | IllegalArgumentException e) {
                 throw new RuntimeException(e);
             }
         }).toList();

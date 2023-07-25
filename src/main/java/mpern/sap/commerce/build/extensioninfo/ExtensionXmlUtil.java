@@ -77,7 +77,7 @@ public final class ExtensionXmlUtil {
             Node extensionNode = doc.getDocumentElement().getElementsByTagName("extension").item(0);
 
             Path extensionPath = extensioninfoXmlFile.toPath().getParent();
-            return new Extension(extractExtensionNameFromNode(extensionNode, extensioninfoXmlFile), extensionPath,
+            return new Extension(extractExtensionNameFromNode(extensionNode, extensioninfoXmlFile),
                     getRelativeLocation(extensionPath, rootLocation), extensionType,
                     extractRequiredExtensionsNamesFromNode(extensionNode));
 
@@ -115,7 +115,7 @@ public final class ExtensionXmlUtil {
         return requiredExtensionsNames;
     }
 
-    private static String getRelativeLocation(Path fullLocation, String rootLocation) {
+    private static Path getRelativeLocation(Path fullLocation, String rootLocation) {
         // normalize to a Unix path
         String fullUnixLocation = fullLocation.toString().replace("\\", "/");
         // get everything after last rootLocation
@@ -124,7 +124,7 @@ public final class ExtensionXmlUtil {
             throw new ExtensionInfoException(
                     "Full location [" + fullUnixLocation + "] does not contain [" + rootLocation + "]");
         }
-        return fullUnixLocation.substring(rootLocationPos + rootLocation.length());
+        return Path.of(fullUnixLocation.substring(rootLocationPos + rootLocation.length()));
     }
 
     private ExtensionXmlUtil() {
