@@ -12,19 +12,12 @@ import org.gradle.api.DefaultTask;
 import org.gradle.api.provider.Property;
 import org.gradle.api.tasks.*;
 
-public class GlobClean extends DefaultTask {
-    final Property<String> glob;
-    final Property<String> baseFolder;
-
-    public GlobClean() {
-        glob = getProject().getObjects().property(String.class);
-        baseFolder = getProject().getObjects().property(String.class);
-    }
+public abstract class GlobClean extends DefaultTask {
 
     @TaskAction
     public void cleanup() {
-        PathMatcher matcher = FileSystems.getDefault().getPathMatcher(glob.getOrNull());
-        Path path = Path.of(baseFolder.get());
+        PathMatcher matcher = FileSystems.getDefault().getPathMatcher(getGlob().getOrNull());
+        Path path = Path.of(getBaseFolder().get());
         if (!Files.exists(path)) {
             return;
         }
@@ -52,12 +45,8 @@ public class GlobClean extends DefaultTask {
     }
 
     @Input
-    public Property<String> getGlob() {
-        return glob;
-    }
+    public abstract Property<String> getGlob();
 
     @Input
-    public Property<String> getBaseFolder() {
-        return baseFolder;
-    }
+    public abstract Property<String> getBaseFolder();
 }

@@ -11,10 +11,7 @@ import java.util.Collections;
 import java.util.List;
 
 import org.apache.tools.ant.DirectoryScanner;
-import org.gradle.api.Plugin;
-import org.gradle.api.Project;
-import org.gradle.api.Task;
-import org.gradle.api.UnknownDomainObjectException;
+import org.gradle.api.*;
 import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.file.ConfigurableFileTree;
 import org.gradle.api.file.DuplicatesStrategy;
@@ -173,32 +170,26 @@ public class HybrisPlugin implements Plugin<Project> {
         yall.configure(t -> t.mustRunAfter(yclean, ycustomize));
         yproduction.configure(t -> t.mustRunAfter(ybuild, yall));
 
-        TaskProvider<HybrisAntTask> createConfigFolder = project.getTasks().register("createDefaultConfig",
-                HybrisAntTask.class, t -> {
-                    t.setGroup(HYBRIS_BOOTSTRAP);
-                    t.setDescription(
-                            "Launches hybris build to create the hybris config folder, if no config folder is present");
-                    t.mustRunAfter(bootstrap);
-                    t.args("createConfig");
-                    t.antProperty("input.template", "develop");
-                    t.onlyIf(s -> {
-                        boolean configPresent = project.file("hybris/config").exists();
-                        if (configPresent) {
-                            t.getLogger().lifecycle("hybris/config folder found, nothing to do");
-                        }
-                        return !configPresent;
-                    });
-                });
+        project.getTasks().register("createDefaultConfig", HybrisAntTask.class, t -> {
+            t.setGroup(HYBRIS_BOOTSTRAP);
+            t.setDescription(
+                    "Launches hybris build to create the hybris config folder, if no config folder is present");
+            t.mustRunAfter(bootstrap);
+            t.args("createConfig");
+            t.antProperty("input.template", "develop");
+            t.onlyIf(s -> {
+                boolean configPresent = project.file("hybris/config").exists();
+                if (configPresent) {
+                    t.getLogger().lifecycle("hybris/config folder found, nothing to do");
+                }
+                return !configPresent;
+            });
+        });
 
         project.getTasks().register("removeUnusedExtensions", t -> {
             t.setGroup(HYBRIS_BOOTSTRAP);
             t.setDescription("Remove unused extensions; helps save disk space if you work on multiple projects");
 
-            t.doFirst(a -> {
-                for (String defaultExclude : DirectoryScanner.getDefaultExcludes()) {
-                    DirectoryScanner.removeDefaultExclude(defaultExclude);
-                }
-            });
             t.doLast(a -> {
                 PlatformResolver resolver = new PlatformResolver(
                         extension.getPlatform().getPlatformHome().get().getAsFile().toPath());
@@ -236,12 +227,10 @@ public class HybrisPlugin implements Plugin<Project> {
                         }
                     });
                 } catch (IOException e) {
-                    throw new RuntimeException(e);
+                    throw new TaskExecutionException(a, e);
                 }
-                DirectoryScanner.resetDefaultExcludes();
             });
         });
-        project.getGradle().getTaskGraph().addTaskExecutionListener(new HybrisAntTask.HybrisAntConfigureAdapter());
     }
 
     private boolean versionMismatch(HybrisPluginExtension extension, Logger logger) {

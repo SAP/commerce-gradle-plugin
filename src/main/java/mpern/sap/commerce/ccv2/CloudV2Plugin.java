@@ -41,7 +41,7 @@ public class CloudV2Plugin implements Plugin<Project> {
         }
         Manifest manifest = parseManifest(manifestFile);
 
-        extension = project.getExtensions().create(CCV2_EXTENSION, CCv2Extension.class, project, manifest);
+        extension = project.getExtensions().create(CCV2_EXTENSION, CCv2Extension.class, manifest);
         extension.getGeneratedConfiguration().set(project.file("generated-configuration"));
         extension.getCloudExtensionPackFolder().set(project.file("cloud-extension-pack"));
 

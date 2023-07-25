@@ -1,7 +1,10 @@
 package mpern.sap.commerce.build;
 
+import javax.inject.Inject;
+
 import org.gradle.api.Action;
 import org.gradle.api.Project;
+import org.gradle.api.model.ObjectFactory;
 import org.gradle.api.provider.ListProperty;
 import org.gradle.api.provider.MapProperty;
 import org.gradle.api.provider.Property;
@@ -12,69 +15,34 @@ import mpern.sap.commerce.build.util.SparseBootstrap;
 
 public abstract class HybrisPluginExtension {
 
-    private final Property<String> version;
-    private final Property<String> intExtPackVersion;
-    private final Property<String> cleanGlob;
-
-    private final ListProperty<String> bootstrapInclude;
-    private final ListProperty<String> bootstrapExclude;
-
-    private final ListProperty<Object> antTaskDependencies;
-
-    private final MapProperty<String, Integer> previewToPatchLevel;
-
     private final HybrisPlatform platform;
 
-    public HybrisPluginExtension(Project project) {
-        version = project.getObjects().property(String.class);
-        version.set("2105.0");
+    @Inject
+    public HybrisPluginExtension(Project project, ObjectFactory objectFactory) {
+        getVersion().convention("2211");
 
-        intExtPackVersion = project.getObjects().property(String.class);
-        intExtPackVersion.set("");
+        getIntExtPackVersion().convention("");
 
-        cleanGlob = project.getObjects().property(String.class);
-
-        bootstrapInclude = project.getObjects().listProperty(String.class);
-        bootstrapExclude = project.getObjects().listProperty(String.class);
-
-        antTaskDependencies = project.getObjects().listProperty(Object.class);
-
-        previewToPatchLevel = project.getObjects().mapProperty(String.class, Integer.class);
-
-        platform = project.getObjects().newInstance(HybrisPlatform.class, project);
+        platform = objectFactory.newInstance(HybrisPlatform.class, project);
     }
 
-    public Property<String> getVersion() {
-        return version;
-    }
+    public abstract Property<String> getVersion();
 
-    public Property<String> getIntExtPackVersion() {
-        return intExtPackVersion;
-    }
+    public abstract Property<String> getIntExtPackVersion();
 
     public HybrisPlatform getPlatform() {
         return platform;
     }
 
-    public Property<String> getCleanGlob() {
-        return cleanGlob;
-    }
+    public abstract Property<String> getCleanGlob();
 
-    public ListProperty<String> getBootstrapInclude() {
-        return bootstrapInclude;
-    }
+    public abstract ListProperty<String> getBootstrapInclude();
 
-    public ListProperty<String> getBootstrapExclude() {
-        return bootstrapExclude;
-    }
+    public abstract ListProperty<String> getBootstrapExclude();
 
-    public ListProperty<Object> getAntTaskDependencies() {
-        return antTaskDependencies;
-    }
+    public abstract ListProperty<Object> getAntTaskDependencies();
 
-    public MapProperty<String, Integer> getPreviewToPatchLevel() {
-        return previewToPatchLevel;
-    }
+    public abstract MapProperty<String, Integer> getPreviewToPatchLevel();
 
     @Nested
     public abstract SparseBootstrap getSparseBootstrap();

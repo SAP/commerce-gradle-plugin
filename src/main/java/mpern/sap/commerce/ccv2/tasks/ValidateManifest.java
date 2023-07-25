@@ -114,7 +114,7 @@ public class ValidateManifest extends DefaultTask {
 
     private String toLink(String code) {
         code = code.toLowerCase();
-        code = code.replaceAll("-", "");
+        code = code.replace("-", "");
         return "https://github.com/SAP/commerce-gradle-plugin/blob/master/docs/ccv2-validation.md#" + code;
     }
 }

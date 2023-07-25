@@ -26,21 +26,13 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.w3c.dom.Text;
 
-public class PatchLocalExtensions extends DefaultTask {
-
-    private final RegularFileProperty target;
-    private final Property<String> cepFolder;
-
-    public PatchLocalExtensions() {
-        this.target = getProject().getObjects().fileProperty();
-        this.cepFolder = getProject().getObjects().property(String.class);
-    }
+public abstract class PatchLocalExtensions extends DefaultTask {
 
     @TaskAction
     public void addCepLoadDir() throws Exception {
 
         Path hybrisBin = getProject().getRootDir().toPath().resolve(Paths.get("hybris", "bin"));
-        Path cepPath = Path.of(cepFolder.get());
+        Path cepPath = Path.of(getCepFolder().get());
 
         Path relativize = hybrisBin.relativize(cepPath);
         String cepPathString = "${HYBRIS_BIN_DIR}" + File.separator + relativize;
@@ -49,7 +41,7 @@ public class PatchLocalExtensions extends DefaultTask {
     }
 
     private void patchLocalExtensions(String cepPathString) throws Exception {
-        Path localExtensions = target.get().getAsFile().toPath();
+        Path localExtensions = getTarget().get().getAsFile().toPath();
         if (!(Files.exists(localExtensions))) {
             getLogger().debug("{} not found; nothing to do", localExtensions);
             return;
@@ -101,12 +93,8 @@ public class PatchLocalExtensions extends DefaultTask {
     }
 
     @InputFiles
-    public RegularFileProperty getTarget() {
-        return target;
-    }
+    public abstract RegularFileProperty getTarget();
 
     @Input
-    public Property<String> getCepFolder() {
-        return cepFolder;
-    }
+    public abstract Property<String> getCepFolder();
 }

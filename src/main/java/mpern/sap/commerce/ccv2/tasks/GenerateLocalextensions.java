@@ -16,26 +16,25 @@ import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.OutputFile;
 import org.gradle.api.tasks.TaskAction;
 
-public class GenerateLocalextensions extends DefaultTask {
+public abstract class GenerateLocalextensions extends DefaultTask {
 
-    private static final String START = "<hybrisconfig xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance' xsi:noNamespaceSchemaLocation='../bin/platform/resources/schemas/extensions.xsd'>\n"
-            + "  <extensions>\n" + "    <path dir='${HYBRIS_BIN_DIR}' autoload='false' />\n";
-    private static final String END = "  </extensions>\n" + "</hybrisconfig>";
+    private static final String START = """
+            <hybrisconfig xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance' xsi:noNamespaceSchemaLocation='../bin/platform/resources/schemas/extensions.xsd'>
+              <extensions>
+                <path dir='${HYBRIS_BIN_DIR}' autoload='false' />
+            """
+            .stripIndent();
+    private static final String END = """
+              </extensions>
+            </hybrisconfig>";
+            """.stripIndent();
 
     private static final String EXTENSION = "    <extension name='%s' />\n";
-
-    private final RegularFileProperty target;
-    private final SetProperty<String> cloudExtensions;
-
-    public GenerateLocalextensions() {
-        target = getProject().getObjects().fileProperty();
-        cloudExtensions = getProject().getObjects().setProperty(String.class);
-    }
 
     @TaskAction
     public void generateLocalextensions() throws IOException {
         Path target = getTarget().get().getAsFile().toPath();
-        Set<String> extensions = cloudExtensions.get();
+        Set<String> extensions = getCloudExtensions().get();
         try (BufferedWriter writer = Files.newBufferedWriter(target, StandardCharsets.UTF_8, StandardOpenOption.CREATE,
                 StandardOpenOption.TRUNCATE_EXISTING)) {
             writer.write(START);
@@ -48,12 +47,8 @@ public class GenerateLocalextensions extends DefaultTask {
     }
 
     @OutputFile
-    public RegularFileProperty getTarget() {
-        return target;
-    }
+    public abstract RegularFileProperty getTarget();
 
     @Input
-    public SetProperty<String> getCloudExtensions() {
-        return cloudExtensions;
-    }
+    public abstract SetProperty<String> getCloudExtensions();
 }

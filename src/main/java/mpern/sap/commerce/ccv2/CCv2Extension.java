@@ -2,32 +2,22 @@ package mpern.sap.commerce.ccv2;
 
 import javax.inject.Inject;
 
-import org.gradle.api.Project;
 import org.gradle.api.file.DirectoryProperty;
 
 import mpern.sap.commerce.ccv2.model.Manifest;
 
-public class CCv2Extension {
-
-    private final DirectoryProperty generatedConfiguration;
-    private final DirectoryProperty cloudExtensionPackFolder;
+public abstract class CCv2Extension {
 
     private final Manifest manifest;
 
     @Inject
-    public CCv2Extension(Project project, Manifest manifest) {
-        generatedConfiguration = project.getObjects().directoryProperty();
-        cloudExtensionPackFolder = project.getObjects().directoryProperty();
+    public CCv2Extension(Manifest manifest) {
         this.manifest = manifest;
     }
 
-    public DirectoryProperty getGeneratedConfiguration() {
-        return generatedConfiguration;
-    }
+    public abstract DirectoryProperty getGeneratedConfiguration();
 
-    public DirectoryProperty getCloudExtensionPackFolder() {
-        return cloudExtensionPackFolder;
-    }
+    public abstract DirectoryProperty getCloudExtensionPackFolder();
 
     public Manifest getManifest() {
         return manifest;
