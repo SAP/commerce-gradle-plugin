@@ -111,8 +111,8 @@ jobs:
         with:
           name: ${{ matrix.GRADLE_VERSION }}-test-result
           path: |
-            build/reports
-            build/test-results
+            */build/reports
+            */build/test-results
 
   publish:
     runs-on: ubuntu-latest
