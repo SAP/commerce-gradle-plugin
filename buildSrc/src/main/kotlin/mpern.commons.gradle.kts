@@ -13,7 +13,6 @@ group = "sap.commerce"
 java {
     toolchain {
         languageVersion = JavaLanguageVersion.of(17)
-        vendor = JvmVendorSpec.SAP
     }
 }
 
