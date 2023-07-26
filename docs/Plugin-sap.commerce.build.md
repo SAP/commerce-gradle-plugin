@@ -133,6 +133,8 @@ Launches hybris build to create the standard developer config folder, if no conf
 
 ### `removeUnusedExtensions`
 
+**:warning: Deprecated in 4.0.0. Use `sparseBootstrap` instead :warning:**
+
 Removes all extensions that are not used by the current project (either directly or indirectly). This helps developers
 save disk space if they juggle multiple projects.
 
@@ -170,6 +172,10 @@ task unitTests(type: mpern.sap.commerce.build.tasks.HybrisAntTask) {
 }
 ```
 
+**New in 4.0.0**: You can configure additional ant properties on the command line, e.g.
+```shell
+./gradlew ybuild --antProperty=build.parallel=true --antProperty=foo.bar=false
+```
 
 ### ~~`mpern.sap.commerce.build.tasks.SupportPortalDownload`~~
 

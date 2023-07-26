@@ -1,17 +1,24 @@
 plugins {
     java
     id("com.diffplug.spotless")
+    id("com.github.ben-manes.versions")
 }
 
 repositories {
     mavenCentral()
 }
 
+group = "sap.commerce"
+
 java {
     toolchain {
         languageVersion = JavaLanguageVersion.of(17)
         vendor = JvmVendorSpec.SAP
     }
+}
+
+tasks.withType<JavaCompile>().configureEach {
+    options.compilerArgs = listOf("-Xlint:deprecation", "-Xlint:unchecked")
 }
 
 spotless {

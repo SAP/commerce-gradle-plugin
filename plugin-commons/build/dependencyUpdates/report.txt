@@ -1,0 +1,9 @@
+
+------------------------------------------------------------
+:plugin-commons Project Dependency Updates (report to plain text file)
+------------------------------------------------------------
+
+No dependencies found.
+
+Gradle release-candidate updates:
+ - Gradle: [8.2.1 -> 8.3-rc-1]

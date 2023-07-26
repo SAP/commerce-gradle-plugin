@@ -15,7 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   ```bash
   > ./gradlew ybuild --antProperty=build.parallel=true --antProperty=foo.bar=false
   ```
-  
+
 ### Changed
 
 - Misc. internal refactoring ([#44], [#46])
@@ -28,11 +28,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Removed
 
 - Dropped support for all Gradle versions < 7.6.2
-  
+
 ### Fixed
 
 - Commerce build, `removeUnusedExtensions`: do not modify default excludes ([#52])
-  
+
 
 
 [#29]: https://github.com/SAP/commerce-gradle-plugin/issues/29
