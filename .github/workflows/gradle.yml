@@ -105,7 +105,7 @@ jobs:
         env:
           GRADLE_VERSION: ${{ matrix.GRADLE_VERSION }}
         with:
-          arguments: check
+          arguments: check -x spotlessCheck
       - uses: actions/upload-artifact@v3
         if: ${{ failure() }}
         with:
