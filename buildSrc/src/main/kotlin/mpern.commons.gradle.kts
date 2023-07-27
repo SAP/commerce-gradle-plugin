@@ -9,6 +9,7 @@ repositories {
 }
 
 group = "sap.commerce"
+project.version = rootProject.version
 
 java {
     toolchain {
