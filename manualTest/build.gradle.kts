@@ -23,4 +23,8 @@ repositories {
 
 hybris {
     antTaskDependencies.set(listOf("bootstrapPlatform"))
+
+    sparseBootstrap {
+        enabled = true
+    }
 }
