@@ -1,3 +1,5 @@
+import mpern.sap.commerce.build.tasks.HybrisAntTask
+
 plugins {
     id("sap.commerce.build") version("SNAPSHOT")
     id("sap.commerce.build.ccv2") version("SNAPSHOT")
@@ -16,9 +18,13 @@ repositories {
         }
     }
     flatDir { dirs("platform") }
-    jcenter()
+    mavenCentral()
 }
 
 hybris {
     antTaskDependencies.set(listOf("bootstrapPlatform"))
+
+    sparseBootstrap {
+        enabled = true
+    }
 }

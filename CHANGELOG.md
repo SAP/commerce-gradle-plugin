@@ -2,12 +2,44 @@
 
 All notable changes to this project will be documented in this file.
 
-The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
-TBD
+### Added
+
+- Gradle 8 support ([#45])
+- Commerce build, `HybrisAntTask`: configure additional ant properties via command
+  line flags ([#29]), e.g.
+  ```bash
+  > ./gradlew ybuild --antProperty=build.parallel=true --antProperty=foo.bar=false
+  ```
+
+### Changed
+
+- Misc. internal refactoring ([#44], [#46])
+
+### Deprecated
+
+- Commerce build, `removeUnusedExtensions`: `sparseBootstrap` introduced in 3.9.0
+  is the better way to save disk space
+
+### Removed
+
+- Dropped support for all Gradle versions < 7.6.2
+
+### Fixed
+
+- Commerce build, `removeUnusedExtensions`: do not modify default excludes ([#52])
+
+
+
+[#29]: https://github.com/SAP/commerce-gradle-plugin/issues/29
+[#45]: https://github.com/SAP/commerce-gradle-plugin/issues/45
+[#52]: https://github.com/SAP/commerce-gradle-plugin/issues/52
+[#46]: https://github.com/SAP/commerce-gradle-plugin/issues/46
+[#44]: https://github.com/SAP/commerce-gradle-plugin/issues/44
 
 ## [3.10.0] 2023-07-17
 

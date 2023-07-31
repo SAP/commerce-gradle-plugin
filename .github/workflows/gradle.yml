@@ -40,7 +40,7 @@ jobs:
       - name: Set up Java
         uses: actions/setup-java@v3
         with:
-          java-version: 8
+          java-version: 17
           distribution: 'temurin'
           cache: 'gradle'
       - name: Gradle build
@@ -63,7 +63,7 @@ jobs:
       - name: Set up Java
         uses: actions/setup-java@v3
         with:
-          java-version: 8
+          java-version: '17'
           distribution: 'temurin'
           cache: 'gradle'
       - name: Gradle build
@@ -82,15 +82,12 @@ jobs:
   verify:
     strategy:
       matrix:
+        # https://gradle.org/releases/
         GRADLE_VERSION:
-        - "6.9.4"
-        - "7.0.2"
-        - "7.1.1"
-        - "7.2"
-        - "7.3.3"
-        - "7.4.2"
-        - "7.5.1"
         - "7.6.2"
+        - "8.0.2"
+        - "8.1.1"
+        - "8.2.1"
     runs-on: ubuntu-latest
     needs: [basic, compliance]
     name: with Gradle ${{ matrix.GRADLE_VERSION }}
@@ -100,7 +97,7 @@ jobs:
       - name: Setup Java JDK
         uses: actions/setup-java@v3
         with:
-          java-version: 8
+          java-version: 17
           distribution: 'temurin'
           cache: 'gradle'
       - name: Gradle build
@@ -108,14 +105,14 @@ jobs:
         env:
           GRADLE_VERSION: ${{ matrix.GRADLE_VERSION }}
         with:
-          arguments: check
+          arguments: check -x spotlessCheck
       - uses: actions/upload-artifact@v3
         if: ${{ failure() }}
         with:
           name: ${{ matrix.GRADLE_VERSION }}-test-result
           path: |
-            build/reports
-            build/test-results
+            */build/reports
+            */build/test-results
 
   publish:
     runs-on: ubuntu-latest
@@ -127,7 +124,7 @@ jobs:
       - name: Setup Java JDK
         uses: actions/setup-java@v3
         with:
-          java-version: 8
+          java-version: 17
           distribution: 'temurin'
           cache: 'gradle'
       - name: Gradle build

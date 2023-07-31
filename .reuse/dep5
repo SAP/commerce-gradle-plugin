@@ -24,7 +24,7 @@ Disclaimer: The code in this project may include calls to APIs (“API Calls”)
  you any rights to use or access any SAP External Product, or provide any third
  parties the right to use of access any SAP External Product, through API Calls.
 
-Files: .gitignore README.md CHANGELOG.md CONTRIBUTING.md .java-version *.gradle gradle/* .github/* docs/* manualTest/*
+Files: gradle.properties .gitignore */.gitignore README.md CHANGELOG.md CONTRIBUTING.md .java-version */*.gradle.kts *.gradle.kts gradle/* .github/* docs/* manualTest/*
 Copyright: 2020 SAP SE or an SAP affiliate company and commerce-gradle-plugin contributors
 License: CC0-1.0
 
@@ -32,6 +32,6 @@ Files: gradlew gradlew.bat gradle/wrapper/*
 Copyright: Gradle Inc. 2020
 License: Apache-2.0
 
-Files: src/*
+Files: */src/*
 Copyright: 2020 SAP SE or an SAP affiliate company and commerce-gradle-plugin contributors
 License: Apache-2.0
