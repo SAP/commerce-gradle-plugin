@@ -32,6 +32,8 @@ import mpern.sap.commerce.ccv2.validation.Validator;
 
 public class UseConfigValidator implements Validator {
 
+    public static final String PROPERTY_LOCATION = "useConfig.properties[%d]";
+    public static final String EXTENSION_LOCATION = "useConfig.extensions.location";
     private final Path projectRoot;
 
     public UseConfigValidator(Path projectRoot) {
@@ -52,21 +54,21 @@ public class UseConfigValidator implements Validator {
         for (int i = 0; i < manifest.useConfig.properties.size(); i++) {
             Properties properties = manifest.useConfig.properties.get(i);
             Tuple2<Path, List<Error>> result = validateAndNormalizePath(this.projectRoot,
-                    String.format("useConfig.properties[%d]", i), properties.location);
+                    String.format(PROPERTY_LOCATION, i), properties.location);
             errors.addAll(result.getV2());
             if (!properties.aspect.isEmpty() && !ALLOWED_ASPECTS.contains(properties.aspect)) {
-                errors.add(new Error.Builder().setLocation("useConfig.properties[%d]", i)
+                errors.add(new Error.Builder().setLocation(PROPERTY_LOCATION, i)
                         .setMessage("Aspect `%s` not supported", properties.aspect).setCode("E-002").createError());
             }
             if (!properties.persona.isEmpty() && !ALLOWED_PERSONAS.contains(properties.persona)) {
-                errors.add(new Error.Builder().setLocation("useConfig.properties[%d]", i)
+                errors.add(new Error.Builder().setLocation(PROPERTY_LOCATION, i)
                         .setMessage("Persona `%s` not supported", properties.persona).setCode("E-008").createError());
             }
             if (result.getV1() != null) {
                 try (InputStream stream = Files.newInputStream(result.getV1())) {
                     new java.util.Properties().load(stream);
                 } catch (Exception e) {
-                    errors.add(new Error.Builder().setLocation("useConfig.properties[%d]", i)
+                    errors.add(new Error.Builder().setLocation(PROPERTY_LOCATION, i)
                             .setMessage("`%s` is not a valid Java properties file", properties.location)
                             .setCode("E-010").createError());
                 }
@@ -76,19 +78,16 @@ public class UseConfigValidator implements Validator {
                             Files.readAllLines(result.getV1(), StandardCharsets.ISO_8859_1));
                     String utf8 = String.join("\n", Files.readAllLines(result.getV1(), StandardCharsets.UTF_8));
                     if (!defaultCharset.equals(utf8)) {
-                        errors.add(new Error.Builder().setLocation("useConfig.properties[%d]", i)
-                                .setLevel(Level.WARNING)
+                        errors.add(new Error.Builder().setLocation(PROPERTY_LOCATION, i).setLevel(Level.WARNING)
                                 .setMessage(
                                         "`%s` seems to use a different charset than ISO 8859-1. This might lead to corrupted properties after build and deployment.",
                                         properties.location)
                                 .setCode("W-002").createError());
                     }
                 } catch (MalformedInputException e) {
-                    errors.add(new Error.Builder().setLocation("useConfig.properties[%d]", i).setLevel(Level.WARNING)
-                            .setMessage(
-                                    "`%s` seems to use a different charset than ISO 8859-1. This might lead to corrupted properties after build and deployment.",
-                                    properties.location)
-                            .setCode("W-002").createError());
+                    errors.add(new Error.Builder().setLocation(PROPERTY_LOCATION, i).setLevel(Level.WARNING).setMessage(
+                            "`%s` seems to use a different charset than ISO 8859-1. This might lead to corrupted properties after build and deployment.",
+                            properties.location).setCode("W-002").createError());
                 } catch (IOException e) {
                     // shouldn't happen
                 }
@@ -101,8 +100,8 @@ public class UseConfigValidator implements Validator {
         List<Error> errors = new ArrayList<>();
         String localExtensionsLocation = manifest.useConfig.extensions.location;
         if (!localExtensionsLocation.isEmpty()) {
-            Tuple2<Path, List<Error>> localExtensions = validateAndNormalizePath(this.projectRoot,
-                    "useConfig.extensions.location", localExtensionsLocation);
+            Tuple2<Path, List<Error>> localExtensions = validateAndNormalizePath(this.projectRoot, EXTENSION_LOCATION,
+                    localExtensionsLocation);
             errors.addAll(localExtensions.getV2());
             if (localExtensions.getV1() != null) {
                 try {
@@ -110,7 +109,7 @@ public class UseConfigValidator implements Validator {
                     DocumentBuilder builder = domFactory.newDocumentBuilder();
                     Document doc = builder.parse(localExtensions.getV1().toFile());
                     if (!"hybrisconfig".equals(doc.getDocumentElement().getTagName())) {
-                        errors.add(new Error.Builder().setLocation("useConfig.extensions.location")
+                        errors.add(new Error.Builder().setLocation(EXTENSION_LOCATION)
                                 .setMessage("File `%s` is not a valid localextensions.xml file",
                                         localExtensionsLocation)
                                 .setCode("E-011").createError());
@@ -119,7 +118,7 @@ public class UseConfigValidator implements Validator {
                         for (int i = 0; i < extensions.getLength(); i++) {
                             Node extension = extensions.item(i);
                             if (extension.getAttributes().getNamedItem("dir") != null) {
-                                errors.add(new Error.Builder().setLocation("useConfig.extensions.location").setMessage(
+                                errors.add(new Error.Builder().setLocation(EXTENSION_LOCATION).setMessage(
                                         "`%s`: Attribute `extension.dir` is not supported. Only use `extension.name` to declare extensions.",
                                         localExtensionsLocation).setCode("E-012").createError());
                                 break;
@@ -127,7 +126,7 @@ public class UseConfigValidator implements Validator {
                         }
                     }
                 } catch (SAXException | IOException e) {
-                    errors.add(new Error.Builder().setLocation("useConfig.extensions.location")
+                    errors.add(new Error.Builder().setLocation(EXTENSION_LOCATION)
                             .setMessage("File `%s` is not a valid extensions.xml file", localExtensionsLocation)
                             .setCode("E-011").createError());
                 } catch (ParserConfigurationException e) {

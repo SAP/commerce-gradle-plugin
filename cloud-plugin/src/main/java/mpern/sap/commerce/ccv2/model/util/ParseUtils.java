@@ -5,7 +5,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
-public class ParseUtils {
+public final class ParseUtils {
     public static String nullToEmpty(String v) {
         return v == null ? "" : v;
     }
@@ -49,5 +49,8 @@ public class ParseUtils {
             return (boolean) input;
         }
         return false;
+    }
+
+    private ParseUtils() {
     }
 }

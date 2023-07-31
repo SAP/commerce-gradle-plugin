@@ -44,7 +44,8 @@ testing {
                 }
             }
         }
-        val functionalTest by registering(JvmTestSuite::class) {
+
+        register("functionalTest", JvmTestSuite::class) {
             targets {
                 all {
                     testTask.configure {

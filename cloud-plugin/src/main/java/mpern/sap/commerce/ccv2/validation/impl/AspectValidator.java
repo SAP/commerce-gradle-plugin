@@ -15,6 +15,8 @@ import mpern.sap.commerce.ccv2.validation.Validator;
 
 public class AspectValidator implements Validator {
 
+    public static final String WEBAPP_LOCATION = "aspects[?name == '%s'].webapps[%d]";
+
     @Override
     public List<Error> validate(Manifest manifest) throws Exception {
         List<Error> errors = new ArrayList<>();
@@ -46,25 +48,18 @@ public class AspectValidator implements Validator {
                         Webapp w = aspect.webapps.get(j);
                         previous = loadedExtensions.put(w.name, j);
                         if (previous != null) {
-                            errors.add(new Error.Builder()
-                                    .setLocation("aspects[?name == '%s'].webapps[%d]", aspect.name, j)
-                                    .setMessage(
-                                            "Extension `%s` configured more than once. Previous location: `aspects[?name == '%s'].webapps[%d]`",
-                                            w.name, aspect.name, previous)
-                                    .setCode("E-004").createError());
+                            errors.add(new Error.Builder().setLocation(WEBAPP_LOCATION, aspect.name, j).setMessage(
+                                    "Extension `%s` configured more than once. Previous location: `aspects[?name == '%s'].webapps[%d]`",
+                                    w.name, aspect.name, previous).setCode("E-004").createError());
                         }
                         previous = webroots.put(w.contextPath, j);
                         if (previous != null) {
-                            errors.add(new Error.Builder()
-                                    .setLocation("aspects[?name == '%s'].webapps[%d]", aspect.name, j)
-                                    .setMessage(
-                                            "Context path `%s` configured more than once! Previous location: `aspects[?name == '%s'].webapps[%d]`",
-                                            w.contextPath, aspect.name, previous)
-                                    .setCode("E-005").createError());
+                            errors.add(new Error.Builder().setLocation(WEBAPP_LOCATION, aspect.name, j).setMessage(
+                                    "Context path `%s` configured more than once! Previous location: `aspects[?name == '%s'].webapps[%d]`",
+                                    w.contextPath, aspect.name, previous).setCode("E-005").createError());
                         }
                         if (!w.contextPath.isEmpty() && !w.contextPath.startsWith("/")) {
-                            errors.add(new Error.Builder()
-                                    .setLocation("aspects[?name == '%s'].webapps[%d]", aspect.name, j)
+                            errors.add(new Error.Builder().setLocation(WEBAPP_LOCATION, aspect.name, j)
                                     .setMessage("contextPath `%s` must start with `/`", w.contextPath).setCode("E-006")
                                     .createError());
                         }

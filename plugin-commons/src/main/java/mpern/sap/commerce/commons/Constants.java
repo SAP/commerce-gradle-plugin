@@ -1,6 +1,9 @@
 package mpern.sap.commerce.commons;
 
-public interface Constants {
+public final class Constants {
 
-    public final String CCV2_EXTENSION = "CCV2";
+    public static final String CCV2_EXTENSION = "CCV2";
+
+    private Constants() {
+    }
 }

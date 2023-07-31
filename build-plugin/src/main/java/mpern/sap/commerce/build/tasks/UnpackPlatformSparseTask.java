@@ -81,7 +81,7 @@ public class UnpackPlatformSparseTask extends DefaultTask {
 
         Map<String, Extension> allMissingExtensions = allNeededExtensions.entrySet().stream()
                 .filter(entry -> !alreadyExistingExtensions.containsKey(entry.getKey()))
-                .collect(Collectors.toMap(e -> e.getKey(), e -> e.getValue()));
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
 
         /*
          * make sure we do not have missing custom extensions (should not be possible,

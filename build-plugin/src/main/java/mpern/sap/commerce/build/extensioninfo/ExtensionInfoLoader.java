@@ -3,7 +3,6 @@ package mpern.sap.commerce.build.extensioninfo;
 import static mpern.sap.commerce.build.HybrisPlugin.*;
 
 import java.io.File;
-import java.nio.file.FileSystems;
 import java.nio.file.Path;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -85,7 +84,6 @@ public class ExtensionInfoLoader {
      * @return the platform extension
      */
     public Extension getPlatfromExtension() {
-        Path platformPath = FileSystems.getDefault().getPath("hybris/bin/platform");
         return new Extension(PLATFORM_NAME, Path.of("platform"), ExtensionType.SAP_PLATFORM, Collections.emptyList());
     }
 
