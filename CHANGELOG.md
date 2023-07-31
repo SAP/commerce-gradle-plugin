@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+TBD
+
+## [4.0.0] 2023-07-31
+
 ### Added
 
 - Gradle 8 support ([#45])
@@ -427,7 +431,8 @@ Shout out to [@corneleberle] for providing the fix.
 
 :tada: Initial release :tada:
 
-[Unreleased]: https://github.com/SAP/commerce-gradle-plugin/compare/v3.10.0...HEAD
+[Unreleased]: https://github.com/SAP/commerce-gradle-plugin/compare/v4.0.0...HEAD
+[4.0.0]: https://github.com/SAP/commerce-gradle-plugin/compare/v3.10.0...v4.0.0
 [3.10.0]: https://github.com/SAP/commerce-gradle-plugin/compare/v3.9.1...v3.10.0
 [3.9.1]: https://github.com/SAP/commerce-gradle-plugin/compare/v3.9.0...v3.9.1
 [3.9.0]: https://github.com/SAP/commerce-gradle-plugin/compare/v3.8.0...v3.9.0
