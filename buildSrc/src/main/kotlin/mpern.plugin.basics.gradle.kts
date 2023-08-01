@@ -1,7 +1,10 @@
+import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
+
 plugins {
     id("groovy")
     `jvm-test-suite`
     id("com.gradle.plugin-publish")
+    id("com.github.johnrengelman.shadow")
 }
 
 dependencies {
@@ -19,6 +22,8 @@ testing {
 
                     implementation(project())
                     implementation(project(":test-utils"))
+
+                    implementation(gradleTestKit())
                 }
                 targets {
                     all {
@@ -66,4 +71,10 @@ gradlePlugin {
 
     website = "https://github.com/SAP/commerce-gradle-plugin"
     vcsUrl = "https://github.com/SAP/commerce-gradle-plugin"
+}
+
+tasks {
+    named<ShadowJar>("shadowJar") {
+        archiveClassifier = ""
+    }
 }

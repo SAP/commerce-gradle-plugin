@@ -13,4 +13,5 @@ dependencies {
     implementation("com.gradle.publish:plugin-publish-plugin:1.2.0")
     implementation("pl.allegro.tech.build:axion-release-plugin:1.15.4")
     implementation("com.github.ben-manes:gradle-versions-plugin:0.47.0")
+    implementation("com.github.johnrengelman:shadow:8.1.1")
 }
