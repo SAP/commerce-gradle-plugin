@@ -41,17 +41,6 @@ public class TestUtils {
         }
     }
 
-    public static void generateDummyExtensionPack(Path destination, String version) throws Exception {
-        Path targetZip = destination.resolve(String.format("hybris-cloud-extension-pack-%s.zip", version));
-        Map<String, String> env = new HashMap<>();
-        env.put("create", "true");
-        try (FileSystem zipfs = FileSystems.newFileSystem(URI.create("jar:" + targetZip.toUri().toString()), env,
-                null)) {
-            Path sourceDir = TestConstants.testResource("dummy-cloud-extension-pack");
-            processSourceDir(zipfs, sourceDir);
-        }
-    }
-
     public static void generateDummyIntegrationPack(Path destination, String version) throws Exception {
         Path targetZip = destination.resolve(String.format("hybris-commerce-integrations-%s.zip", version));
         Map<String, String> env = new HashMap<>();

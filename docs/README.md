@@ -4,10 +4,6 @@
 
   Download, bootstrap, build, test, ... your SAP Commerce project using Gradle
 
-- [CCv1 Package Plugin](Plugin-sap.commerce.ccv1.package.md)
-
-  Manage your CCv1 Configuration and build valid Deployment Packages
-
 - [CCv2 Build Plugin](Plugin-sap.commerce.build.ccv2.md)
 
   Use `manifest.json` to build and configure your commerce project locally

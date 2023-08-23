@@ -212,8 +212,7 @@ class ManifestParseSpec extends Specification {
         Manifest m = Manifest.fromMap(minimalManifest)
         then:
         with(m) {
-            commerceSuiteVersion == "1811.3"
-            useCloudExtensionPack == true
+            commerceSuiteVersion == "2211"
             extensions == [
                 "modeltacceleratorservices",
                 "electronicsstore",

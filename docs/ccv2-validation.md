@@ -16,8 +16,6 @@ Here you can find additional information for the errors and warnings reported by
 - [:red_circle: E-011 >file< is not a valid extensions.xml file](#red_circle-e-011-file-is-not-a-valid-extensionsxml-file)
 - [:red_circle: E-012 extension.dir is not supported](#red_circle-e-012-extensiondir-is-not-supported)
 - [:red_circle: E-013 Solr customization folder structure](#red_circle-e-013-solr-customization-folder-structure)
-- [:red_circle: E-014 Version >version< does not support Cloud Extension Pack](#red_circle-e-014-version-version-does-not-support-cloud-extension-pack)
-- [:red_circle: E-015 Patch release not allowed with Cloud Extension Pack](#red_circle-e-015-patch-release-not-allowed-with-cloud-extension-pack)
 - [:red_circle: E-016 Invalid media conversion configuration](#red_circle-e-016-invalid-media-conversion-configuration)
 - [:red_circle: E-017 Webroot configured in properties](#red_circle-e-017-webroot-configured-in-properties)
 - [:red_circle: E-018 Invalid Solr Version](#red_circle-e-018-invalid-solr-version)
@@ -44,9 +42,9 @@ The error indicates that the extension is not loaded by the platform.
 
 ### Related Documentation
 
-- [Extensions](https://help.sap.com/viewer/1be46286b36a4aa48205be5a96240672/latest/en-US/aa4777ef30f845008c64dae7218ac82d.html)
+- [Extensions](https://help.sap.com/docs/SAP_COMMERCE_CLOUD_PUBLIC_CLOUD/1be46286b36a4aa48205be5a96240672/aa4777ef30f845008c64dae7218ac82d.html?locale=en-US)
 - [SAP Commerce Cloud Configuration Reuse][reuse]
-- [Extension Dependencies](https://help.sap.com/viewer/20125f0eca6340dba918bda360e3cdfa/latest/en-US/8bbf3a9d86691014aa4189bf3ac0eb88.html)
+- [Extension Dependencies](https://help.sap.com/docs/SAP_COMMERCE_CLOUD_PUBLIC_CLOUD/20125f0eca6340dba918bda360e3cdfa/8bbf3a9d86691014aa4189bf3ac0eb88.html?locale=en-US)
 
 ## <a id="e002"></a>:red_circle: E-002 Aspect `>aspect<` not supported
 
@@ -96,8 +94,8 @@ Only a predefined set of personas (= environment types) is supported in CCv2
 
 ### Relevant Documentation
 
-- [Properties](https://help.sap.com/viewer/1be46286b36a4aa48205be5a96240672/latest/en-US/d6794b766aea4783b829988dc587f978.html)
-- [Detailed Information](https://help.sap.com/viewer/1be46286b36a4aa48205be5a96240672/latest/en-US/e6e07ca6171a4081b733c46fce22e8ee.html)
+- [Properties](https://help.sap.com/docs/SAP_COMMERCE_CLOUD_PUBLIC_CLOUD/1be46286b36a4aa48205be5a96240672/d6794b766aea4783b829988dc587f978.html?locale=en-US)
+- [Detailed Information](https://help.sap.com/docs/SAP_COMMERCE_CLOUD_PUBLIC_CLOUD/1be46286b36a4aa48205be5a96240672/e6e07ca6171a4081b733c46fce22e8ee.html?locale=en-US)
 
 ## <a id="e009"></a>:red_circle: E-009 Location `>path<` is invalid/absolute/...
 
@@ -123,8 +121,8 @@ Good:
 
 ### Relevant Documentation
 
-- [General Rules for Paths Declared in a Manifest](https://help.sap.com/viewer/1be46286b36a4aa48205be5a96240672/latest/en-US/6b40de5762694346bf3b1e9494b2256b.html)
-- [Location of Resources in the Code Repository](https://help.sap.com/viewer/1be46286b36a4aa48205be5a96240672/latest/en-US/611a2ffa372348c1a39447ad927b2035.html)
+- [General Rules for Paths Declared in a Manifest](https://help.sap.com/docs/SAP_COMMERCE_CLOUD_PUBLIC_CLOUD/1be46286b36a4aa48205be5a96240672/6b40de5762694346bf3b1e9494b2256b.html?locale=en-US)
+- [Location of Resources in the Code Repository](https://help.sap.com/docs/SAP_COMMERCE_CLOUD_PUBLIC_CLOUD/1be46286b36a4aa48205be5a96240672/611a2ffa372348c1a39447ad927b2035.html?locale=en-US)
 
 ## <a id="e010"></a>:red_circle: E-010 `>file<` is not a valid Java properties file
 
@@ -134,7 +132,7 @@ properties files.
 ### Relevant Documentation
 
 - [SAP Commerce Cloud Configuration Reuse][reuse]
-- [java.util.Properties](https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Properties.html)
+- [java.util.Properties](https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Properties.html)
 
 ## <a id="011"></a>:red_circle: E-011 `>file<` is not a valid extensions.xml file
 
@@ -143,7 +141,7 @@ The file referenced in `useConfig.extensions.locations` must be a valid extensio
 ### Relevant Documentation
 
 - [SAP Commerce Cloud Configuration Reuse][reuse]
-- [Configuration Options in localextensions.xml](https://help.sap.com/viewer/b490bb4e85bc42a7aa09d513d0bcb18e/latest/en-US/cce26d8ef435425fb9e054d91794148c.html)
+- [Configuration Options in localextensions.xml](https://help.sap.com/docs/SAP_COMMERCE/b490bb4e85bc42a7aa09d513d0bcb18e/cce26d8ef435425fb9e054d91794148c.html?locale=en-US)
 
 ## <a id="012"></a>:red_circle: E-012 `extension.dir` is not supported
 
@@ -153,7 +151,8 @@ The cloud build only supports the `name` attribute of the `<extension>` tags in 
 ### Relevant Documentation
 
 - [SAP Commerce Cloud Configuration Reuse][reuse]
-- [Configuration Options in localextensions.xml](https://help.sap.com/viewer/b490bb4e85bc42a7aa09d513d0bcb18e/latest/en-US/cce26d8ef435425fb9e054d91794148c.html)
+- [Configuration Options in localextensions.xml](https://help.sap.com/docs/SAP_COMMERCE/b490bb4e85bc42a7aa09d513d0bcb18e/cce26d8ef435425fb9e054d91794148c.html?locale=en-US)
+
 
 ## <a id="e013"></a>:red_circle: E-013 Solr customization folder structure
 
@@ -163,23 +162,7 @@ If the folder structure is incorrect, the customization simply doesn't work.
 
 ### Relevant Documentation
 
-- [Customizing Solr](https://help.sap.com/viewer/b2f400d4c0414461a4bb7e115dccd779/latest/en-US/f7251d5a1d6848489b1ce7ba46300fe6.html)
-
-## <a id="e014"></a>:red_circle: E-014 Version `>version<` does not support Cloud Extension Pack
-
-The Cloud Extension Pack is only available for versions 1811 to 1905.
-
-### Relevant Documentation 
-
-- [Manifest Components Reference (v1905)](https://help.sap.com/viewer/1be46286b36a4aa48205be5a96240672/v1905/en-US/3d562b85b37a460a92d32ec991459133.html)
-
-## <a id="e015"></a>:red_circle: E-015 Patch release not allowed with Cloud Extension Pack
-
-When using the Cloud Extension Pack, you cannot configure a specific patch release
-
-### Relevant Documentation
-
-- [Manifest Components Reference (v1905)](https://help.sap.com/viewer/1be46286b36a4aa48205be5a96240672/v1905/en-US/3d562b85b37a460a92d32ec991459133.html)
+- [Customizing Solr](https://help.sap.com/docs/SAP_COMMERCE_CLOUD_PUBLIC_CLOUD/b2f400d4c0414461a4bb7e115dccd779/f7251d5a1d6848489b1ce7ba46300fe6.html?locale=en-US)
 
 ## <a id="e016"></a>:red_circle: E-016 Invalid media conversion configuration
 
@@ -188,7 +171,7 @@ service (`enableImageProcessingService`)
 
 ### Relevant Documentation
 
-- [Enabling Media Conversion](https://help.sap.com/viewer/403d43bf9c564f5a985913d1fbfbf8d7/latest/en-US/fba094343e624aae8f041d0170046355.html)
+- [Enabling Media Conversion](https://help.sap.com/docs/SAP_COMMERCE_CLOUD_PUBLIC_CLOUD/403d43bf9c564f5a985913d1fbfbf8d7/fba094343e624aae8f041d0170046355.html?locale=en-US)
 
 ## <a id="e017"></a>:red_circle: E-017 Webroot configured in properties
 
@@ -197,7 +180,7 @@ to configure and enable web extensions.
 
 ### Relevant Documentation
 
-- [Manifest Components Reference](https://help.sap.com/viewer/1be46286b36a4aa48205be5a96240672/latest/en-US/3d562b85b37a460a92d32ec991459133.html)
+- [Manifest Components Reference][manifest]
 
 ## <a id="e018"></a>:red_circle: E-018 Invalid Solr Version
 
@@ -205,7 +188,7 @@ The Solr version in the manifest must be two numbers separated by a dot (`<major
 
 ### Relevant Documentation
 
-- [Manifest Components Reference](https://help.sap.com/viewer/1be46286b36a4aa48205be5a96240672/latest/en-US/3d562b85b37a460a92d32ec991459133.html)
+- [Manifest Components Reference][manifest]
 
 ## <a id="e019"></a>:red_circle: E-019 Invalid Integration Extension Pack Version
 
@@ -217,7 +200,7 @@ qualified, i.e. include the patch number.
 
 ### Relevant Documentation
 
-- [Integrations Compatibility Matrix](https://help.sap.com/viewer/bad9b0b66bac476f8a4a5c4a08e4ab6b/LATEST/en-US/f7e859a4b880476aa37e376b5423188c.html)
+- [Integrations Compatibility Matrix](https://help.sap.com/docs/SAP_COMMERCE_CLOUD_PUBLIC_CLOUD/bad9b0b66bac476f8a4a5c4a08e4ab6b/f7e859a4b880476aa37e376b5423188c.html?locale=en-US)
 
 
 ## <a id="w001"></a>:warning: W-001 Property `>property<` is a managed property
@@ -230,7 +213,7 @@ only be done if recommended by SAP experts or SAP support.
 
 ### Relevant Documentation
 
-- [Managed Properties](https://help.sap.com/viewer/1be46286b36a4aa48205be5a96240672/latest/en-US/a30160b786b545959184898b51c737fa.html)
+- [Managed Properties](https://help.sap.com/docs/SAP_COMMERCE_CLOUD_PUBLIC_CLOUD/1be46286b36a4aa48205be5a96240672/a30160b786b545959184898b51c737fa.html?locale=en-US)
 
 ## <a id="w002"></a>:warning: W-002 Property file encoding
 
@@ -239,7 +222,7 @@ to changed/corrupted values after build and deploy.
 
 ### Relevant Documentation
 
-- [java.util.Properties](https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Properties.html)
+- [java.util.Properties](https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Properties.html)
 
 ## <a id="w003"></a>:warning: W-003 Cloud Hot Folder without configuration for processing nodes
 
@@ -248,7 +231,7 @@ If you use the Cloud Hot Folders feature of the Commerce cloud, you also have to
 
 ### Relevant Documentation
 
-- [Enabling and Configuring Hot Folders](https://help.sap.com/viewer/403d43bf9c564f5a985913d1fbfbf8d7/latest/en-US/6e23a26fe9c8472380f9101e8a9fe1c3.html)
+- [Enabling and Configuring Hot Folders](https://help.sap.com/docs/SAP_COMMERCE_CLOUD_PUBLIC_CLOUD/403d43bf9c564f5a985913d1fbfbf8d7/6e23a26fe9c8472380f9101e8a9fe1c3.html?locale=en-US)
 
 ## <a id="w004"></a>:warning: W-004 Solr customization without pinned Solr version
 
@@ -259,7 +242,9 @@ compatible with the new Solr version.
 
 ### Relevant Documentation
 
-- [Solr Server Version Selection](https://help.sap.com/viewer/1be46286b36a4aa48205be5a96240672/latest/en-US/b35bc14a62aa4950bdba451a5f40fc61.html#loiod7294323e5e542b7b37f48dd83565321)
+- [Solr Server Version Selection](https://help.sap.com/docs/SAP_COMMERCE_CLOUD_PUBLIC_CLOUD/1be46286b36a4aa48205be5a96240672/b35bc14a62aa4950bdba451a5f40fc61.html?locale=en-US#selecting-solr-server-version)
+- [Search Engine Compatibility](https://help.sap.com/docs/SAP_COMMERCE_CLOUD_PUBLIC_CLOUD/20125f0eca6340dba918bda360e3cdfa/31ac209eb08f41bc92e9bbe5772fb949.html?locale=en-US#search-engines)
 
-[aspects]: https://help.sap.com/viewer/1be46286b36a4aa48205be5a96240672/latest/en-US/8f494fb9617346188ddf21a971db84fc.htm
-[reuse]: https://help.sap.com/viewer/1be46286b36a4aa48205be5a96240672/latest/en-US/2311d89eef9344fc81ef168ac9668307.html
+[aspects]: https://help.sap.com/docs/SAP_COMMERCE_CLOUD_PUBLIC_CLOUD/1be46286b36a4aa48205be5a96240672/8f494fb9617346188ddf21a971db84fc.html?locale=en-US
+[reuse]: https://help.sap.com/docs/SAP_COMMERCE_CLOUD_PUBLIC_CLOUD/1be46286b36a4aa48205be5a96240672/2311d89eef9344fc81ef168ac9668307.html?locale=en-US
+[manifest]: https://help.sap.com/docs/SAP_COMMERCE_CLOUD_PUBLIC_CLOUD/1be46286b36a4aa48205be5a96240672/3d562b85b37a460a92d32ec991459133.html?locale=en-US
