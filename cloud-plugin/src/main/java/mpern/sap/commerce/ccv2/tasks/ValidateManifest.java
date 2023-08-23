@@ -38,7 +38,6 @@ public class ValidateManifest extends DefaultTask {
         List<Validator> validators = new ArrayList<>();
 
         validators.add(new AspectValidator());
-        validators.add(new CloudExtensionPackValidator());
         validators.add(new PropertyValidator());
         validators.add(new UseConfigValidator(projectDir));
         ManifestExtensionsResolver resolver = new ManifestExtensionsResolver(projectDir);

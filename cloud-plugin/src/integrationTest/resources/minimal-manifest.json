@@ -1,6 +1,5 @@
 {
-  "commerceSuiteVersion": "1811.3",
-  "useCloudExtensionPack": true,
+  "commerceSuiteVersion": "2211",
   "extensions": [
     "modeltacceleratorservices",
     "electronicsstore",

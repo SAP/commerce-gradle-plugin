@@ -5,12 +5,9 @@ import static mpern.sap.commerce.commons.Constants.CCV2_EXTENSION;
 import java.io.File;
 import java.time.Instant;
 import java.util.*;
-import java.util.stream.Collectors;
 
 import org.gradle.api.*;
 import org.gradle.api.artifacts.Configuration;
-import org.gradle.api.tasks.Copy;
-import org.gradle.api.tasks.Delete;
 import org.gradle.api.tasks.TaskProvider;
 import org.gradle.api.tasks.WriteProperties;
 import org.jetbrains.annotations.NotNull;
@@ -23,7 +20,6 @@ import mpern.sap.commerce.build.tasks.HybrisAntTask;
 import mpern.sap.commerce.build.util.Version;
 import mpern.sap.commerce.ccv2.model.*;
 import mpern.sap.commerce.ccv2.tasks.GenerateLocalextensions;
-import mpern.sap.commerce.ccv2.tasks.PatchLocalExtensions;
 import mpern.sap.commerce.ccv2.tasks.ValidateManifest;
 
 public class CloudV2Plugin implements Plugin<Project> {
@@ -44,17 +40,8 @@ public class CloudV2Plugin implements Plugin<Project> {
 
         extension = project.getExtensions().create(CCV2_EXTENSION, CCv2Extension.class, manifest);
         extension.getGeneratedConfiguration().set(project.file("generated-configuration"));
-        extension.getCloudExtensionPackFolder().set(project.file("cloud-extension-pack"));
 
         final Configuration extensionPack = project.getConfigurations().create(EXTENSION_PACK);
-        extensionPack.defaultDependencies(deps -> {
-            // de/hybris/platform/hybris-cloud-extension-pack/1905.06/
-            String commerceSuiteVersion = manifest.commerceSuiteVersion;
-            String cepVersion = commerceSuiteVersion.replaceAll("(.+)(\\.\\d\\d)?", "$1.+");
-
-            deps.add(project.getDependencies()
-                    .create("de.hybris.platform:hybris-cloud-extension-pack:" + cepVersion + "@zip"));
-        });
 
         project.getPlugins().withType(HybrisPlugin.class, hybrisPlugin -> {
             Object o = project.getExtensions().getByName(HybrisPlugin.HYBRIS_EXTENSION);
@@ -63,7 +50,6 @@ public class CloudV2Plugin implements Plugin<Project> {
                 configureAddonInstall(project, manifest.storefrontAddons);
                 configureTests(project, manifest.tests);
                 configureWebTests(project, manifest.webTests);
-                configureCloudExtensionPackBootstrap(project, manifest.useCloudExtensionPack);
             }
         });
         configurePropertyFileGeneration(project, manifest);
@@ -177,42 +163,6 @@ public class CloudV2Plugin implements Plugin<Project> {
                     t.antProperty("failbuildonerror", "yes");
                 });
         allWebTests.configure(configureTest(test));
-    }
-
-    private void configureCloudExtensionPackBootstrap(Project project, boolean useCloudExtensionPack) {
-        if (!useCloudExtensionPack) {
-            return;
-        }
-        TaskProvider<Delete> cleanCep = project.getTasks().register("cleanCloudExtensionPack", Delete.class,
-                d -> d.delete(extension.getCloudExtensionPackFolder().getAsFile()));
-        TaskProvider<Copy> unpackCep = project.getTasks().register("unpackCloudExtensionPack", Copy.class, c -> {
-            c.dependsOn(cleanCep);
-            c.from(project.provider(() -> project.getConfigurations().getByName(EXTENSION_PACK).getFiles().stream()
-                    .map(project::zipTree).collect(Collectors.toUnmodifiableSet())));
-            c.into(extension.getCloudExtensionPackFolder().getAsFile());
-            c.doLast(a -> project.getConfigurations().getByName(EXTENSION_PACK).getResolvedConfiguration()
-                    .getFirstLevelModuleDependencies()
-                    .forEach(r -> a.getLogger().lifecycle("Using Cloud Extension Pack: {}", r.getModuleVersion())));
-        });
-
-        TaskProvider<Task> bootstrapPlatform = project.getTasks().named("bootstrapPlatform");
-        bootstrapPlatform.configure(t -> t.dependsOn(unpackCep));
-
-        String reservedTypeCodes = "hybris/bin/platform/ext/core/resources/core/unittest/reservedTypecodes.txt";
-        TaskProvider<Copy> copyTypeCodes = project.getTasks().register("copyCEPTypeCode", Copy.class, c -> {
-            c.mustRunAfter(unpackCep);
-            c.mustRunAfter("unpackPlatform");
-            c.from(extension.getCloudExtensionPackFolder().file(reservedTypeCodes));
-            c.into(project.file(reservedTypeCodes).getParent());
-        });
-        bootstrapPlatform.configure(t -> t.dependsOn(copyTypeCodes));
-        TaskProvider<PatchLocalExtensions> patch = project.getTasks().register("patchLocalExtensions",
-                PatchLocalExtensions.class, p -> {
-                    p.getTarget().set(project.file("hybris/config/localextensions.xml"));
-                    p.getCepFolder()
-                            .set(extension.getCloudExtensionPackFolder().map(d -> d.getAsFile().getAbsolutePath()));
-                });
-        bootstrapPlatform.configure(t -> t.dependsOn(patch));
     }
 
     private void configurePropertyFileGeneration(Project project, Manifest manifest) {

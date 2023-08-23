@@ -33,7 +33,6 @@ class CCv2Tests extends Specification {
         TestUtils.generateDummyPlatform(deps, "1808.0")
 
         TestUtils.generateDummyPlatform(deps, "1905.1")
-        TestUtils.generateDummyExtensionPack(deps, "1905.6")
 
         TestUtils.generateDummyPlatform(deps, "2005.0")
         TestUtils.generateDummyIntegrationPack(deps, '2005.0')
@@ -132,57 +131,6 @@ class CCv2Tests extends Specification {
         localExtensions.contains("<extension name='privacyoverlayeraddon' />")
         localExtensions.contains("<extension name='yacceleratorstorefront' />")
         localExtensions.contains("<extension name='backoffice' />")
-    }
-
-    def enableCep() {
-        Path dummy = TestConstants.testResource("cloud-extension-pack-manifest.json")
-        Files.copy(dummy, testProjectPath.resolve("manifest.json"), StandardCopyOption.REPLACE_EXISTING)
-    }
-
-    def "useCloudExtensionPack triggers unpack and setup of extension pack"() {
-        given: "manifest with enabled cloud extension pack"
-        enableCep()
-
-
-        when: "running bootstrap task"
-        def result = runner
-                .withArguments("bootstrapPlatform", "--stacktrace")
-                .build()
-        def cepFolder = testProjectPath.resolve("cloud-extension-pack")
-
-        then: "cloud extension pack is resolved correctly and expanded to build folder"
-        Files.exists(cepFolder)
-        Files.exists(cepFolder.resolve("hybris/bin/modules/sap-ccv2-hotfolder/azurecloudhotfolder/extensioninfo.xml"))
-    }
-
-    def "useCloudExtensionPack patches localextensions.xml to load extension pack"() {
-        given: "localextensions.xml present"
-        enableCep()
-        def localExtensions = ensureParents(testProjectPath.resolve("hybris/config/localextensions.xml"))
-        localExtensions << """<?xml version="1.0" encoding="UTF-8"?>
-        <hybrisconfig xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-                      xsi:noNamespaceSchemaLocation="resources/schemas/extensions.xsd">
-            <extensions>
-                <path dir="\${HYBRIS_BIN_DIR}" />
-                <extension name='dummy' />
-            </extensions>
-        </hybrisconfig>
-        """.stripIndent()
-
-        when: "running bootstrap task"
-        runner.withArguments("bootstrapPlatform", "--stacktrace")
-                .build()
-        def local = new XmlSlurper().parse(localExtensions.toFile())
-
-        then: "plugin patches localextensions.xml to load cloud extension pack first"
-        local.extensions.path[0].'@dir' == Path.of('${HYBRIS_BIN_DIR}/../../cloud-extension-pack')
-        local.extensions.path[1].'@dir' == '${HYBRIS_BIN_DIR}'
-        cepDirResolvesCorrectly(local.extensions.path[0].'@dir'.toString())
-    }
-
-    void cepDirResolvesCorrectly(folderName) {
-        folderName = folderName.replace('${HYBRIS_BIN_DIR}', testProjectPath.resolve("hybris/bin").toString())
-        assert Files.exists(Path.of(folderName))
     }
 
     def "extensionPacks are automatically bootstrapped"() {

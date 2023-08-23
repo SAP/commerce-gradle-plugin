@@ -50,19 +50,6 @@ See also:
 
 [packs]: https://help.sap.com/viewer/1be46286b36a4aa48205be5a96240672/LATEST/en-US/ad98c976ab3d433e935b4b5c89303dd5.html
 
-### `useCloudExtensionPack` Support
-
-> The Cloud Extension Pack is only available for SAP Commerce 1811 and 1905.\
-> Starting with 2005, it is replaced by the "Integration Extension Pack" (see above)
-
-If the cloud extension pack is enabled in your `manifest.json` (`useCloudExtensionPack: true`), the `bootstrapPlatform`
-task will automatically:
-
-- Download and unpack the extension pack (artifact
-  coordinates: `de.hybris.platform:hybris-cloud-extension-pack:<commerce-version-without-patch>.+`)
-  into `cloud-extension-pack`
-- Patch `localextensions.xml` to load the extensions from the cloud extension pack, if necessary
-
 ## Tasks
 
 The plugin defines the following tasks
