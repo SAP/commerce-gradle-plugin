@@ -5,7 +5,7 @@
 
 Bootstrap, configure and build your SAP Commerce (Hybris) project using Gradle 5+.
 
-> **Note**\
+> [!TIP]
 > **For the user documentation, please check the [`/docs` folder](/docs)**
 
 The plugins are published to https://plugins.gradle.org/.
