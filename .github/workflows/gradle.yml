@@ -36,17 +36,17 @@ jobs:
         with:
           fetch-depth: 0
       - name: REUSE Compliance Check
-        uses: fsfe/reuse-action@v1
+        uses: fsfe/reuse-action@v5
       - name: Set up Java
         uses: actions/setup-java@v4
         with:
           java-version: 17
           distribution: 'sapmachine'
           cache: 'gradle'
-      - name: Gradle build
-        uses: gradle/gradle-build-action@v2
-        with:
-          arguments: spotlessCheck
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
+      - name: Check code style
+        run: ./gradlew spotlessCheck
 
   # One Basic check, for all kind of OS - to check if we have some kind of
   # issue with any kind of OS
@@ -66,11 +66,11 @@ jobs:
           java-version: '17'
           distribution: 'sapmachine'
           cache: 'gradle'
-      - name: Gradle build
-        uses: gradle/gradle-build-action@v2
-        with:
-          arguments: check -x spotlessCheck
-      - uses: actions/upload-artifact@v3
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
+      - name: Build and Test
+        run: ./gradlew check -x spotlessCheck
+      - uses: actions/upload-artifact@v4
         if: ${{ failure() }}
         with:
           name: ${{ matrix.os }}-test-result
@@ -78,17 +78,15 @@ jobs:
             build/reports
             build/test-results
 
-  # The check for different kind of gradle Versions
+  # Check supported Gradle releases
+  # https://gradle.org/releases/
+  # https://docs.gradle.org/current/userguide/feature_lifecycle.html#eol_support
   verify:
     strategy:
       matrix:
-        # https://gradle.org/releases/
         GRADLE_VERSION:
-        - "7.6.2"
-        - "8.0.2"
-        - "8.1.1"
-        - "8.2.1"
-        - "8.3"
+        - "7.6.3"
+        - "8.12"
     runs-on: ubuntu-latest
     needs: [basic, compliance]
     name: with Gradle ${{ matrix.GRADLE_VERSION }}
@@ -101,13 +99,13 @@ jobs:
           java-version: 17
           distribution: 'sapmachine'
           cache: 'gradle'
-      - name: Gradle build
-        uses: gradle/gradle-build-action@v2
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
+      - name: Build and Test
+        run: ./gradlew check -x spotlessCheck
         env:
-          GRADLE_VERSION: ${{ matrix.GRADLE_VERSION }}
-        with:
-          arguments: check -x spotlessCheck
-      - uses: actions/upload-artifact@v3
+          GRADLE_VERSION: "${{ matrix.GRADLE_VERSION }}"
+      - uses: actions/upload-artifact@v4
         if: ${{ failure() }}
         with:
           name: ${{ matrix.GRADLE_VERSION }}-test-result
@@ -128,11 +126,10 @@ jobs:
           java-version: 17
           distribution: 'sapmachine'
           cache: 'gradle'
-      - name: Gradle build
-        uses: gradle/gradle-build-action@v2
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
+      - name: Publish Plugin
         env:
-          GRADLE_PUBLISH_KEY: ${{secrets.PUBLISH_KEY}}
-          GRADLE_PUBLISH_SECRET: ${{secrets.PUBLISH_SECRET}}
-        with:
-          arguments: publishPlugins "-Pgradle.publish.key=${GRADLE_PUBLISH_KEY}" "-Pgradle.publish.secret=${GRADLE_PUBLISH_SECRET}"
-
+          ORG_GRADLE_PROJECT_gradle.publish.key: ${{secrets.PUBLISH_KEY}}
+          ORG_GRADLE_PROJECT_gradle.publish.secret: ${{secrets.PUBLISH_SECRET}}
+        run: ./gradlew publishPlugins
