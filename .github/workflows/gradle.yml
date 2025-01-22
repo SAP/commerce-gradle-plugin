@@ -104,7 +104,7 @@ jobs:
         with:
           gradle-version: "${{ matrix.GRADLE_VERSION }}"
       - name: Build and Test
-        run: ./gradlew check -x spotlessCheck
+        run: gradle --version && gradle check -x spotlessCheck
       - uses: actions/upload-artifact@v4
         if: ${{ failure() }}
         with:
