@@ -101,10 +101,10 @@ jobs:
           cache: 'gradle'
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v4
-        with:
-          gradle-version: "${{ matrix.GRADLE_VERSION }}"
       - name: Build and Test
-        run: gradle --version && gradle check -x spotlessCheck
+        run: ./gradlew check -x spotlessCheck
+        env:
+          GRADLE_VERSION: "${{ matrix.GRADLE_VERSION }}"
       - uses: actions/upload-artifact@v4
         if: ${{ failure() }}
         with:
