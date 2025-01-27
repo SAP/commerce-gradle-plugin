@@ -16,16 +16,17 @@ gradlePlugin {
 
             displayName = "SAP Commerce Cloud in the Public Cloud Build Support Plugin"
             description = """Use the CCv2 manifest.json to configure and build your local development environment"""
-            tags = setOf(
-                "sap commerce",
-                "sap hybris commerce",
-                "hybris",
-                "sap",
-                "commerce",
-                "ccv2",
-                "public cloud",
-                "manifest",
-            )
+            tags =
+                setOf(
+                    "sap commerce",
+                    "sap hybris commerce",
+                    "hybris",
+                    "sap",
+                    "commerce",
+                    "ccv2",
+                    "public cloud",
+                    "manifest",
+                )
         }
     }
 }
