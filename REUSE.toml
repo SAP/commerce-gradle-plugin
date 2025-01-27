@@ -1,0 +1,37 @@
+version = 1
+
+[[annotations]]
+paths = [
+    "gradle.properties",
+    ".gitignore",
+    "*/.gitignore",
+    "README.md",
+    "CHANGELOG.md",
+    "CONTRIBUTING.md",
+    ".java-version",
+    "*/*.gradle.kts",
+    "*.gradle.kts",
+    "gradle/*",
+    ".github/*",
+    "docs/*",
+    "manualTest/*",
+    "renovate.json"
+]
+SPDX-FileCopyrightText = "2020 SAP SE or an SAP affiliate company and commerce-gradle-plugin contributors"
+SPDX-License-Identifier = "CC0-1.0"
+
+[[annotations]]
+paths = [
+    "gradlew",
+    "gradlew.bat",
+    "gradle/wrapper/*"
+]
+SPDX-FileCopyrightText = "Gradle Inc. 2020"
+SPDX-License-Identifier = "Apache-2.0"
+
+[[annotations]]
+paths = [
+    "*/src/*"
+]
+SPDX-FileCopyrightText = "2020 SAP SE or an SAP affiliate company and commerce-gradle-plugin contributors"
+SPDX-License-Identifier = "Apache-2.0"
