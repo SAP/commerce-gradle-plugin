@@ -16,15 +16,16 @@ gradlePlugin {
 
             displayName = "SAP Commerce Bootstrap & Build Plugin"
             description = """Manage the whole development lifecycle of your SAP Commerce Project with Gradle"""
-            tags = setOf(
-                "sap commerce",
-                "sap hybris commerce",
-                "hybris",
-                "sap",
-                "commerce",
-                "bootstrap",
-                "build",
-            )
+            tags =
+                setOf(
+                    "sap commerce",
+                    "sap hybris commerce",
+                    "hybris",
+                    "sap",
+                    "commerce",
+                    "bootstrap",
+                    "build",
+                )
         }
     }
 }
