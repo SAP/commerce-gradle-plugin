@@ -9,7 +9,7 @@ repositories {
 }
 
 dependencies {
-    implementation("com.diffplug.spotless:spotless-plugin-gradle:6.25.0")
+    implementation("com.diffplug.spotless:spotless-plugin-gradle:7.0.2")
     implementation("com.gradle.publish:plugin-publish-plugin:1.2.0")
     implementation("pl.allegro.tech.build:axion-release-plugin:1.15.4")
     implementation("com.github.ben-manes:gradle-versions-plugin:0.47.0")
