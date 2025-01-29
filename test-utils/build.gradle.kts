@@ -15,8 +15,13 @@ val generateSources by tasks.registering {
     outputs.dir(generated)
 
     doFirst {
+        val projectDir = inputs.properties["projectDir"] as File
         val structure = file("$generated/mpern/sap/commerce/test/TestConstants.java")
-        val resourcesDir = project.projectDir.resolve("src/main/resources").toString().replace("\\", "\\\\")
+        val resourcesDir =
+            projectDir
+                .resolve("src/main/resources")
+                .toString()
+                .replace("\\", "\\\\")
         structure.parentFile.mkdirs()
         structure.writeText(
             """

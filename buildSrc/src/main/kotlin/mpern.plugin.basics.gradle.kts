@@ -4,7 +4,7 @@ plugins {
     id("groovy")
     `jvm-test-suite`
     id("com.gradle.plugin-publish")
-    id("com.github.johnrengelman.shadow")
+    id("com.gradleup.shadow")
 }
 
 dependencies {
