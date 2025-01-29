@@ -3,5 +3,12 @@
   "extends": [
     "config:recommended"
   ],
-  "ignorePaths": ["manualTest/build.gradle.kts"]
+  "ignorePaths": ["manualTest/build.gradle.kts"],
+  "packageRules": [
+    {
+      "matchDatasources": ["maven"],
+      "matchPackageNames": ["org.spockframework:spock-bom"],
+      "versionCompatibility": "^(?<version>[^-]+(?<compatibility>-.*))$"
+    }
+  ]
 }

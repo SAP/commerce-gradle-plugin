@@ -42,13 +42,18 @@ path = [
     "docs/**",
     "manualTest/**",
     "renovate.json",
+    "REUSE.toml"
 ]
 precedence = "aggregate"
 SPDX-FileCopyrightText = "2020 SAP SE or an SAP affiliate company and commerce-gradle-plugin contributors"
 SPDX-License-Identifier = "CC0-1.0"
 
 [[annotations]]
-path = ["gradlew", "gradlew.bat", "gradle/wrapper/**"]
+path = [
+    "gradlew",
+    "gradlew.bat",
+    "**/gradle/wrapper/**"
+]
 precedence = "aggregate"
 SPDX-FileCopyrightText = "Gradle Inc. 2020"
 SPDX-License-Identifier = "Apache-2.0"
