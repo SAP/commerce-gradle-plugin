@@ -1,6 +1,5 @@
 plugins {
     `kotlin-dsl`
-    id("com.github.ben-manes.versions") version "0.47.0"
 }
 
 repositories {
@@ -9,9 +8,8 @@ repositories {
 }
 
 dependencies {
-    implementation("com.diffplug.spotless:spotless-plugin-gradle:6.25.0")
-    implementation("com.gradle.publish:plugin-publish-plugin:1.2.0")
-    implementation("pl.allegro.tech.build:axion-release-plugin:1.15.4")
-    implementation("com.github.ben-manes:gradle-versions-plugin:0.47.0")
-    implementation("com.github.johnrengelman:shadow:8.1.1")
+    implementation("com.diffplug.gradle.spotless:com.diffplug.gradle.spotless.gradle.plugin:7.0.2")
+    implementation("com.gradle.plugin-publish:com.gradle.plugin-publish.gradle.plugin:1.3.0")
+    implementation("pl.allegro.tech.build.axion-release:pl.allegro.tech.build.axion-release.gradle.plugin:1.18.16")
+    implementation("com.gradleup.shadow:com.gradleup.shadow.gradle.plugin:8.3.5")
 }

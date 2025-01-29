@@ -1,7 +1,6 @@
 plugins {
     java
     id("com.diffplug.spotless")
-    id("com.github.ben-manes.versions")
 }
 
 repositories {
@@ -28,7 +27,7 @@ spotless {
 
         // define the steps to apply to those files
         trimTrailingWhitespace()
-        indentWithSpaces(4)
+        leadingTabsToSpaces(4)
         endWithNewline()
     }
     java {
