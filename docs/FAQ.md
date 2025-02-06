@@ -62,6 +62,15 @@ The field "Checksum" of the content info page is the sha-256 hash of the file (t
 hybris-commerce-suite-2011.4.zip: OK
 ```
 
+### SAP Universal ID
+
+When using SAP Universal ID the curl command may not work out of the box. Set a password for the S-User following the steps below:
+
+1. Login and go to https://account.sap.com/manage/accounts
+2. Select your S-User
+3. Use `Reset Account Password` to set a password
+
+You can now use the S-User with the password in the procedure above!
 
 [launch]: https://launchpad.support.sap.com
 [down]: https://launchpad.support.sap.com/#/softwarecenter/template/products/%20_APP=00200682500000001943&_EVENT=DISPHIER&HEADER=Y&FUNCTIONBAR=N&EVENT=TREE&NE=NAVIGATE&ENR=73555000100200013787&V=MAINT&TA=ACTUAL&PAGE=SEARCH/CX%20COMMERCE%202011[[
