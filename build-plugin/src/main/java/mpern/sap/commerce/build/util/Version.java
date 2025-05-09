@@ -8,7 +8,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class Version implements Comparable<Version> {
-    private static final Pattern COMBINED_VERSION = Pattern.compile("(\\d\\d)(\\d\\d)-?(\\w+)?(\\.(\\w+\\.?)?([1-9]?\\d+))?");
+    private static final Pattern COMBINED_VERSION = Pattern
+            .compile("(\\d\\d)(\\d\\d)-?(\\w+)?(\\.(\\w+\\.?)?([1-9]?\\d+))?");
     private static final Pattern OLD_VERSION = Pattern.compile("(\\d)\\.(\\d)\\.(\\d)(\\.([1-9]?\\d))?");
     public static final int UNDEFINED_PART = Integer.MAX_VALUE;
     public static final Version UNDEFINED = new Version(UNDEFINED_PART, UNDEFINED_PART, UNDEFINED_PART, UNDEFINED_PART,
