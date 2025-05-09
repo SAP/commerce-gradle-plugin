@@ -68,4 +68,40 @@ class VersionTest extends Specification {
         v.patch == Version.UNDEFINED_PART
         v.toString() == "2211.FP1 (PREVIEW)"
     }
+
+    def "jdk21 preview version can be parsed without patch when not needed"() {
+        when:
+        def v = Version.parseVersion("2211-jdk21.FP0")
+
+        then:
+        v.preview
+        v.major == 22
+        v.minor == 11
+        v.patch == Version.UNDEFINED_PART
+        v.toString() == "2211-jdk21.FP0 (PREVIEW)"
+    }
+
+    def "jdk21 version with patch"() {
+        when:
+        def v = Version.parseVersion("2211-jdk21.1")
+
+        then:
+        !v.preview
+        v.major == 22
+        v.minor == 11
+        v.patch == 1
+        v.toString() == "2211-jdk21.1"
+    }
+
+    def "jdk21 version can have test build"() {
+        when:
+        def v = Version.parseVersion("2211-jdk21.TEST.20250505")
+
+        then:
+        !v.preview
+        v.major == 22
+        v.minor == 11
+        v.patch == 20250505
+        v.toString() == "2211-jdk21.TEST.20250505"
+    }
 }

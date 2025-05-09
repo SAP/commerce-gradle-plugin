@@ -8,8 +8,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class Version implements Comparable<Version> {
-    private static final Pattern NEW_VERSION = Pattern.compile("(\\d\\d)(\\d\\d)(\\.([1-9]?\\d))?");
-    private static final Pattern PREVIEW_VERSION = Pattern.compile("(\\d\\d)(\\d\\d)\\.FP([1-9]?\\d)?");
+    private static final Pattern COMBINED_VERSION = Pattern.compile("(\\d\\d)(\\d\\d)-?(\\w+)?(\\.(\\w+\\.?)?([1-9]?\\d+))?");
     private static final Pattern OLD_VERSION = Pattern.compile("(\\d)\\.(\\d)\\.(\\d)(\\.([1-9]?\\d))?");
     public static final int UNDEFINED_PART = Integer.MAX_VALUE;
     public static final Version UNDEFINED = new Version(UNDEFINED_PART, UNDEFINED_PART, UNDEFINED_PART, UNDEFINED_PART,
@@ -52,20 +51,23 @@ public class Version implements Comparable<Version> {
         Objects.requireNonNull(versionString);
 
         Matcher oldV = OLD_VERSION.matcher(versionString);
-        Matcher newV = NEW_VERSION.matcher(versionString);
-        Matcher previewV = PREVIEW_VERSION.matcher(versionString);
+        Matcher fullV = COMBINED_VERSION.matcher(versionString);
 
-        if (previewV.matches()) {
-            return new Version(Integer.parseInt(previewV.group(1)), Integer.parseInt(previewV.group(2)),
-                    previewToPlatformPatch.getOrDefault(versionString, UNDEFINED_PART), true, versionString);
-        }
-        if (newV.matches()) {
+        if (fullV.matches()) {
+            boolean preview = "FP".equalsIgnoreCase(fullV.group(5));
+
+            if (preview) {
+                return new Version(Integer.parseInt(fullV.group(1)), Integer.parseInt(fullV.group(2)),
+                        previewToPlatformPatch.getOrDefault(versionString, UNDEFINED_PART), true, versionString);
+            }
+
             int patch = UNDEFINED_PART;
 
-            if (newV.groupCount() > 3 && newV.group(4) != null) {
-                patch = Integer.parseInt(newV.group(4));
+            if (fullV.group(6) != null) {
+                patch = Integer.parseInt(fullV.group(6));
             }
-            return new Version(Integer.parseInt(newV.group(1)), Integer.parseInt(newV.group(2)), 0, patch,
+
+            return new Version(Integer.parseInt(fullV.group(1)), Integer.parseInt(fullV.group(2)), 0, patch,
                     versionString);
         } else if (oldV.matches()) {
             int patch = UNDEFINED_PART;
@@ -76,7 +78,7 @@ public class Version implements Comparable<Version> {
                     Integer.parseInt(oldV.group(3)), patch, versionString);
         }
         String[] split = versionString.split("\\.");
-        int major = UNDEFINED_PART, minor = UNDEFINED_PART, release = UNDEFINED_PART, patch = UNDEFINED_PART;
+        int major, minor = UNDEFINED_PART, release = UNDEFINED_PART, patch = UNDEFINED_PART;
         switch (split.length) {
         case 4:
             patch = Integer.parseInt(split[3]);
