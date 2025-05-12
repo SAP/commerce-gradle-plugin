@@ -104,4 +104,16 @@ class VersionTest extends Specification {
         v.patch == 20250505
         v.toString() == "2211-jdk21.TEST.20250505"
     }
+
+    def "jdk21 version can have test build without date timestamp"() {
+        when:
+        def v = Version.parseVersion("2211-jdk21.TEST")
+
+        then:
+        !v.preview
+        v.major == 22
+        v.minor == 11
+        v.patch == Version.UNDEFINED_PART
+        v.toString() == "2211-jdk21.TEST"
+    }
 }

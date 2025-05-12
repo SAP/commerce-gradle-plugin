@@ -9,7 +9,7 @@ import java.util.regex.Pattern;
 
 public class Version implements Comparable<Version> {
     private static final Pattern COMBINED_VERSION = Pattern
-            .compile("(\\d\\d)(\\d\\d)-?(\\w+)?(\\.(\\w+\\.?)?([1-9]?\\d+))?");
+            .compile("(\\d\\d)(\\d\\d)-?(\\w+)?(\\.?(\\w+)?)?(\\.(\\d+))?");
     private static final Pattern OLD_VERSION = Pattern.compile("(\\d)\\.(\\d)\\.(\\d)(\\.([1-9]?\\d))?");
     public static final int UNDEFINED_PART = Integer.MAX_VALUE;
     public static final Version UNDEFINED = new Version(UNDEFINED_PART, UNDEFINED_PART, UNDEFINED_PART, UNDEFINED_PART,
@@ -55,7 +55,8 @@ public class Version implements Comparable<Version> {
         Matcher fullV = COMBINED_VERSION.matcher(versionString);
 
         if (fullV.matches()) {
-            boolean preview = "FP".equalsIgnoreCase(fullV.group(5));
+            String patchPart = Objects.toString(fullV.group(7), fullV.group(5));
+            boolean preview = patchPart != null && patchPart.startsWith("FP");
 
             if (preview) {
                 return new Version(Integer.parseInt(fullV.group(1)), Integer.parseInt(fullV.group(2)),
@@ -64,8 +65,12 @@ public class Version implements Comparable<Version> {
 
             int patch = UNDEFINED_PART;
 
-            if (fullV.group(6) != null) {
-                patch = Integer.parseInt(fullV.group(6));
+            if (patchPart != null) {
+                try {
+                    patch = Integer.parseInt(patchPart);
+                } catch (NumberFormatException ignored) {
+                    // ignore
+                }
             }
 
             return new Version(Integer.parseInt(fullV.group(1)), Integer.parseInt(fullV.group(2)), 0, patch,
