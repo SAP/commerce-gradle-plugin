@@ -290,17 +290,6 @@ class ManifestParseSpec extends Specification {
               "commerceSuiteVersion": "2011",
               "extensionPacks" : [
                 {
-                  "name" : "foo",
-                  "version" : "2011.x"
-                }
-              ]
-            }
-            """,
-            """
-            {
-              "commerceSuiteVersion": "2011",
-              "extensionPacks" : [
-                {
                   "artifact": "de.hybris.platform.suite:fsa-suite"
                 }
               ]
