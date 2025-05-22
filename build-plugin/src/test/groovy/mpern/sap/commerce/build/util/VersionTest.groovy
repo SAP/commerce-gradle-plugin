@@ -148,4 +148,14 @@ class VersionTest extends Specification {
         then:
         v.jdk == 21
     }
+
+    def "2211 and 2211-jdk21 versions are not equal"() {
+        when:
+        def x = Version.parseVersion("2211")
+        def y = Version.parseVersion("2211-jdk21")
+
+        then:
+        x != y
+        y > x
+    }
 }

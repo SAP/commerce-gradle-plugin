@@ -14,9 +14,9 @@ public class Version implements Comparable<Version> {
     public static final int UNDEFINED_PART = Integer.MAX_VALUE;
     public static final Version UNDEFINED = new Version(UNDEFINED_PART, UNDEFINED_PART, UNDEFINED_PART, UNDEFINED_PART,
             UNDEFINED_PART, "<undefined>");
-    public static final Comparator<Version> VERSION_COMPARATOR = Comparator.comparingInt(Version::getMajor)
-            .thenComparingInt(Version::getJdk).thenComparingInt(Version::getMinor).thenComparingInt(Version::getRelease)
-            .thenComparingInt(Version::getPatch);
+    public static final Comparator<Version> VERSION_COMPARATOR = Comparator.comparingInt(Version::getJdk)
+            .thenComparingInt(Version::getMajor).thenComparingInt(Version::getMinor)
+            .thenComparingInt(Version::getRelease).thenComparingInt(Version::getPatch);
 
     private final int major;
     private final int minor;
