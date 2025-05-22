@@ -9,13 +9,13 @@ import java.util.regex.Pattern;
 
 public class Version implements Comparable<Version> {
     private static final Pattern COMBINED_VERSION = Pattern
-            .compile("(\\d\\d)(\\d\\d)-?(\\w+)?(\\.?(\\w+)?)?(\\.(\\d+))?");
+            .compile("(\\d\\d)(\\d\\d)(-jdk(?<jdk>\\d+))?(\\.?(?<variant>FP\\d+|TEST)?)?(\\.(?<patch>\\d+))?");
     private static final Pattern OLD_VERSION = Pattern.compile("(\\d)\\.(\\d)\\.(\\d)(\\.([1-9]?\\d))?");
     public static final int UNDEFINED_PART = Integer.MAX_VALUE;
     public static final Version UNDEFINED = new Version(UNDEFINED_PART, UNDEFINED_PART, UNDEFINED_PART, UNDEFINED_PART,
-            "<undefined>");
+            UNDEFINED_PART, "<undefined>");
     public static final Comparator<Version> VERSION_COMPARATOR = Comparator.comparingInt(Version::getMajor)
-            .thenComparingInt(Version::getMinor).thenComparingInt(Version::getRelease)
+            .thenComparingInt(Version::getJdk).thenComparingInt(Version::getMinor).thenComparingInt(Version::getRelease)
             .thenComparingInt(Version::getPatch);
 
     private final int major;
@@ -25,23 +25,40 @@ public class Version implements Comparable<Version> {
     private final String original;
 
     private final boolean preview;
+    private final int jdk;
 
-    private Version(int major, int minor, int release, int patch, String original) {
+    private Version(int major, int minor, int release, int patch, int jdk, String original) {
         this.major = major;
         this.minor = minor;
         this.release = release;
         this.patch = patch;
+        this.jdk = resolveJdkVersion(major, jdk);
         this.original = original;
         this.preview = false;
     }
 
-    private Version(int major, int minor, int patch, boolean preview, String original) {
+    private Version(int major, int minor, int patch, boolean preview, int jdk, String original) {
         this.major = major;
         this.minor = minor;
         this.preview = preview;
         this.release = 0;
         this.patch = patch;
+        this.jdk = resolveJdkVersion(major, jdk);
         this.original = original;
+    }
+
+    private static int resolveJdkVersion(int major, int jdk) {
+        if (jdk > 0) {
+            return jdk;
+        }
+
+        if (major < 19) {
+            return 8;
+        } else if (major >= 22) {
+            return 17;
+        }
+
+        return 11;
     }
 
     public static Version parseVersion(String versionString) {
@@ -55,15 +72,27 @@ public class Version implements Comparable<Version> {
         Matcher fullV = COMBINED_VERSION.matcher(versionString);
 
         if (fullV.matches()) {
-            String patchPart = Objects.toString(fullV.group(7), fullV.group(5));
-            boolean preview = patchPart != null && patchPart.startsWith("FP");
+            String jdkPart = fullV.group("jdk");
+            int jdk = 0;
+
+            if (jdkPart != null) {
+                try {
+                    jdk = Integer.parseInt(jdkPart);
+                } catch (NumberFormatException ignored) {
+                    // ignore
+                }
+            }
+
+            String variantPart = fullV.group("variant");
+            boolean preview = variantPart != null && variantPart.startsWith("FP");
 
             if (preview) {
                 return new Version(Integer.parseInt(fullV.group(1)), Integer.parseInt(fullV.group(2)),
-                        previewToPlatformPatch.getOrDefault(versionString, UNDEFINED_PART), true, versionString);
+                        previewToPlatformPatch.getOrDefault(versionString, UNDEFINED_PART), true, jdk, versionString);
             }
 
             int patch = UNDEFINED_PART;
+            String patchPart = fullV.group("patch");
 
             if (patchPart != null) {
                 try {
@@ -73,7 +102,7 @@ public class Version implements Comparable<Version> {
                 }
             }
 
-            return new Version(Integer.parseInt(fullV.group(1)), Integer.parseInt(fullV.group(2)), 0, patch,
+            return new Version(Integer.parseInt(fullV.group(1)), Integer.parseInt(fullV.group(2)), 0, patch, jdk,
                     versionString);
         } else if (oldV.matches()) {
             int patch = UNDEFINED_PART;
@@ -81,7 +110,7 @@ public class Version implements Comparable<Version> {
                 patch = Integer.parseInt(oldV.group(5));
             }
             return new Version(Integer.parseInt(oldV.group(1)), Integer.parseInt(oldV.group(2)),
-                    Integer.parseInt(oldV.group(3)), patch, versionString);
+                    Integer.parseInt(oldV.group(3)), patch, -1, versionString);
         }
         String[] split = versionString.split("\\.");
         int major, minor = UNDEFINED_PART, release = UNDEFINED_PART, patch = UNDEFINED_PART;
@@ -99,14 +128,14 @@ public class Version implements Comparable<Version> {
             default:
                 throw new IllegalArgumentException("Could not parse " + versionString);
             }
-            return new Version(major, minor, release, patch, versionString);
+            return new Version(major, minor, release, patch, -1, versionString);
         } catch (NumberFormatException e) {
             throw new IllegalArgumentException("Could not parse " + versionString);
         }
     }
 
     public Version withoutPatch() {
-        return new Version(major, minor, release, UNDEFINED_PART, original);
+        return new Version(major, minor, release, UNDEFINED_PART, -1, original);
     }
 
     @Override
@@ -118,7 +147,7 @@ public class Version implements Comparable<Version> {
         if (this == version) {
             return true;
         }
-        return major == version.major && minor == version.minor && release == version.release;
+        return major == version.major && minor == version.minor && release == version.release && jdk == version.jdk;
     }
 
     @Override
@@ -130,7 +159,8 @@ public class Version implements Comparable<Version> {
             return false;
         }
         Version version = (Version) o;
-        return major == version.major && minor == version.minor && release == version.release && patch == version.patch;
+        return major == version.major && minor == version.minor && release == version.release && patch == version.patch
+                && jdk == version.jdk;
     }
 
     @Override
@@ -165,6 +195,10 @@ public class Version implements Comparable<Version> {
 
     public int getPatch() {
         return patch;
+    }
+
+    public int getJdk() {
+        return jdk;
     }
 
     public String getDependencyVersion() {
