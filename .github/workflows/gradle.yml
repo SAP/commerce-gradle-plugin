@@ -3,6 +3,7 @@ name: Gradle CI
 on:
   push:
     branches:
+      - renovate/**
       - main
     tags:
       - v*
