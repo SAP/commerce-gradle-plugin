@@ -135,7 +135,7 @@ public class Version implements Comparable<Version> {
     }
 
     public Version withoutPatch() {
-        return new Version(major, minor, release, UNDEFINED_PART, -1, original);
+        return new Version(major, minor, release, UNDEFINED_PART, jdk, original);
     }
 
     @Override
