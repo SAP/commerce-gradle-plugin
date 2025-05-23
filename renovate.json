@@ -1,14 +1,38 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": [
-    "config:recommended"
+    "config:best-practices"
   ],
+  "automergeType": "branch",
   "ignorePaths": ["manualTest/build.gradle.kts"],
   "packageRules": [
+    {
+      "matchUpdateTypes": ["minor", "patch", "pin", "digest", "pinDigest", "lockFileMaintenance"],
+      "automerge": true
+    },
     {
       "matchDatasources": ["maven"],
       "matchPackageNames": ["org.spockframework:spock-bom"],
       "versionCompatibility": "^(?<version>[^-]+(?<compatibility>-.*))$"
+    },
+    {
+      "matchDepNames": ["gradle-backward"],
+      "allowedVersions": ">= 7.6 < 8.0"
+    }
+  ],
+
+  "customManagers": [
+    {
+      "customType": "regex",
+      "managerFilePatterns": [
+        "/(^|/)\\.github/workflows/.+\\.ya?ml$/",
+        "/(^|/)action\\.ya?ml$/"
+      ],
+      "datasourceTemplate": "gradle-version",
+      "depNameTemplate": "gradle-backward",
+      "matchStrings": [
+        "# renovate: gradle-backwards-compatibility\\s+-\\s+?[\"']?(?<currentValue>.+?)[\"']?\\s"
+      ]
     }
   ]
 }
