@@ -118,6 +118,7 @@ public class CloudV2Plugin implements Plugin<Project> {
                         if (finalI > 0) {
                             t.mustRunAfter(String.format("addonInstall_%d", (finalI - 1)));
                         }
+                        t.mustRunAfter("unpackPlatform", "unpackPlatformSparse");
                         t.args("addoninstall");
                         t.antProperty("addonnames", addonParameter);
                         t.antProperty("addonStorefront." + addonInstall.template, storefrontParameter);
