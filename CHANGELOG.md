@@ -7,7 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-TBD
+- Task ordering improvements.
+
+## [4.1.0]
+
+- Add support for JDK21 version of SAP Commerce
+- Dependency Updates
 
 ## [4.0.0] 2023-07-31
 
@@ -431,7 +436,8 @@ Shout out to [@corneleberle] for providing the fix.
 
 :tada: Initial release :tada:
 
-[Unreleased]: https://github.com/SAP/commerce-gradle-plugin/compare/v4.0.0...HEAD
+[Unreleased]: https://github.com/SAP/commerce-gradle-plugin/compare/v4.1.0...HEAD
+[4.1.0]: https://github.com/SAP/commerce-gradle-plugin/compare/v4.0.0...v4.1.0
 [4.0.0]: https://github.com/SAP/commerce-gradle-plugin/compare/v3.10.0...v4.0.0
 [3.10.0]: https://github.com/SAP/commerce-gradle-plugin/compare/v3.9.1...v3.10.0
 [3.9.1]: https://github.com/SAP/commerce-gradle-plugin/compare/v3.9.0...v3.9.1
