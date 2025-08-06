@@ -1,5 +1,6 @@
 package mpern.sap.commerce.ccv2;
 
+import static mpern.sap.commerce.ccv2.model.util.ParseUtils.toEmpty;
 import static mpern.sap.commerce.commons.Constants.CCV2_EXTENSION;
 
 import java.io.File;
@@ -70,7 +71,7 @@ public class CloudV2Plugin implements Plugin<Project> {
     }
 
     private void configureDefaultDependencies(HybrisPluginExtension extension, Project project, Manifest manifest) {
-        extension.getVersion().set(project.provider(() -> manifest.commerceSuiteVersion));
+        extension.getVersion().set(project.provider(manifest::getEffectiveVersion));
         final Configuration hybrisPlatform = project.getConfigurations()
                 .getByName(HybrisPlugin.HYBRIS_PLATFORM_CONFIGURATION);
         hybrisPlatform.defaultDependencies(dependencies -> {

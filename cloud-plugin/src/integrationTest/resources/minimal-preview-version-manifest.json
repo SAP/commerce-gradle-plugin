@@ -1,0 +1,11 @@
+{
+  "commerceSuiteVersion": "2211.41",
+  "commerceSuitePreviewVersion": "2211-jdk21.0",
+  "extensions": [
+    "modeltacceleratorservices",
+    "electronicsstore",
+    "privacyoverlayeraddon",
+    "yacceleratorstorefront",
+    "backoffice"
+  ]
+}

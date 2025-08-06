@@ -17,7 +17,7 @@ class ManifestParseSpec extends Specification {
 
         then:
         with(m) {
-            commerceSuiteVersion == "6.7.0.1"
+            effectiveVersion == "6.7.0.1"
             useCloudExtensionPack == false
             extensions == [
                 "modeltacceleratorservices",
@@ -212,7 +212,7 @@ class ManifestParseSpec extends Specification {
         Manifest m = Manifest.fromMap(minimalManifest)
         then:
         with(m) {
-            commerceSuiteVersion == "2211"
+            effectiveVersion == "2211"
             extensions == [
                 "modeltacceleratorservices",
                 "electronicsstore",
@@ -239,6 +239,17 @@ class ManifestParseSpec extends Specification {
                 name == "hybris-commerce-integrations"
                 version == "2005.0"
             }
+        }
+    }
+
+    def "parsing of preview version"() {
+        given:
+        Map<String, Object> rawManifest = new JsonSlurper().parse(this.getClass().getResource('/minimal-preview-version-manifest.json'))
+        when:
+        Manifest m = Manifest.fromMap(rawManifest)
+        then:
+        with(m) {
+            effectiveVersion == "2211-jdk21.0"
         }
     }
 
