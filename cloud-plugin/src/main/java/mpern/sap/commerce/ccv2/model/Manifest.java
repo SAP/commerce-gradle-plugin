@@ -30,9 +30,9 @@ public class Manifest {
 
     public final TestConfiguration webTests;
 
-    public Manifest(String commerceSuiteVersion, String commerceSuitePreviewVersion, String solrVersion, boolean useCloudExtensionPack,
-            boolean enableImageProcessingService, boolean troubleshootingModeEnabled, boolean disableImageReuse,
-            UseConfig useConfig, List<ExtensionPack> extensionPacks, Set<String> extensions,
+    public Manifest(String commerceSuiteVersion, String commerceSuitePreviewVersion, String solrVersion,
+            boolean useCloudExtensionPack, boolean enableImageProcessingService, boolean troubleshootingModeEnabled,
+            boolean disableImageReuse, UseConfig useConfig, List<ExtensionPack> extensionPacks, Set<String> extensions,
             List<Addon> storefrontAddons, List<Property> properties, List<Aspect> aspects, TestConfiguration tests,
             TestConfiguration webTests) {
         this.commerceSuiteVersion = commerceSuiteVersion;
