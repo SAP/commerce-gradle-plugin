@@ -43,7 +43,7 @@ public class IntExtPackValidator implements Validator {
                 versionString = extensionPack.version;
             }
             if (PACK.equals(name)) {
-                Version platform = Version.parseVersion(manifest.commerceSuiteVersion).withoutPatch();
+                Version platform = Version.parseVersion(manifest.getEffectiveVersion()).withoutPatch();
                 Version pack = Version.parseVersion(versionString).withoutPatch();
                 Version expected = PLATFORM_TO_PACK.get(platform);
                 List<Error> errors = new ArrayList<>();
@@ -51,10 +51,10 @@ public class IntExtPackValidator implements Validator {
                     String message;
                     if (expected == null) {
                         message = String.format("No Integration Extension Pack available for SAP Commerce %s",
-                                manifest.commerceSuiteVersion);
+                                manifest.getEffectiveVersion());
                     } else {
                         message = String.format("Integration Extension Pack %s is not compatible with SAP Commerce %s",
-                                extensionPack.version, manifest.commerceSuiteVersion);
+                                extensionPack.version, manifest.getEffectiveVersion());
                     }
                     errors.add(new Error.Builder().setLocation("extensionPacks[%d]", i).setCode("E-019")
                             .setMessage(message).createError());

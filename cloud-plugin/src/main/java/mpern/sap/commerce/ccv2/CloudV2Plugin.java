@@ -70,7 +70,7 @@ public class CloudV2Plugin implements Plugin<Project> {
     }
 
     private void configureDefaultDependencies(HybrisPluginExtension extension, Project project, Manifest manifest) {
-        extension.getVersion().set(project.provider(() -> manifest.commerceSuiteVersion));
+        extension.getVersion().set(project.provider(manifest::getEffectiveVersion));
         final Configuration hybrisPlatform = project.getConfigurations()
                 .getByName(HybrisPlugin.HYBRIS_PLATFORM_CONFIGURATION);
         hybrisPlatform.defaultDependencies(dependencies -> {

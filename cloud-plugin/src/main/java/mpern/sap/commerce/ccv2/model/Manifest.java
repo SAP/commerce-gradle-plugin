@@ -5,7 +5,8 @@ import static mpern.sap.commerce.ccv2.model.util.ParseUtils.*;
 import java.util.*;
 
 public class Manifest {
-    public final String commerceSuiteVersion;
+    private final String commerceSuiteVersion;
+    private final String commerceSuitePreviewVersion;
     public final String solrVersion;
     public final boolean useCloudExtensionPack;
     public final boolean enableImageProcessingService;
@@ -29,12 +30,13 @@ public class Manifest {
 
     public final TestConfiguration webTests;
 
-    public Manifest(String commerceSuiteVersion, String solrVersion, boolean useCloudExtensionPack,
-            boolean enableImageProcessingService, boolean troubleshootingModeEnabled, boolean disableImageReuse,
-            UseConfig useConfig, List<ExtensionPack> extensionPacks, Set<String> extensions,
+    public Manifest(String commerceSuiteVersion, String commerceSuitePreviewVersion, String solrVersion,
+            boolean useCloudExtensionPack, boolean enableImageProcessingService, boolean troubleshootingModeEnabled,
+            boolean disableImageReuse, UseConfig useConfig, List<ExtensionPack> extensionPacks, Set<String> extensions,
             List<Addon> storefrontAddons, List<Property> properties, List<Aspect> aspects, TestConfiguration tests,
             TestConfiguration webTests) {
         this.commerceSuiteVersion = commerceSuiteVersion;
+        this.commerceSuitePreviewVersion = commerceSuitePreviewVersion;
         this.solrVersion = solrVersion;
         this.useCloudExtensionPack = useCloudExtensionPack;
         this.enableImageProcessingService = enableImageProcessingService;
@@ -54,6 +56,7 @@ public class Manifest {
     public static Manifest fromMap(Map<String, Object> jsonMap) {
         String version = validateNullOrWhitespace((String) jsonMap.get("commerceSuiteVersion"),
                 "Manifest.commerceSuiteVersion must have a value");
+        String previewVersion = (String) jsonMap.get("commerceSuitePreviewVersion");
 
         String solrVersion = (String) jsonMap.get("solrVersion");
         if (solrVersion == null) {
@@ -116,9 +119,16 @@ public class Manifest {
         TestConfiguration webTests = Optional.ofNullable(rawConfig).map(TestConfiguration::fromMap)
                 .orElse(TestConfiguration.NO_VALUE);
 
-        return new Manifest(version, solrVersion, useExtensionPack, enableImageProcessingService,
+        return new Manifest(version, previewVersion, solrVersion, useExtensionPack, enableImageProcessingService,
                 troubleshootingModeEnabled, disableImageReuse, useConfig, extensionPacks, extensions, addons,
                 properties, aspects, tests, webTests);
+    }
+
+    public String getEffectiveVersion() {
+        if (commerceSuitePreviewVersion != null && !commerceSuitePreviewVersion.isBlank()) {
+            return commerceSuitePreviewVersion;
+        }
+        return commerceSuiteVersion;
     }
 
     // necessary to shadow groovy method getProperties
