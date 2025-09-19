@@ -3,6 +3,7 @@
   "extends": [
     "config:best-practices"
   ],
+  "minimumReleaseAge": "7 days",
   "automergeType": "branch",
   "ignorePaths": ["manualTest/build.gradle.kts"],
   "packageRules": [
