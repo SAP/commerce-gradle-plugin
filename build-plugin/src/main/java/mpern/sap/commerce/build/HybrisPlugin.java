@@ -87,9 +87,10 @@ public class HybrisPlugin implements Plugin<Project> {
             }
         });
 
-        Task bootstrap = project.task("bootstrapPlatform");
-        bootstrap.setGroup(HYBRIS_BOOTSTRAP);
-        bootstrap.setDescription("Bootstraps the configured hybris distribution with the configured DB drivers");
+        TaskProvider<?> bootstrap = project.getTasks().register("bootstrapPlatform", t -> {
+            t.setGroup(HYBRIS_BOOTSTRAP);
+            t.setDescription("Bootstraps the configured hybris distribution with the configured DB drivers");
+        });
 
         File hybrisBin = project.file("hybris/bin");
 
@@ -155,8 +156,8 @@ public class HybrisPlugin implements Plugin<Project> {
             });
         });
 
-        bootstrap.dependsOn(cleanOnVersionChange, unpackPlatform, unpackPlatformSparse, setupDBDriver,
-                touchDbDriverLastUpdate);
+        bootstrap.configure(t -> t.dependsOn(cleanOnVersionChange, unpackPlatform, unpackPlatformSparse, setupDBDriver,
+                touchDbDriverLastUpdate));
 
         project.getTasks().addRule(new HybrisAntRule(project));
         // sensible defaults

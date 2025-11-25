@@ -29,7 +29,7 @@ public class HybrisAntRule implements Rule {
     public void apply(String taskName) {
         if (taskName.startsWith(PREFIX)) {
             String antTarget = taskName.substring(PREFIX.length());
-            project.getTasks().create(taskName, HybrisAntTask.class, t -> {
+            project.getTasks().register(taskName, HybrisAntTask.class, t -> {
                 t.args(antTarget);
                 t.dependsOn((Callable<List<Object>>) () -> {
                     HybrisPluginExtension extension = (HybrisPluginExtension) project.getExtensions()

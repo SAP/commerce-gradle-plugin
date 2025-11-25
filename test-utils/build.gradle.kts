@@ -2,7 +2,7 @@ plugins {
     id("mpern.commons")
 }
 
-val generated = "$buildDir/genSrc/main/java"
+val generated: Provider<Directory> = layout.buildDirectory.dir("genSrc/main/java")
 
 sourceSets["main"].java {
     srcDir(generated)
@@ -16,7 +16,7 @@ val generateSources by tasks.registering {
 
     doFirst {
         val projectDir = inputs.properties["projectDir"] as File
-        val structure = file("$generated/mpern/sap/commerce/test/TestConstants.java")
+        val structure = File(outputs.files.singleFile, "mpern/sap/commerce/test/TestConstants.java")
         val resourcesDir =
             projectDir
                 .resolve("src/main/resources")
@@ -25,19 +25,19 @@ val generateSources by tasks.registering {
         structure.parentFile.mkdirs()
         structure.writeText(
             """
-        package mpern.sap.commerce.test;
-        
-        import java.nio.file.Path;
+            package mpern.sap.commerce.test;
+            
+            import java.nio.file.Path;
 
-        public class TestConstants {
-        
-            public static final Path TEST_RESOURCES = Path.of("$resourcesDir");
+            public class TestConstants {
+            
+                public static final Path TEST_RESOURCES = Path.of("$resourcesDir");
 
-            public static Path testResource(String fileOrFolder) {
-                return TEST_RESOURCES.resolve(fileOrFolder);
+                public static Path testResource(String fileOrFolder) {
+                    return TEST_RESOURCES.resolve(fileOrFolder);
+                }
             }
-        }
-        """.stripIndent(),
+            """.trimIndent(),
         )
     }
 }
