@@ -17,6 +17,7 @@ import mpern.sap.commerce.build.HybrisPluginExtension;
 import mpern.sap.commerce.build.util.Extension;
 import mpern.sap.commerce.build.util.ExtensionType;
 import mpern.sap.commerce.build.util.Stopwatch;
+import mpern.sap.commerce.build.util.Version;
 
 /**
  * Responsible for the creation of
@@ -27,17 +28,66 @@ public class ExtensionInfoLoader {
 
     private static final String CUSTOM_DIR = "custom";
 
-    private static final Set<String> PLATFORM_INNER_EXT_NAMES = new HashSet<>(
-            Arrays.asList("advancedsavedquery", "catalog", "comments", "commons", "core", "deliveryzone", "europe1",
-                    "hac", "impex", "maintenanceweb", "mediaweb", "oauth2", "paymentstandard", "platformservices",
-                    "processing", "scripting", "testweb", "validation", "workflow"));
+    // @formatter:off
+    private static final Set<String> PLATFORM_EXT_NAMES_JDK21 = Set.of(
+            "advancedsavedquery",
+            "authorizationserver",
+            "catalog",
+            "comments",
+            "commons",
+            "core",
+            "deliveryzone",
+            "europe1",
+            "hac",
+            "impex",
+            "maintenanceweb",
+            "mediaweb",
+            "oauth2commons",
+            "paymentstandard",
+            "platformservices",
+            "processing",
+            "resourceserver",
+            "scripting",
+            "testweb",
+            "validation",
+            "workflow"
+    );
+    private static final Set<String> PLATFORM_EXT_NAMES_JDK17 = Set.of(
+            "advancedsavedquery",
+            "catalog",
+            "comments",
+            "commons",
+            "core",
+            "deliveryzone",
+            "europe1",
+            "hac",
+            "impex",
+            "maintenanceweb",
+            "mediaweb",
+            "oauth2",
+            "paymentstandard",
+            "platformservices",
+            "processing",
+            "scripting",
+            "testweb",
+            "validation",
+            "workflow"
+    );
+    // @formatter:on
 
     private static final Logger LOG = Logging.getLogger(ExtensionInfoLoader.class);
 
     private final Project project;
 
+    private final HybrisPluginExtension hybrisPluginExtension;
+
     public ExtensionInfoLoader(Project project) {
         this.project = project;
+        this.hybrisPluginExtension = (HybrisPluginExtension) project.getExtensions().findByName(HYBRIS_EXTENSION);
+        if (hybrisPluginExtension == null) {
+            project.getLogger().warn("HybrisPluginExtension has not been configured");
+        }
+
     }
 
     /**
@@ -116,8 +166,6 @@ public class ExtensionInfoLoader {
         }
 
         // add alwaysIncluded extensions
-        HybrisPluginExtension hybrisPluginExtension = (HybrisPluginExtension) project.getExtensions()
-                .getByName(HYBRIS_EXTENSION);
         Set<String> alwaysIncluded = hybrisPluginExtension.getSparseBootstrap().getAlwaysIncluded().get();
         for (String alwaysIncludedExtName : alwaysIncluded) {
             addExtensionAndAllDepedencies(alwaysIncludedExtName, allNeededExtensions, allKnownExtensions);
@@ -197,6 +245,11 @@ public class ExtensionInfoLoader {
     }
 
     private boolean isPlatformInnerExtension(String extName) {
-        return PLATFORM_INNER_EXT_NAMES.contains(extName);
+        Version v = Version.UNDEFINED;
+        if (hybrisPluginExtension != null) {
+            Version.parseVersion(hybrisPluginExtension.getVersion().get());
+        }
+        return v.getJdk() >= 21 ? PLATFORM_EXT_NAMES_JDK21.contains(extName)
+                : PLATFORM_EXT_NAMES_JDK17.contains(extName);
     }
 }

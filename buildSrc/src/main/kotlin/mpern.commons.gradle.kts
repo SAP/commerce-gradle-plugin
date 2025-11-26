@@ -12,12 +12,8 @@ project.version = rootProject.version
 
 java {
     toolchain {
-        languageVersion = JavaLanguageVersion.of(21)
+        languageVersion = JavaLanguageVersion.of(17)
     }
-}
-
-tasks.withType<JavaCompile>().configureEach {
-    options.compilerArgs = listOf("-Xlint:deprecation", "-Xlint:unchecked")
 }
 
 spotless {
@@ -44,4 +40,9 @@ spotless {
     kotlinGradle {
         ktlint()
     }
+}
+
+tasks.withType<JavaCompile>().configureEach {
+    options.compilerArgs = listOf("-Xlint:deprecation", "-Xlint:unchecked")
+    dependsOn("spotlessApply")
 }
