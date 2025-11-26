@@ -3,7 +3,6 @@ package mpern.sap.commerce.build;
 import javax.inject.Inject;
 
 import org.gradle.api.Action;
-import org.gradle.api.Project;
 import org.gradle.api.model.ObjectFactory;
 import org.gradle.api.provider.ListProperty;
 import org.gradle.api.provider.MapProperty;
@@ -18,12 +17,12 @@ public abstract class HybrisPluginExtension {
     private final HybrisPlatform platform;
 
     @Inject
-    public HybrisPluginExtension(Project project, ObjectFactory objectFactory) {
+    public HybrisPluginExtension(ObjectFactory objectFactory) {
         getVersion().convention("2211");
 
         getIntExtPackVersion().convention("");
 
-        platform = objectFactory.newInstance(HybrisPlatform.class, project);
+        platform = objectFactory.newInstance(HybrisPlatform.class);
     }
 
     public abstract Property<String> getVersion();

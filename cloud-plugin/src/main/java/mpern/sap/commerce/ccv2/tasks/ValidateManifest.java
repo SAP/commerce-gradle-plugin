@@ -12,6 +12,7 @@ import javax.inject.Inject;
 
 import org.gradle.api.DefaultTask;
 import org.gradle.api.InvalidUserDataException;
+import org.gradle.api.provider.ProviderFactory;
 import org.gradle.api.tasks.TaskAction;
 import org.gradle.internal.logging.text.StyledTextOutput;
 import org.gradle.internal.logging.text.StyledTextOutputFactory;
@@ -22,19 +23,21 @@ import mpern.sap.commerce.ccv2.validation.Level;
 import mpern.sap.commerce.ccv2.validation.Validator;
 import mpern.sap.commerce.ccv2.validation.impl.*;
 
-public class ValidateManifest extends DefaultTask {
+public abstract class ValidateManifest extends DefaultTask {
 
     private final StyledTextOutputFactory styledTextOutputFactory;
+    private final CCv2Extension extension;
+    private final Path projectDir;
 
     @Inject
-    public ValidateManifest(StyledTextOutputFactory styledTextOutputFactory) {
+    public ValidateManifest(StyledTextOutputFactory styledTextOutputFactory, ProviderFactory providerFactory) {
         this.styledTextOutputFactory = styledTextOutputFactory;
+        this.projectDir = getProject().getProjectDir().toPath();
+        this.extension = (CCv2Extension) getProject().getExtensions().getByName(CCV2_EXTENSION);
     }
 
     @TaskAction
     public void validateManifest() throws Exception {
-        Path projectDir = getProject().getProjectDir().toPath();
-
         List<Validator> validators = new ArrayList<>();
 
         validators.add(new AspectValidator());
@@ -53,8 +56,6 @@ public class ValidateManifest extends DefaultTask {
             validators.add(new AddonValidator(resolver));
             validators.add(new AspectWebappValidator(resolver));
         }
-
-        CCv2Extension extension = (CCv2Extension) getProject().getExtensions().getByName(CCV2_EXTENSION);
 
         List<Error> errors = new ArrayList<>();
         for (Validator validator : validators) {

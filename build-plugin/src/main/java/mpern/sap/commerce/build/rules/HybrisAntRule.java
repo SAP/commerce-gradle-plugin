@@ -15,9 +15,11 @@ public class HybrisAntRule implements Rule {
 
     public static final String PREFIX = "y";
     private final Project project;
+    private final HybrisPluginExtension extension;
 
     public HybrisAntRule(Project project) {
         this.project = project;
+        this.extension = (HybrisPluginExtension) project.getExtensions().getByName(HYBRIS_EXTENSION);
     }
 
     @Override
@@ -31,11 +33,7 @@ public class HybrisAntRule implements Rule {
             String antTarget = taskName.substring(PREFIX.length());
             project.getTasks().register(taskName, HybrisAntTask.class, t -> {
                 t.args(antTarget);
-                t.dependsOn((Callable<List<Object>>) () -> {
-                    HybrisPluginExtension extension = (HybrisPluginExtension) project.getExtensions()
-                            .getByName(HYBRIS_EXTENSION);
-                    return extension.getAntTaskDependencies().getOrNull();
-                });
+                t.dependsOn((Callable<List<Object>>) () -> extension.getAntTaskDependencies().getOrNull());
             });
         }
     }

@@ -8,11 +8,12 @@ import java.nio.file.attribute.BasicFileAttributes;
 import java.util.Optional;
 import java.util.Properties;
 
-import org.gradle.api.Project;
 import org.gradle.api.file.Directory;
+import org.gradle.api.file.ProjectLayout;
 import org.gradle.api.logging.Logger;
 import org.gradle.api.logging.Logging;
 import org.gradle.api.provider.Provider;
+import org.gradle.api.provider.ProviderFactory;
 
 public class HybrisPlatform {
     private static final Logger LOG = Logging.getLogger(HybrisPlatform.class);
@@ -21,15 +22,11 @@ public class HybrisPlatform {
 
     private final Provider<String> platformVersion;
 
-    private final Provider<Directory> antHome;
-
     @javax.inject.Inject
-    public HybrisPlatform(Project project) {
-        platformDir = project.provider(() -> project.getLayout().getProjectDirectory().dir("hybris/bin/platform"));
+    public HybrisPlatform(ProviderFactory providerFactory, ProjectLayout layout) {
+        platformDir = providerFactory.provider(() -> layout.getProjectDirectory().dir("hybris/bin/platform"));
 
-        platformVersion = project.provider(this::readVersion);
-
-        antHome = project.provider(() -> project.getLayout().getProjectDirectory().dir(getRelativeAntHomepath()));
+        platformVersion = providerFactory.provider(this::readVersion);
     }
 
     public Provider<Directory> getPlatformHome() {
@@ -38,10 +35,6 @@ public class HybrisPlatform {
 
     public Provider<String> getVersion() {
         return platformVersion;
-    }
-
-    public Provider<Directory> getAntHome() {
-        return antHome;
     }
 
     private String readVersion() {
@@ -60,19 +53,6 @@ public class HybrisPlatform {
         }
         String bootstrappedVersion = properties.getProperty("version", "NONE");
         return bootstrappedVersion;
-    }
-
-    private String getRelativeAntHomepath() {
-        try {
-            AntPathVisitor visitor = new AntPathVisitor();
-            Path platformPath = platformDir.get().getAsFile().toPath();
-            Files.walkFileTree(platformPath, visitor);
-            Path antHome = visitor.getAntHome().orElseThrow(() -> new IllegalStateException(
-                    "could not find hybris platform ant in hybris/bin/platform/apache-ant*"));
-            return antHome.toString();
-        } catch (IOException e) {
-            throw new IllegalStateException("could not find hybris platform ant", e);
-        }
     }
 
     private static class AntPathVisitor extends SimpleFileVisitor<Path> {

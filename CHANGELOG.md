@@ -7,9 +7,30 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Gradle 9.x support - this is now the preferred Gradle version for the plugins
 - Task ordering improvements.
-- Support for commerceSuitePreviewVersion in manifest.json
-  (see [SAP Help](https://help.sap.com/docs/SAP_COMMERCE_CLOUD_PUBLIC_CLOUD/1be46286b36a4aa48205be5a96240672/811b9e1cb1094da5bbe8e384345e73cc.html?locale=en-US))  
+- Support for `commerceSuitePreviewVersion` / `previewVersion` in `manifest.json`
+  (see [SAP Help](https://help.sap.com/docs/SAP_COMMERCE_CLOUD_PUBLIC_CLOUD/1be46286b36a4aa48205be5a96240672/811b9e1cb1094da5bbe8e384345e73cc.html?locale=en-US); [#105])
+
+### Changed
+
+- Misc. internal refactor
+
+### Fixed
+
+- `sparseBootstrap` for `2211-jdk21` ([#103])
+
+### Removed
+
+- `removeUnusedExtensions` now completely removed. Please use `spareseBootstrap` instead
+- Support for Gradle 7.6.x as it is [EOL]
+
+[EOL]: https://docs.gradle.org/current/userguide/feature_lifecycle.html#eol_support
+[#105]: https://github.com/SAP/commerce-gradle-plugin/issues/105
+[#103]: https://github.com/SAP/commerce-gradle-plugin/issues/103
+[config-cache]: https://docs.gradle.org/9.2.1/userguide/configuration_cache_enabling.html
 
 ## [4.1.0]
 

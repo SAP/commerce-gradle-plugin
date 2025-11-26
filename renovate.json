@@ -18,7 +18,7 @@
     },
     {
       "matchDepNames": ["gradle-backward"],
-      "allowedVersions": ">= 8 < 9.0"
+      "allowedVersions": ">= 8.14 < 9.0"
     }
   ],
 

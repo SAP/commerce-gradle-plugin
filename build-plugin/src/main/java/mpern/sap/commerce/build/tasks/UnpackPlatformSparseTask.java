@@ -6,9 +6,12 @@ import java.io.File;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import javax.inject.Inject;
+
 import org.gradle.api.DefaultTask;
 import org.gradle.api.InvalidUserDataException;
-import org.gradle.api.file.FileTree;
+import org.gradle.api.file.*;
+import org.gradle.api.model.ObjectFactory;
 import org.gradle.api.tasks.TaskAction;
 
 import mpern.sap.commerce.build.HybrisPluginExtension;
@@ -21,11 +24,29 @@ import mpern.sap.commerce.build.util.ExtensionType;
  */
 public class UnpackPlatformSparseTask extends DefaultTask {
 
+    private final File projecDir;
+    private final HybrisPluginExtension hybrisPluginExtension;
+    private final FileSystemOperations fileSystemOperations;
+    private final FileCollection hybrisDependencies;
+    private final ArchiveOperations archiveOperations;
+    private final ExtensionInfoLoader extensionInfoLoader;
+
+    @Inject
+    public UnpackPlatformSparseTask(FileSystemOperations fileSystemOperations, ArchiveOperations archiveOperations,
+            ObjectFactory objectFactory) {
+        this.projecDir = getProject().getProjectDir();
+        this.hybrisPluginExtension = (HybrisPluginExtension) getProject().getExtensions().getByName(HYBRIS_EXTENSION);
+        this.fileSystemOperations = fileSystemOperations;
+        this.archiveOperations = archiveOperations;
+        this.hybrisDependencies = getProject().getConfigurations().getByName(HYBRIS_PLATFORM_CONFIGURATION);
+
+        this.extensionInfoLoader = objectFactory.newInstance(ExtensionInfoLoader.class, hybrisPluginExtension,
+                hybrisDependencies);
+    }
+
     @TaskAction
     public void unpack() {
         getLogger().lifecycle("Unpacking platform in sparse mode");
-
-        ExtensionInfoLoader extensionInfoLoader = new ExtensionInfoLoader(getProject());
 
         // Phase 1: gather information about all known extensions and their direct
         // dependencies
@@ -110,16 +131,15 @@ public class UnpackPlatformSparseTask extends DefaultTask {
          * Take the project dependencies, search the missing extensions and copy them
          * into the project.
          */
-        Set<File> dependencies = getProject().getConfigurations().getByName(HYBRIS_PLATFORM_CONFIGURATION).getFiles();
+        Set<File> dependencies = hybrisDependencies.getFiles();
         for (File dependency : dependencies) {
-            FileTree zip = getProject().zipTree(dependency);
+            FileTree zip = archiveOperations.zipTree(dependency);
             getLogger().lifecycle("Copying missing extensions from project dependency {}", dependency.getName());
-            getProject().copy(c -> {
+            fileSystemOperations.copy(c -> {
                 c.from(zip);
-                c.into(getProject().getProjectDir());
+                c.into(projecDir);
                 c.include(getDependencyCopyIncludes(missingExtensions));
-                c.exclude(((HybrisPluginExtension) getProject().getExtensions().getByName(HYBRIS_EXTENSION))
-                        .getBootstrapExclude().get());
+                c.exclude(hybrisPluginExtension.getBootstrapExclude().get());
             });
             getLogger().lifecycle("Copied missing extensions from project dependency {}", dependency.getName());
         }
