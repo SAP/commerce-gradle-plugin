@@ -32,7 +32,7 @@
       "datasourceTemplate": "gradle-version",
       "depNameTemplate": "gradle-backward",
       "matchStrings": [
-        "# renovate: gradle-backwards-compatibility\\s+-\\s+?[\"']?(?<currentValue>.+?)[\"']?\\s"
+        "# renovate: gradle-backwards-compatibility\\s+[A-Za-z0-9_]+?_VERSION\\s*:\\s*[\"']?(?<currentValue>.+?)[\"']?\\s"
       ]
     }
   ]
