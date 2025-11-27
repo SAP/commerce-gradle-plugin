@@ -19,8 +19,28 @@ CCV2 {
     //Use this property to access the manifest.json in your Gradle build script
     manifest = < parsed manifest.json >
 }
-
 ```
+
+>[!IMPORTANT]
+> **Preview Release Maven Coordinates**
+>
+> If you use `commerceSuitePreviewVersion`  or `previewVersion` of an extension pack, it changes the
+> [`groupId`][coordinates] of the dependency to `de.hybris.platform.preview` instead of the default value of
+> `de.hybris.platform` for regular releases.
+>
+> Maven coordinates of `commerceSuitePreviewVersion`:
+>
+> ```
+> de.hybris.platform.preview:hybris-commerce-suite:${commerceSuitePreviewVersion}@zip
+> ```
+>
+> Maven coordinates of an extension pack with `previewVersion`:
+>
+> ```txt
+> de.hybris.platform.preview:${name}:${previewVersion}@zip
+> ```
+
+[coordinates]: https://maven.apache.org/pom.html#maven-coordinates
 
 If you also use `sap.commerce.build` in your build, the `hybris.version` is preconfigured with `commerceSuiteVersion` of
 the manifest.
