@@ -44,9 +44,13 @@ Please use the Gradle Wrapper provided in the project for your build.
 ### Code Style
 
 We enforce a consistent code style for the whole project using [spotless][spotless] in combination with the Eclipse JDT
-formatter. You can find the formatter configuration files in `gradle/spotless.xml` and `gradle/spotless.importorder`.
+formatter, which is automatically applied during build.
 
-The PR build will **fail** if you don't follow the project code style.
+You can find the formatter configuration files in `gradle/spotless.xml` and `gradle/spotless.importorder` to e.g.
+configure them in your IDE.
+
+The build will **fail** if you don't follow the project code style. To fix any formating issue, simply run `./gradlew
+spotlessApply`
 
 [spotless]: https://github.com/diffplug/spotless/tree/main/plugin-gradle
 
@@ -65,3 +69,68 @@ Due to legal reasons, contributors will be asked to accept a DCO before they sub
 project, this happens in an automated fashion during the submission process.
 
 SAP uses [the standard DCO text of the Linux Foundation](https://developercertificate.org/).
+
+## Release
+
+_This section is only relevant for project maintainers._
+
+- [ ] Update `CHANGELOG.md`
+  - [ ] Add new link to git log at the bottom of the file, and update `[Unreleased]`, e.g
+
+     ```md
+     [Unreleased]: https://github.com/SAP/commerce-gradle-plugin/compare/vX.Y.Z...HEAD
+     [X.Z.Z]: https://github.com/SAP/commerce-gradle-plugin/compare/<previous release>...vX.Y.Z
+     ```
+
+  - [ ] Add new heading for release, reset template for `[Unreleased]`
+  
+    ```md
+    ## [Unreleased]
+    <!-- uncomment headings as required -->
+
+     <!-- ### Added -->
+     <!-- for new features. -->
+
+     <!-- #### Changed -->
+     <!-- for changes in existing functionality. -->
+
+     <!-- ### Deprecated -->
+     <!-- for soon-to-be removed features. -->
+
+     <!-- ### Removed -->
+     <!-- for now removed features. -->
+
+     <!-- ### Fixed -->
+     <!-- for any bug fixes. -->
+
+     <!-- ### Security -->
+     <!-- in case of vulnerabilities. -->
+
+    ## [X.Y.Z] yyyy-MM-dd
+
+    <previous [Unreleased] content>
+    ```
+
+- [ ] Documentation in `./docs` updated as required?
+- [ ] Use  `-Prelease.dryRun` to verify if versions in `README.md` are properly updated.\
+      Don't forget to `git restore README.md` after dry run!
+- [ ] Once everything is verified, run `release` without dry run
+- [ ] Create a new GH Release for the release tag `vX.Y.Z`; copy-paste the changelog as release description.\
+      Release name: `vX.Y.Z - <short summary in a few words>`
+
+### Commands
+
+```sh
+git swtich main
+
+# choose:
+# patch release
+./gradlew release -Prelease.versionIncrementer=incrementPatch
+# minor release
+./gradlew release -Prelease.versionIncrementer=incrementMinor
+# major release
+./gradlew release -Prelease.versionIncrementer=incrementMajor
+
+
+git push --follow-tags
+```
