@@ -7,6 +7,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+<!-- uncomment headings as required -->
+
+<!-- ### Added -->
+<!-- for new features. -->
+
+<!-- #### Changed -->
+<!-- for changes in existing functionality. -->
+
+<!-- ### Deprecated -->
+<!-- for soon-to-be removed features. -->
+
+<!-- ### Removed -->
+<!-- for now removed features. -->
+
+<!-- ### Fixed -->
+<!-- for any bug fixes. -->
+
+<!-- ### Security -->
+<!-- in case of vulnerabilities. -->
+
+## [5.0.0] 2025-11-XX
+
 ### Added
 
 - Gradle 9.x support - this is now the preferred Gradle version for the plugins
@@ -459,7 +481,8 @@ Shout out to [@corneleberle] for providing the fix.
 
 :tada: Initial release :tada:
 
-[Unreleased]: https://github.com/SAP/commerce-gradle-plugin/compare/v4.1.0...HEAD
+[Unreleased]: https://github.com/SAP/commerce-gradle-plugin/compare/v5.0.0...HEAD
+[5.0.0]: https://github.com/SAP/commerce-gradle-plugin/compare/v4.1.0...v5.0.0
 [4.1.0]: https://github.com/SAP/commerce-gradle-plugin/compare/v4.0.0...v4.1.0
 [4.0.0]: https://github.com/SAP/commerce-gradle-plugin/compare/v3.10.0...v4.0.0
 [3.10.0]: https://github.com/SAP/commerce-gradle-plugin/compare/v3.9.1...v3.10.0
