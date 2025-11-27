@@ -21,6 +21,7 @@ public class IntExtPackValidator implements Validator {
         PLATFORM_TO_PACK.put(Version.parseVersion("2105"), Version.parseVersion("2108"));
         PLATFORM_TO_PACK.put(Version.parseVersion("2205"), Version.parseVersion("2205"));
         PLATFORM_TO_PACK.put(Version.parseVersion("2211"), Version.parseVersion("2211"));
+        PLATFORM_TO_PACK.put(Version.parseVersion("2211-jdk21"), Version.parseVersion("2211-jdk21"));
     }
 
     @Override
@@ -40,7 +41,7 @@ public class IntExtPackValidator implements Validator {
                 versionString = split[2].trim();
             } else {
                 name = extensionPack.name;
-                versionString = extensionPack.version;
+                versionString = extensionPack.getEffectiveVersion();
             }
             if (PACK.equals(name)) {
                 Version platform = Version.parseVersion(manifest.getEffectiveVersion()).withoutPatch();

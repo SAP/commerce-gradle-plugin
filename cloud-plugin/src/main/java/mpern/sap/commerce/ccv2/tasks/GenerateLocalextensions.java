@@ -26,7 +26,7 @@ public abstract class GenerateLocalextensions extends DefaultTask {
             .stripIndent();
     private static final String END = """
               </extensions>
-            </hybrisconfig>";
+            </hybrisconfig>
             """.stripIndent();
 
     private static final String EXTENSION = "    <extension name='%s' />\n";

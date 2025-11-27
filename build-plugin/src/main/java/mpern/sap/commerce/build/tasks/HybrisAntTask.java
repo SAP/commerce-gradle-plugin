@@ -1,8 +1,14 @@
 package mpern.sap.commerce.build.tasks;
 
+import java.io.IOException;
+import java.nio.file.*;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.util.*;
 
+import javax.inject.Inject;
+
 import org.gradle.api.file.ConfigurableFileTree;
+import org.gradle.api.model.ObjectFactory;
 import org.gradle.api.provider.MapProperty;
 import org.gradle.api.provider.Property;
 import org.gradle.api.tasks.Input;
@@ -19,9 +25,16 @@ public abstract class HybrisAntTask extends JavaExec {
     private static final Version V_2205 = Version.parseVersion("2205.0");
 
     private List<String> fromCommandLine = Collections.emptyList();
+    private final HybrisPluginExtension extension;
+    private final ObjectFactory objectFactory;
 
-    public HybrisAntTask() {
+    @Inject
+    public HybrisAntTask(ObjectFactory objectFactory) {
         super();
+        this.extension = ((HybrisPluginExtension) getProject().getExtensions()
+                .getByName(HybrisPlugin.HYBRIS_EXTENSION));
+        this.objectFactory = objectFactory;
+
         getAntProperties().put("maven.update.dbdrivers", "false");
         getMainClass().set("org.apache.tools.ant.launch.Launcher");
     }
@@ -35,10 +48,9 @@ public abstract class HybrisAntTask extends JavaExec {
         ConfigurableFileTree files = buildPlatformAntClasspath();
         setClasspath(files);
 
-        HybrisPlatform platform = ((HybrisPluginExtension) getProject().getExtensions()
-                .getByName(HybrisPlugin.HYBRIS_EXTENSION)).getPlatform();
+        HybrisPlatform platform = extension.getPlatform();
 
-        systemProperty("ant.home", platform.getAntHome().get().getAsFile());
+        systemProperty("ant.home", getRelativeAntHomepath(platform.getPlatformHome().get().getAsFile().toPath()));
         systemProperty("file.encoding", "UTF-8");
 
         Map<String, String> props = new LinkedHashMap<>(getAntProperties().get());
@@ -75,8 +87,20 @@ public abstract class HybrisAntTask extends JavaExec {
         super.exec();
     }
 
+    private String getRelativeAntHomepath(Path platformPath) {
+        try {
+            AntPathVisitor visitor = new AntPathVisitor();
+            Files.walkFileTree(platformPath, visitor);
+            Path antHome = visitor.getAntHome().orElseThrow(() -> new IllegalStateException(
+                    "could not find hybris platform ant in hybris/bin/platform/apache-ant*"));
+            return antHome.toString();
+        } catch (IOException e) {
+            throw new IllegalStateException("could not find hybris platform ant", e);
+        }
+    }
+
     private ConfigurableFileTree buildPlatformAntClasspath() {
-        ConfigurableFileTree files = getProject().fileTree("hybris/bin/platform");
+        ConfigurableFileTree files = objectFactory.fileTree().from("hybris/bin/platform");
         files.include("apache-ant*/lib/ant-launcher.jar");
         return files;
     }
@@ -114,4 +138,27 @@ public abstract class HybrisAntTask extends JavaExec {
 
     @Input
     public abstract MapProperty<String, String> getFallbackAntProperties();
+
+    private static class AntPathVisitor extends SimpleFileVisitor<Path> {
+        private Path foundPath;
+        private final PathMatcher antPathMatcher;
+
+        public AntPathVisitor() {
+            this.foundPath = null;
+            antPathMatcher = FileSystems.getDefault().getPathMatcher("glob:**/apache-ant*");
+        }
+
+        @Override
+        public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
+            if (antPathMatcher.matches(dir)) {
+                foundPath = dir;
+                return FileVisitResult.TERMINATE;
+            }
+            return FileVisitResult.CONTINUE;
+        }
+
+        public Optional<Path> getAntHome() {
+            return Optional.ofNullable(foundPath);
+        }
+    }
 }

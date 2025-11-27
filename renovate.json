@@ -18,7 +18,7 @@
     },
     {
       "matchDepNames": ["gradle-backward"],
-      "allowedVersions": ">= 7.6 < 8.0"
+      "allowedVersions": ">= 8.14 < 9.0"
     }
   ],
 
@@ -32,7 +32,7 @@
       "datasourceTemplate": "gradle-version",
       "depNameTemplate": "gradle-backward",
       "matchStrings": [
-        "# renovate: gradle-backwards-compatibility\\s+-\\s+?[\"']?(?<currentValue>.+?)[\"']?\\s"
+        "# renovate: gradle-backwards-compatibility\\s+[A-Za-z0-9_]+?_VERSION\\s*:\\s*[\"']?(?<currentValue>.+?)[\"']?\\s"
       ]
     }
   ]

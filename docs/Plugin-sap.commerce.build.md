@@ -131,8 +131,8 @@ Deletes the hybris platform folders (all files/folders matching `hybris.cleanGlo
 
 Launches hybris build to create the standard developer config folder, if no config folder is present
 
-### `removeUnusedExtensions`
-
+### ~~`removeUnusedExtensions`~~
+**Removed in 5.0.0**\
 **:warning: Deprecated in 4.0.0. Use `sparseBootstrap` instead :warning:**
 
 Removes all extensions that are not used by the current project (either directly or indirectly). This helps developers

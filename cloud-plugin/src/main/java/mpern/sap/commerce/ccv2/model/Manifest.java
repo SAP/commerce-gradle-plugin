@@ -3,6 +3,7 @@ package mpern.sap.commerce.ccv2.model;
 import static mpern.sap.commerce.ccv2.model.util.ParseUtils.*;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class Manifest {
     private final String commerceSuiteVersion;
@@ -54,10 +55,17 @@ public class Manifest {
 
     @SuppressWarnings("unchecked")
     public static Manifest fromMap(Map<String, Object> jsonMap) {
-        String version = validateNullOrWhitespace((String) jsonMap.get("commerceSuiteVersion"),
-                "Manifest.commerceSuiteVersion must have a value");
-        String previewVersion = (String) jsonMap.get("commerceSuitePreviewVersion");
+        String version = nullToEmpty((String) jsonMap.get("commerceSuiteVersion"));
+        String previewVersion = nullToEmpty((String) jsonMap.get("commerceSuitePreviewVersion"));
 
+        if (version.isBlank() && previewVersion.isBlank()) {
+            throw new IllegalArgumentException(
+                    "Missing Manifest.commerceSuiteVersion or Manifest.commerceSuitePreviewVersion");
+        }
+        if (!previewVersion.isBlank() && !version.isBlank()) {
+            throw new IllegalArgumentException(
+                    "Eiter Manifest.commerceSuiteVersion or Manifest.commerceSuitePreviewVersion, not both");
+        }
         String solrVersion = (String) jsonMap.get("solrVersion");
         if (solrVersion == null) {
             solrVersion = "";
@@ -75,6 +83,15 @@ public class Manifest {
             extensionPacks = Collections.emptyList();
         } else {
             extensionPacks = raw.stream().map(ExtensionPack::fromMap).toList();
+        }
+        boolean isPreview = !previewVersion.isBlank();
+        String mismatched = extensionPacks.stream().filter(p -> p.isPreview() != isPreview).map(p -> p.name)
+                .collect(Collectors.joining(","));
+        if (!mismatched.isEmpty()) {
+            String msg = isPreview ? "commercePreviewVersion configured, but extension packs [%s] use regular version"
+                    : "commerceVersion configured, but extension packs [%s] use previewVersion";
+            msg = String.format(msg, mismatched);
+            throw new IllegalArgumentException(msg);
         }
 
         rawBool = jsonMap.get("troubleshootingModeEnabled");
@@ -129,6 +146,10 @@ public class Manifest {
             return commerceSuitePreviewVersion;
         }
         return commerceSuiteVersion;
+    }
+
+    public boolean isPreview() {
+        return commerceSuitePreviewVersion != null && !commerceSuitePreviewVersion.isBlank();
     }
 
     // necessary to shadow groovy method getProperties

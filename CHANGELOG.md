@@ -7,9 +7,52 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+<!-- uncomment headings as required -->
+
+<!-- ### Added -->
+<!-- for new features. -->
+
+<!-- #### Changed -->
+<!-- for changes in existing functionality. -->
+
+<!-- ### Deprecated -->
+<!-- for soon-to-be removed features. -->
+
+<!-- ### Removed -->
+<!-- for now removed features. -->
+
+<!-- ### Fixed -->
+<!-- for any bug fixes. -->
+
+<!-- ### Security -->
+<!-- in case of vulnerabilities. -->
+
+## [5.0.0] 2025-11-XX
+
+### Added
+
+- Gradle 9.x support - this is now the preferred Gradle version for the plugins
 - Task ordering improvements.
-- Support for commerceSuitePreviewVersion in manifest.json
-  (see [SAP Help](https://help.sap.com/docs/SAP_COMMERCE_CLOUD_PUBLIC_CLOUD/1be46286b36a4aa48205be5a96240672/811b9e1cb1094da5bbe8e384345e73cc.html?locale=en-US))  
+- Support for `commerceSuitePreviewVersion` / `previewVersion` in `manifest.json`
+  (see [SAP Help](https://help.sap.com/docs/SAP_COMMERCE_CLOUD_PUBLIC_CLOUD/1be46286b36a4aa48205be5a96240672/811b9e1cb1094da5bbe8e384345e73cc.html?locale=en-US); [#105])
+
+### Changed
+
+- Misc. internal refactor
+
+### Fixed
+
+- `sparseBootstrap` for `2211-jdk21` ([#103])
+
+### Removed
+
+- `removeUnusedExtensions` now completely removed. Please use `spareseBootstrap` instead
+- Support for Gradle 7.6.x as it is [EOL]
+
+[EOL]: https://docs.gradle.org/current/userguide/feature_lifecycle.html#eol_support
+[#105]: https://github.com/SAP/commerce-gradle-plugin/issues/105
+[#103]: https://github.com/SAP/commerce-gradle-plugin/issues/103
+[config-cache]: https://docs.gradle.org/9.2.1/userguide/configuration_cache_enabling.html
 
 ## [4.1.0]
 
@@ -438,7 +481,8 @@ Shout out to [@corneleberle] for providing the fix.
 
 :tada: Initial release :tada:
 
-[Unreleased]: https://github.com/SAP/commerce-gradle-plugin/compare/v4.1.0...HEAD
+[Unreleased]: https://github.com/SAP/commerce-gradle-plugin/compare/v5.0.0...HEAD
+[5.0.0]: https://github.com/SAP/commerce-gradle-plugin/compare/v4.1.0...v5.0.0
 [4.1.0]: https://github.com/SAP/commerce-gradle-plugin/compare/v4.0.0...v4.1.0
 [4.0.0]: https://github.com/SAP/commerce-gradle-plugin/compare/v3.10.0...v4.0.0
 [3.10.0]: https://github.com/SAP/commerce-gradle-plugin/compare/v3.9.1...v3.10.0

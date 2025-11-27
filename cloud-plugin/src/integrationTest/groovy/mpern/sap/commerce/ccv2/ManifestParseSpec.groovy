@@ -250,6 +250,7 @@ class ManifestParseSpec extends Specification {
         then:
         with(m) {
             effectiveVersion == "2211-jdk21.0"
+            preview
         }
     }
 
@@ -298,6 +299,18 @@ class ManifestParseSpec extends Specification {
             """,
             """
             {
+              "commerceSuitePreviewVersion": "2211.22",
+              "extensionPacks" : [
+                {
+                  "name" : "hybris-commerce-integrations",
+                  "version": "2211.3",
+                  "previewVersion" : "2211.3"
+                }
+              ]
+            }
+            """,
+            """
+            {
               "commerceSuiteVersion": "2011",
               "extensionPacks" : [
                 {
@@ -312,6 +325,69 @@ class ManifestParseSpec extends Specification {
               "extensionPacks" : [
                 {
                   "artifact": "de.hybris.platform.suite:fsa-suite:xxx"
+                }
+              ]
+            }
+            """
+        ]
+    }
+
+    def "parse extension packs previewVersion"() {
+        given:
+        Map<String, Object> rawManifest = new JsonSlurper().parseText(
+                """
+            {
+              "commerceSuitePreviewVersion": "2211-jdk21.3",
+              "extensionPacks" : [
+                {
+                  "name": "hybris-commerce-integrations",
+                  "previewVersion": "2211-jdk21.3"
+                }
+              ]
+            }
+            """
+                ) as Map<String, Object>
+        when:
+        Manifest m = Manifest.fromMap(rawManifest)
+        then:
+        with(m) {
+            effectiveVersion == "2211-jdk21.3"
+            preview
+            extensionPacks[0].effectiveVersion == "2211-jdk21.3"
+            extensionPacks[0].preview
+        }
+    }
+
+    def "previewVersion mismatches fail to parse"() {
+        given:
+        def rawManifest = new JsonSlurper().parseText(str) as Map<String, Object>
+
+        when:
+        Manifest m = Manifest.fromMap(rawManifest)
+
+        then:
+        thrown(IllegalArgumentException)
+
+        where:
+        str << [
+            """
+            {
+              "commerceSuiteVersion": "2211-jdk21.4",
+              "extensionPacks" : [
+                {
+                  "name" : "hybris-commerce-integrations",
+                  "previewVersion": "2211-jdk21.2"
+                }
+              ]
+            }
+            """,
+            """
+            {
+              "commerceSuitePreviewVersion": "2211-jdk21.3",
+              "extensionPacks" : [
+                {
+                  "name" : "hybris-commerce-integrations",
+                  "version": "2211-jdk21.1"
                 }
               ]
             }

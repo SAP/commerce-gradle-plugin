@@ -16,10 +16,6 @@ java {
     }
 }
 
-tasks.withType<JavaCompile>().configureEach {
-    options.compilerArgs = listOf("-Xlint:deprecation", "-Xlint:unchecked")
-}
-
 spotless {
     format("misc") {
         // define the files to apply `misc` to
@@ -44,4 +40,9 @@ spotless {
     kotlinGradle {
         ktlint()
     }
+}
+
+tasks.withType<JavaCompile>().configureEach {
+    options.compilerArgs = listOf("-Xlint:deprecation", "-Xlint:unchecked")
+    dependsOn("spotlessApply")
 }

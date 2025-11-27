@@ -8,6 +8,7 @@ import java.nio.file.Files
 import java.nio.file.Path
 
 import org.gradle.api.Project
+import org.gradle.api.file.FileCollection
 import org.gradle.testfixtures.ProjectBuilder
 
 import spock.lang.Specification
@@ -29,11 +30,17 @@ class ExtensionInfoLoaderSpec extends Specification {
     @TempDir
     File testProjectDir
 
+    Project project
+    HybrisPluginExtension extension
     ExtensionInfoLoader loader
 
-    Project project
-
     def setup() {
+    }
+
+    def initLoader() {
+        extension = project.getExtensions().create(HYBRIS_EXTENSION, HybrisPluginExtension.class)
+        FileCollection collection = project.configurations.create(HYBRIS_PLATFORM_CONFIGURATION)
+        loader = project.getObjects().newInstance(ExtensionInfoLoader.class, extension, collection)
     }
 
     def "load extensions from custom folder"() {
@@ -43,7 +50,7 @@ class ExtensionInfoLoaderSpec extends Specification {
                 .withProjectDir(TestConstants.testResource("dummy-custom-modules").toFile())
         project = projectBuilder.build()
 
-        loader = new ExtensionInfoLoader(project)
+        initLoader()
 
         when:
         def extensions = loader.getExtensionsFromCustomFolder()
@@ -76,11 +83,10 @@ class ExtensionInfoLoaderSpec extends Specification {
                 .withName("test")
                 .withProjectDir(testProjectDir)
         project = projectBuilder.build()
-        project.configurations.create(HYBRIS_PLATFORM_CONFIGURATION)
+        initLoader()
         project.dependencies.add(HYBRIS_PLATFORM_CONFIGURATION,
                 project.files("${DEPENDENCIES_DIR}/hybris-commerce-suite-${HYBRIS_VERSION}.zip"))
 
-        loader = new ExtensionInfoLoader(project)
 
         when:
         def extensions = loader.getExtensionsFromHybrisPlatformDependencies()
@@ -146,7 +152,7 @@ class ExtensionInfoLoaderSpec extends Specification {
                 .withName("test")
         project = projectBuilder.build()
 
-        loader = new ExtensionInfoLoader(project)
+        initLoader()
 
         when:
         def platformExt = loader.getPlatfromExtension()
@@ -166,7 +172,7 @@ class ExtensionInfoLoaderSpec extends Specification {
                 .withName("test")
         project = projectBuilder.build()
 
-        loader = new ExtensionInfoLoader(project)
+        initLoader()
 
         and: "already loaded all extensions information"
         def allKnownExtensions = new HashMap<String, Extension>()
@@ -185,11 +191,9 @@ class ExtensionInfoLoaderSpec extends Specification {
                 .withName("test")
                 .withProjectDir(testProjectDir)
         project = projectBuilder.build()
-        HybrisPluginExtension extension = project.getExtensions().create(HYBRIS_EXTENSION, HybrisPluginExtension.class,
-                project)
         ExtensionsTestUtils.ensureLocalExtensions(testProjectDir.toPath())
 
-        loader = new ExtensionInfoLoader(project)
+        initLoader()
 
         and: "already loaded all extensions information"
         def allKnownExtensions = buildAllKnownExtensions()
@@ -215,16 +219,13 @@ class ExtensionInfoLoaderSpec extends Specification {
                 .withName("test")
                 .withProjectDir(testProjectDir)
         project = projectBuilder.build()
-        HybrisPluginExtension extension = project.getExtensions().create(HYBRIS_EXTENSION, HybrisPluginExtension.class,
-                project)
+        initLoader()
         extension.sparseBootstrap {
             enabled = true
             alwaysIncluded = ["yempty", "ybackoffice"]
         }
 
         ExtensionsTestUtils.ensureLocalExtensions(testProjectDir.toPath())
-
-        loader = new ExtensionInfoLoader(project)
 
         and: "already loaded all extensions information"
         def allKnownExtensions = buildAllKnownExtensions()
@@ -253,7 +254,7 @@ class ExtensionInfoLoaderSpec extends Specification {
                 .withProjectDir(testProjectDir)
         project = projectBuilder.build()
 
-        loader = new ExtensionInfoLoader(project)
+        initLoader()
 
         and: "platform folder is present"
         def platformDir = testProjectDir.toPath().resolve("hybris/bin/platform/ext/core")
@@ -280,7 +281,7 @@ class ExtensionInfoLoaderSpec extends Specification {
                 .withProjectDir(testProjectDir)
         project = projectBuilder.build()
 
-        loader = new ExtensionInfoLoader(project)
+        initLoader()
 
         and: "platform folder is present"
         def platformDir = testProjectDir.toPath().resolve("hybris/bin/platform")
@@ -300,7 +301,7 @@ class ExtensionInfoLoaderSpec extends Specification {
                 .withProjectDir(testProjectDir)
         project = projectBuilder.build()
 
-        loader = new ExtensionInfoLoader(project)
+        initLoader()
 
         ProjectFolderTestUtils.prepareProjectFolder(testProjectDir.toPath(), "dummy-platform-new-model")
         ProjectFolderTestUtils.prepareProjectFolder(testProjectDir.toPath(), "dummy-custom-modules")

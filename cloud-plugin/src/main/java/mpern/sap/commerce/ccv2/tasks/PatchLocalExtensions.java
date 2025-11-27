@@ -4,6 +4,7 @@ import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
+import javax.inject.Inject;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.transform.Transformer;
@@ -13,6 +14,7 @@ import javax.xml.transform.stream.StreamResult;
 
 import org.gradle.api.DefaultTask;
 import org.gradle.api.GradleException;
+import org.gradle.api.file.ProjectLayout;
 import org.gradle.api.file.RegularFileProperty;
 import org.gradle.api.provider.Property;
 import org.gradle.api.tasks.Input;
@@ -22,10 +24,17 @@ import org.w3c.dom.*;
 
 public abstract class PatchLocalExtensions extends DefaultTask {
 
+    private final Path projectDir;
+
+    @Inject
+    public PatchLocalExtensions(ProjectLayout projectLayout) {
+        this.projectDir = projectLayout.getProjectDirectory().getAsFile().toPath();
+    }
+
     @TaskAction
     public void addCepLoadDir() throws Exception {
 
-        Path hybrisBin = getProject().getRootDir().toPath().resolve(Path.of("hybris", "bin"));
+        Path hybrisBin = projectDir.resolve(Path.of("hybris", "bin"));
         Path cepPath = Path.of(getCepFolder().get());
 
         Path relativize = hybrisBin.relativize(cepPath);
@@ -77,7 +86,7 @@ public abstract class PatchLocalExtensions extends DefaultTask {
 
         } else if (cepIndex > platformIndex) {
             throw new GradleException(String.format("%s: <path dir='%s'> must be before <path='${HYBRIS_BIN_DIR}'>",
-                    getProject().getRootDir().toPath().relativize(localExtensions), cepPathString));
+                    projectDir.relativize(localExtensions), cepPathString));
         }
 
         Transformer transformer = TransformerFactory.newInstance().newTransformer();

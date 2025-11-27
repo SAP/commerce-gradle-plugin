@@ -18,7 +18,7 @@ public class ProjectFolderTestUtils {
      * @throws IOException
      * @throws URISyntaxException
      */
-    public static void prepareProjectFolder(Path projectDir, String template) throws IOException, URISyntaxException {
+    public static void prepareProjectFolder(Path projectDir, String template) throws IOException {
         Path sourceDir = TestConstants.testResource(template);
 
         // Iterate over the direct subdirectories of the source directory

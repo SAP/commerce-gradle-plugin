@@ -7,16 +7,19 @@ import java.nio.file.Path;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import org.gradle.api.Project;
-import org.gradle.api.file.FileTree;
+import javax.inject.Inject;
+
+import org.gradle.api.file.*;
 import org.gradle.api.logging.Logger;
 import org.gradle.api.logging.Logging;
+import org.gradle.api.model.ObjectFactory;
 import org.gradle.api.tasks.util.PatternSet;
 
 import mpern.sap.commerce.build.HybrisPluginExtension;
 import mpern.sap.commerce.build.util.Extension;
 import mpern.sap.commerce.build.util.ExtensionType;
 import mpern.sap.commerce.build.util.Stopwatch;
+import mpern.sap.commerce.build.util.Version;
 
 /**
  * Responsible for the creation of
@@ -27,17 +30,70 @@ public class ExtensionInfoLoader {
 
     private static final String CUSTOM_DIR = "custom";
 
-    private static final Set<String> PLATFORM_INNER_EXT_NAMES = new HashSet<>(
-            Arrays.asList("advancedsavedquery", "catalog", "comments", "commons", "core", "deliveryzone", "europe1",
-                    "hac", "impex", "maintenanceweb", "mediaweb", "oauth2", "paymentstandard", "platformservices",
-                    "processing", "scripting", "testweb", "validation", "workflow"));
+    // @formatter:off
+    private static final Set<String> PLATFORM_EXT_NAMES_JDK21 = Set.of(
+            "advancedsavedquery",
+            "authorizationserver",
+            "catalog",
+            "comments",
+            "commons",
+            "core",
+            "deliveryzone",
+            "europe1",
+            "hac",
+            "impex",
+            "maintenanceweb",
+            "mediaweb",
+            "oauth2commons",
+            "paymentstandard",
+            "platformservices",
+            "processing",
+            "resourceserver",
+            "scripting",
+            "testweb",
+            "validation",
+            "workflow"
+    );
+    private static final Set<String> PLATFORM_EXT_NAMES_JDK17 = Set.of(
+            "advancedsavedquery",
+            "catalog",
+            "comments",
+            "commons",
+            "core",
+            "deliveryzone",
+            "europe1",
+            "hac",
+            "impex",
+            "maintenanceweb",
+            "mediaweb",
+            "oauth2",
+            "paymentstandard",
+            "platformservices",
+            "processing",
+            "scripting",
+            "testweb",
+            "validation",
+            "workflow"
+    );
+    // @formatter:on
 
     private static final Logger LOG = Logging.getLogger(ExtensionInfoLoader.class);
 
-    private final Project project;
+    private final HybrisPluginExtension hybrisPluginExtension;
+    private final FileCollection hybrisDependencies;
 
-    public ExtensionInfoLoader(Project project) {
-        this.project = project;
+    private final ArchiveOperations archiveOperations;
+    private final ObjectFactory objectFactory;
+    private final ProjectLayout layout;
+
+    @Inject
+    public ExtensionInfoLoader(HybrisPluginExtension hybrisPluginExtension, FileCollection hybrisDependencies,
+            ArchiveOperations archiveOperations, ObjectFactory objectFactory, ProjectLayout layout) {
+        this.hybrisPluginExtension = hybrisPluginExtension;
+        this.hybrisDependencies = hybrisDependencies;
+        this.archiveOperations = archiveOperations;
+        this.objectFactory = objectFactory;
+        this.layout = layout;
     }
 
     /**
@@ -48,7 +104,7 @@ public class ExtensionInfoLoader {
     public Map<String, Extension> getExtensionsFromCustomFolder() {
         Stopwatch stopwatch = new Stopwatch();
 
-        FileTree customDir = project.fileTree(HYBRIS_BIN_DIR + CUSTOM_DIR);
+        FileTree customDir = objectFactory.fileTree().from(HYBRIS_BIN_DIR + CUSTOM_DIR);
         Map<String, Extension> result = getFromDir(customDir, ExtensionType.CUSTOM);
 
         LOG.info("Loaded extensions information from project custom folder in {} ms", stopwatch.stop());
@@ -67,7 +123,7 @@ public class ExtensionInfoLoader {
 
         Map<String, Extension> extensions = new HashMap<>();
 
-        Set<File> hybrisZipFiles = project.getConfigurations().getByName(HYBRIS_PLATFORM_CONFIGURATION).getFiles();
+        Set<File> hybrisZipFiles = hybrisDependencies.getFiles();
         for (File zipFile : hybrisZipFiles) {
             extensions.putAll(getFromHybrisPlatformDependency(zipFile));
         }
@@ -104,7 +160,8 @@ public class ExtensionInfoLoader {
         }
         allNeededExtensions.put(PLATFORM_NAME, platform);
 
-        File localExtensionsXmlFile = project.file("hybris/config/localextensions.xml");
+        File localExtensionsXmlFile = layout.getProjectDirectory().file("hybris/config/localextensions.xml")
+                .getAsFile();
         if (!localExtensionsXmlFile.exists()) {
             throw new ExtensionInfoException(
                     "localextensions.xml file not found at " + localExtensionsXmlFile.getPath());
@@ -116,8 +173,6 @@ public class ExtensionInfoLoader {
         }
 
         // add alwaysIncluded extensions
-        HybrisPluginExtension hybrisPluginExtension = (HybrisPluginExtension) project.getExtensions()
-                .getByName(HYBRIS_EXTENSION);
         Set<String> alwaysIncluded = hybrisPluginExtension.getSparseBootstrap().getAlwaysIncluded().get();
         for (String alwaysIncludedExtName : alwaysIncluded) {
             addExtensionAndAllDepedencies(alwaysIncludedExtName, allNeededExtensions, allKnownExtensions);
@@ -136,14 +191,14 @@ public class ExtensionInfoLoader {
     public Map<String, Extension> loadAlreadyExistingExtensions() {
         Stopwatch stopwatch = new Stopwatch();
 
-        FileTree binDir = project.fileTree(HYBRIS_BIN_DIR);
+        FileTree binDir = objectFactory.fileTree().from(HYBRIS_BIN_DIR);
         Map<String, Extension> existingExtensions = getFromDir(binDir, ExtensionType.RUNTIME_INSTALLED);
 
         /*
          * add platform if ext/core folder exists (other tasks may copy in platform, so
          * only platform check is not enough)
          */
-        if (project.file(HYBRIS_BIN_DIR + "platform/ext/core").exists()) {
+        if (layout.getProjectDirectory().file(HYBRIS_BIN_DIR + "platform/ext/core").getAsFile().exists()) {
             Extension platformExt = getPlatfromExtension();
             existingExtensions.put(platformExt.name, platformExt);
         }
@@ -192,11 +247,16 @@ public class ExtensionInfoLoader {
     }
 
     private Map<String, Extension> getFromHybrisPlatformDependency(File zipFile) {
-        FileTree zip = project.zipTree(zipFile);
+        FileTree zip = archiveOperations.zipTree(zipFile);
         return getFromDir(zip, ExtensionType.SAP_MODULE);
     }
 
     private boolean isPlatformInnerExtension(String extName) {
-        return PLATFORM_INNER_EXT_NAMES.contains(extName);
+        Version v = Version.UNDEFINED;
+        if (hybrisPluginExtension != null) {
+            Version.parseVersion(hybrisPluginExtension.getVersion().get());
+        }
+        return v.getJdk() >= 21 ? PLATFORM_EXT_NAMES_JDK21.contains(extName)
+                : PLATFORM_EXT_NAMES_JDK17.contains(extName);
     }
 }

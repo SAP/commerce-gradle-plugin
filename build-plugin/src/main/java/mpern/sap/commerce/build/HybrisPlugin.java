@@ -10,11 +10,13 @@ import java.time.Instant;
 import java.util.Collections;
 import java.util.List;
 
+import javax.inject.Inject;
+
 import org.gradle.api.*;
 import org.gradle.api.artifacts.Configuration;
-import org.gradle.api.file.ConfigurableFileTree;
-import org.gradle.api.file.DuplicatesStrategy;
+import org.gradle.api.file.*;
 import org.gradle.api.logging.Logger;
+import org.gradle.api.provider.ProviderFactory;
 import org.gradle.api.tasks.TaskExecutionException;
 import org.gradle.api.tasks.TaskProvider;
 
@@ -22,8 +24,6 @@ import mpern.sap.commerce.build.rules.HybrisAntRule;
 import mpern.sap.commerce.build.tasks.GlobClean;
 import mpern.sap.commerce.build.tasks.HybrisAntTask;
 import mpern.sap.commerce.build.tasks.UnpackPlatformSparseTask;
-import mpern.sap.commerce.build.util.Extension;
-import mpern.sap.commerce.build.util.PlatformResolver;
 import mpern.sap.commerce.build.util.Version;
 
 public class HybrisPlugin implements Plugin<Project> {
@@ -33,6 +33,20 @@ public class HybrisPlugin implements Plugin<Project> {
     public static final String HYBRIS_PLATFORM_CONFIGURATION = "hybrisPlatform";
     public static final String HYBRIS_BIN_DIR = "hybris/bin/";
     public static final String PLATFORM_NAME = "platform";
+
+    private final ProjectLayout layout;
+    private final FileSystemOperations fileSystemOperations;
+    private final ProviderFactory providerFactory;
+    private final ArchiveOperations archiveOperations;
+
+    @Inject
+    public HybrisPlugin(ProjectLayout layout, FileSystemOperations fileSystemOperations,
+            ArchiveOperations archiveOperations, ProviderFactory providerFactory) {
+        this.layout = layout;
+        this.fileSystemOperations = fileSystemOperations;
+        this.providerFactory = providerFactory;
+        this.archiveOperations = archiveOperations;
+    }
 
     private static boolean isDirEmpty(final Path directory) {
         try (DirectoryStream<Path> dirStream = Files.newDirectoryStream(directory)) {
@@ -44,8 +58,7 @@ public class HybrisPlugin implements Plugin<Project> {
 
     @Override
     public void apply(Project project) {
-        HybrisPluginExtension extension = project.getExtensions().create(HYBRIS_EXTENSION, HybrisPluginExtension.class,
-                project);
+        HybrisPluginExtension extension = project.getExtensions().create(HYBRIS_EXTENSION, HybrisPluginExtension.class);
         extension.getSparseBootstrap().getEnabled().convention(false);
         extension.getSparseBootstrap().getAlwaysIncluded().convention(Collections.emptySet());
 
@@ -87,9 +100,10 @@ public class HybrisPlugin implements Plugin<Project> {
             }
         });
 
-        Task bootstrap = project.task("bootstrapPlatform");
-        bootstrap.setGroup(HYBRIS_BOOTSTRAP);
-        bootstrap.setDescription("Bootstraps the configured hybris distribution with the configured DB drivers");
+        TaskProvider<?> bootstrap = project.getTasks().register("bootstrapPlatform", t -> {
+            t.setGroup(HYBRIS_BOOTSTRAP);
+            t.setDescription("Bootstraps the configured hybris distribution with the configured DB drivers");
+        });
 
         File hybrisBin = project.file("hybris/bin");
 
@@ -108,10 +122,19 @@ public class HybrisPlugin implements Plugin<Project> {
                     t.onlyIf(o -> versionMismatch(extension, t.getLogger()));
                 });
 
+        FileCollection hybrisPlafomCollecion = hybrisPlatform;
         TaskProvider<Task> unpackPlatform = project.getTasks().register("unpackPlatform", t -> {
             t.onlyIf(o -> versionMismatch(extension, t.getLogger()));
             t.onlyIf(o -> !isSparseEnabled(extension, t.getLogger()));
             t.mustRunAfter(cleanOnVersionChange);
+            t.doLast(a -> fileSystemOperations.copy(c -> {
+                c.from(providerFactory.provider(
+                        () -> hybrisPlafomCollecion.getFiles().stream().map(archiveOperations::zipTree).toList()));
+                c.into(layout.getProjectDirectory());
+                c.include(extension.getBootstrapInclude().get());
+                c.exclude(extension.getBootstrapExclude().get());
+                c.setDuplicatesStrategy(DuplicatesStrategy.WARN);
+            }));
         });
 
         TaskProvider<UnpackPlatformSparseTask> unpackPlatformSparse = project.getTasks()
@@ -120,28 +143,22 @@ public class HybrisPlugin implements Plugin<Project> {
                     t.mustRunAfter(cleanOnVersionChange);
                 });
 
-        project.afterEvaluate(p -> unpackPlatform.get().doLast(t -> project.copy(c -> {
-            c.from(project.provider(() -> hybrisPlatform.getFiles().stream().map(project::zipTree).toList()));
-            c.into(t.getProject().getProjectDir());
-            c.include(extension.getBootstrapInclude().get());
-            c.exclude(extension.getBootstrapExclude().get());
-            c.setDuplicatesStrategy(DuplicatesStrategy.WARN);
-        })));
-
+        FileCollection dbDriversCollection = dbDrivers;
         TaskProvider<Task> setupDBDriver = project.getTasks().register("setupDbDriver", t -> {
-            t.mustRunAfter(unpackPlatform);
-            t.doLast(l -> project.copy(c -> {
-                File driverDir = t.getProject().file("hybris/bin/platform/lib/dbdriver");
-                c.from(dbDrivers);
+            t.mustRunAfter(unpackPlatform, unpackPlatformSparse);
+            t.doLast(l -> fileSystemOperations.copy(c -> {
+                File driverDir = layout.getProjectDirectory().file("hybris/bin/platform/lib/dbdriver").getAsFile();
+                c.from(dbDriversCollection);
                 c.into(driverDir);
                 c.setDuplicatesStrategy(DuplicatesStrategy.WARN);
             }));
         });
 
         TaskProvider<Task> touchDbDriverLastUpdate = project.getTasks().register("touchLastUpdate", t -> {
-            t.mustRunAfter(unpackPlatform, setupDBDriver);
+            t.mustRunAfter(unpackPlatform, unpackPlatformSparse, setupDBDriver);
             t.doLast(a -> {
-                Path driverDir = a.getProject().file("hybris/bin/platform/lib/dbdriver").toPath();
+                Path driverDir = layout.getProjectDirectory().file("hybris/bin/platform/lib/dbdriver").getAsFile()
+                        .toPath();
                 Path lastUpdate = driverDir.resolve(".lastupdate");
                 try {
                     Files.createDirectories(driverDir);
@@ -155,8 +172,8 @@ public class HybrisPlugin implements Plugin<Project> {
             });
         });
 
-        bootstrap.dependsOn(cleanOnVersionChange, unpackPlatform, unpackPlatformSparse, setupDBDriver,
-                touchDbDriverLastUpdate);
+        bootstrap.configure(t -> t.dependsOn(cleanOnVersionChange, unpackPlatform, unpackPlatformSparse, setupDBDriver,
+                touchDbDriverLastUpdate));
 
         project.getTasks().addRule(new HybrisAntRule(project));
         // sensible defaults
@@ -182,53 +199,6 @@ public class HybrisPlugin implements Plugin<Project> {
                     t.getLogger().lifecycle("hybris/config folder found, nothing to do");
                 }
                 return !configPresent;
-            });
-        });
-
-        project.getTasks().register("removeUnusedExtensions", t -> {
-            t.setGroup(HYBRIS_BOOTSTRAP);
-            t.setDescription("Remove unused extensions; helps save disk space if you work on multiple projects");
-
-            t.doFirst(a -> a.getLogger()
-                    .warn("'removeUnusedExtensions' is deprecated. Please use sparseBootstrap instead."));
-            t.doLast(a -> {
-                PlatformResolver resolver = new PlatformResolver(
-                        extension.getPlatform().getPlatformHome().get().getAsFile().toPath());
-                List<Extension> configured;
-                try {
-                    configured = resolver.getConfiguredExtensions();
-                } catch (Exception e) {
-                    return;
-                }
-                if (configured.isEmpty()) {
-                    return;
-                }
-                Path bin = project.file(HYBRIS_BIN_DIR).toPath();
-                ConfigurableFileTree files = project.fileTree(bin);
-                files.exclude("platform/");
-                files.exclude("custom/");
-                // @formatter:off
-                configured.stream()
-                        .map(e -> e.relativeLocation)
-                        .map(p -> p + "/")
-                        .filter(p -> !p.startsWith("platform/"))
-                        .filter(p -> !p.startsWith("custom/"))
-                        .forEach(files::exclude);
-                // @formatter:on
-                project.delete(files);
-                try {
-                    Files.walkFileTree(bin, new SimpleFileVisitor<>() {
-                        @Override
-                        public FileVisitResult postVisitDirectory(Path dir, IOException exc) throws IOException {
-                            if (isDirEmpty(dir)) {
-                                Files.delete(dir);
-                            }
-                            return FileVisitResult.CONTINUE;
-                        }
-                    });
-                } catch (IOException e) {
-                    throw new TaskExecutionException(a, e);
-                }
             });
         });
     }
@@ -261,4 +231,5 @@ public class HybrisPlugin implements Plugin<Project> {
         logger.lifecycle("hybris.sparseBootstrap.enabled is {}", sparseEnabled);
         return sparseEnabled;
     }
+
 }
