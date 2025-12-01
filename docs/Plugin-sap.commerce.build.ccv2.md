@@ -21,12 +21,28 @@ CCV2 {
 }
 ```
 
+If you also use `sap.commerce.build` in your build, the CCv2 plugin preconfigures `hybris.version` with `commerceSuiteVersion` or `commerceSuitePreviewVersion` (details see next heading) as defined in your `manifest.json`.
+
+### Preview Release Support
+
+General information: [Preview Releases]
+
+Starting with 5.0.0, the CCV2 plugin fully supports preview releases both for SAP Commerce Cloud (key `commercePreviewVersion`) and extension packs (key `previewVersion` in the `extensionPacks` array; more details [here][preview-manifest] and [here][preview-pack])
+
+[Preview Releases]: https://help.sap.com/docs/SAP_COMMERCE_CLOUD_PUBLIC_CLOUD/75d4c3895cb346008545900bffe851ce/6221aeb97f784d55856bfdff0bd05e0e.html?locale=en-US
+[preview-manifest]: https://help.sap.com/docs/SAP_COMMERCE_CLOUD_PUBLIC_CLOUD/1be46286b36a4aa48205be5a96240672/811b9e1cb1094da5bbe8e384345e73cc.html?locale=en-US&version=LATEST
+[preview-pack]: https://help.sap.com/docs/SAP_COMMERCE_INTEGRATIONS/58d2065698d847efaa44e08c3556ae96/fdc6a80d9de54f00bdb6edc83a7c01a1.html?locale=en-US&version=LATEST
+
+To get the currently effective version (regular or preview release) in your Gradle build script use `CCV2.manifest.effectiveVersion` (`String getEffectiveMethod()`).
+
+If your build need to handle preview versions differently, you can check for a preview with `CCV2.manifest.preview` (`boolean isPreview()`)
+
 >[!IMPORTANT]
-> **Preview Release Maven Coordinates**
+> **Preview Releases - Default Maven Coordinates**
 >
 > If you use `commerceSuitePreviewVersion`  or `previewVersion` of an extension pack, it changes the
 > [`groupId`][coordinates] of the dependency to `de.hybris.platform.preview` instead of the default value of
-> `de.hybris.platform` for regular releases.
+> `de.hybris.platform` of regular releases.
 >
 > Maven coordinates of `commerceSuitePreviewVersion`:
 >
@@ -34,16 +50,13 @@ CCV2 {
 > de.hybris.platform.preview:hybris-commerce-suite:${commerceSuitePreviewVersion}@zip
 > ```
 >
-> Maven coordinates of an extension pack with `previewVersion`:
+> Maven coordinates of an extension pack defining `previewVersion`:
 >
-> ```txt
+> ```
 > de.hybris.platform.preview:${name}:${previewVersion}@zip
 > ```
 
 [coordinates]: https://maven.apache.org/pom.html#maven-coordinates
-
-If you also use `sap.commerce.build` in your build, the `hybris.version` is preconfigured with `commerceSuiteVersion` of
-the manifest.
 
 ### `extenionPacks` Support
 

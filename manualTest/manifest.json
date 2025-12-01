@@ -1,15 +1,15 @@
 {
-  "commerceSuiteVersion": "2211",
+  "commerceSuitePreviewVersion": "2211-jdk21.3",
   "enableImageProcessingService": true,
-  "datahubVersion": "2211.9",
+  "datahubVersion": "2211-jdk21.0",
   "extensionPacks": [
     {
       "name": "hybris-commerce-integrations",
-      "version": "2211.7"
+      "previewVersion": "2211-jdk21.2"
     },
     {
       "name" : "hybris-datahub-integration-suite",
-      "version" : "2211.7"
+      "previewVersion": "2211-jdk21.2"
     }
   ],
   "extensions": [

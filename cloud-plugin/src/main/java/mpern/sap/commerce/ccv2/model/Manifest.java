@@ -5,9 +5,11 @@ import static mpern.sap.commerce.ccv2.model.util.ParseUtils.*;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import org.jspecify.annotations.*;
+
 public class Manifest {
-    private final String commerceSuiteVersion;
-    private final String commerceSuitePreviewVersion;
+    private final @NonNull String commerceSuiteVersion;
+    private final @NonNull String commerceSuitePreviewVersion;
     public final String solrVersion;
     public final boolean useCloudExtensionPack;
     public final boolean enableImageProcessingService;
@@ -142,17 +144,20 @@ public class Manifest {
     }
 
     public String getEffectiveVersion() {
-        if (commerceSuitePreviewVersion != null && !commerceSuitePreviewVersion.isBlank()) {
-            return commerceSuitePreviewVersion;
-        }
-        return commerceSuiteVersion;
+        return commerceSuitePreviewVersion.isBlank() ? commerceSuiteVersion : commerceSuitePreviewVersion;
+    }
+
+    // satisfy Kotlin-Java interop
+    public boolean getPreview() {
+        return isPreview();
     }
 
     public boolean isPreview() {
-        return commerceSuitePreviewVersion != null && !commerceSuitePreviewVersion.isBlank();
+        return !commerceSuitePreviewVersion.isBlank();
     }
 
-    // necessary to shadow groovy method getProperties
+    // Shadow Groovy built-in method getProperties.
+    // If not present, Spock tests fail because it defaults to Groovies method.
     public List<Property> getProperties() {
         return properties;
     }

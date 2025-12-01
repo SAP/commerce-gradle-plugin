@@ -6,7 +6,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
-
 <!-- uncomment headings as required -->
 
 <!-- ### Added -->
@@ -27,6 +26,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 <!-- ### Security -->
 <!-- in case of vulnerabilities. -->
 
+## [5.0.0] 2025-12-01
+
+### Added
+
+- Access `CCV2.manifest.isPreview()` via `CCV2.manifest.preview` in Kotlin build scripts ([#109])
+
+[#109]: https://github.com/SAP/commerce-gradle-plugin/issues/109
+
 ## [5.0.0] 2025-11-27
 
 ### Added
@@ -39,6 +46,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - Misc. internal refactor
+- BREAKING changed visibility `CCV2.manifest.commerceSuiteVersion` to private
+  - Please use `CCv2.manifest.effectiveVersion` (`getEffectiveVersion()`) to get whatever version (normal or preview) is currently configured in `manifest.json`.
+  - For special handling of preview versions, use `CCV2.manifest.isPreview()`
+
+### Deprecated
+
+- 
 
 ### Fixed
 
@@ -481,7 +495,8 @@ Shout out to [@corneleberle] for providing the fix.
 
 :tada: Initial release :tada:
 
-[Unreleased]: https://github.com/SAP/commerce-gradle-plugin/compare/v5.0.0...HEAD
+[Unreleased]: https://github.com/SAP/commerce-gradle-plugin/compare/v5.0.1...HEAD
+[5.0.1]: https://github.com/SAP/commerce-gradle-plugin/compare/v5.0.0...v5.0.1
 [5.0.0]: https://github.com/SAP/commerce-gradle-plugin/compare/v4.1.0...v5.0.0
 [4.1.0]: https://github.com/SAP/commerce-gradle-plugin/compare/v4.0.0...v4.1.0
 [4.0.0]: https://github.com/SAP/commerce-gradle-plugin/compare/v3.10.0...v4.0.0

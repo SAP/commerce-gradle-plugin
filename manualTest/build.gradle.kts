@@ -28,3 +28,9 @@ hybris {
         enabled = true
     }
 }
+
+tasks.register("testManifestAccess") {
+    doLast {
+        logger.lifecycle("Version: {}, preview? {}", CCV2.manifest.effectiveVersion, CCV2.manifest.preview)
+    }
+}
