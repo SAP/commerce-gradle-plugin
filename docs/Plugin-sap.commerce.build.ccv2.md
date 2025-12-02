@@ -33,15 +33,15 @@ Starting with 5.0.0, the CCV2 plugin fully supports preview releases both for SA
 [preview-manifest]: https://help.sap.com/docs/SAP_COMMERCE_CLOUD_PUBLIC_CLOUD/1be46286b36a4aa48205be5a96240672/811b9e1cb1094da5bbe8e384345e73cc.html?locale=en-US&version=LATEST
 [preview-pack]: https://help.sap.com/docs/SAP_COMMERCE_INTEGRATIONS/58d2065698d847efaa44e08c3556ae96/fdc6a80d9de54f00bdb6edc83a7c01a1.html?locale=en-US&version=LATEST
 
-To get the currently effective version (regular or preview release) in your Gradle build script use `CCV2.manifest.effectiveVersion` (`String getEffectiveVersion()`).
+To get the currently effective version (regular or preview release, whatever is currently configured) in your Gradle build script use `CCV2.manifest.effectiveVersion` (`String getEffectiveVersion()`).
 
-If your build need to handle preview versions differently, you can check for a preview with `CCV2.manifest.preview` (`boolean isPreview()`)
+If your build needs to handle preview versions differently, you can check if a preview release is configured with `CCV2.manifest.preview` (`boolean isPreview()`)
 
 >[!IMPORTANT]
 > **Preview Releases - Default Maven Coordinates**
 >
 > If you use `commerceSuitePreviewVersion`  or `previewVersion` of an extension pack, it changes the
-> [`groupId`][coordinates] of the dependency to `de.hybris.platform.preview` instead of the default value of
+> [`groupId`][coordinates] of the dependency to `de.hybris.platform.preview` instead of the default value
 > `de.hybris.platform` of regular releases.
 >
 > Maven coordinates of `commerceSuitePreviewVersion`:
