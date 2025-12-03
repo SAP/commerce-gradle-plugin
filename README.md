@@ -1,4 +1,4 @@
-# SAP Commerce Gradle Plugins 5.0.1
+# SAP Commerce Gradle Plugins 5.0.2
 
 [![Actions Status](https://github.com/SAP/commerce-gradle-plugin/workflows/Gradle%20CI/badge.svg)](https://github.com/SAP/commerce-gradle-plugin/actions)
 [![REUSE status](https://api.reuse.software/badge/github.com/SAP/commerce-gradle-plugin)](https://api.reuse.software/info/github.com/SAP/commerce-gradle-plugin)
@@ -40,7 +40,7 @@ Here is how you get started with the plugins for your SAP Commerce project.
 
     ```kotlin
     plugins {
-        id("sap.commerce.build.ccv2") version("5.0.1")
+        id("sap.commerce.build.ccv2") version("5.0.2")
     }
     ```
 
@@ -61,8 +61,8 @@ Here is how you get started with the plugins for your SAP Commerce project.
 
    ```kotlin
    plugins {
-      id("sap.commerce.build") version("5.0.1")
-      id("sap.commerce.build.ccv2") version("5.0.1")
+      id("sap.commerce.build") version("5.0.2")
+      id("sap.commerce.build.ccv2") version("5.0.2")
    }
 
    repositories {
