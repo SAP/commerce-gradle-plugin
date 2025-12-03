@@ -254,7 +254,7 @@ public class ExtensionInfoLoader {
     private boolean isPlatformInnerExtension(String extName) {
         Version v = Version.UNDEFINED;
         if (hybrisPluginExtension != null) {
-            Version.parseVersion(hybrisPluginExtension.getVersion().get());
+            v = Version.parseVersion(hybrisPluginExtension.getVersion().get());
         }
         return v.getJdk() >= 21 ? PLATFORM_EXT_NAMES_JDK21.contains(extName)
                 : PLATFORM_EXT_NAMES_JDK17.contains(extName);

@@ -421,4 +421,63 @@ class ExtensionInfoLoaderSpec extends Specification {
 
         return allKnownExtensions
     }
+
+    def "use correct platform/ext extension list for jdk21"() {
+
+        given:
+        def projectBuilder = ProjectBuilder.builder()
+                .withName("test")
+                .withProjectDir(testProjectDir)
+        project = projectBuilder.build()
+        initLoader()
+        extension.getVersion().set("2211-jdk21.0")
+
+        and: "a localextensions.xml requesting a platform/ext dependency of jdk21"
+        def localextensions = testProjectDir.toPath().resolve(Path.of("hybris", "config", "localextensions.xml"))
+        Files.createDirectories(localextensions.getParent())
+        localextensions << """
+        <hybrisconfig xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance' xsi:noNamespaceSchemaLocation='../bin/platform/resources/schemas/extensions.xsd'>
+          <extensions>
+            <path dir='\${HYBRIS_BIN_DIR}' autoload='false' />
+        
+            <extension name='oauth2commons' />
+          </extensions>
+        </hybrisconfig>
+        """.stripIndent()
+
+        when:
+        def extensions = loader.loadAllNeededExtensions(buildAllKnownExtensions())
+
+        then:
+        noExceptionThrown()
+    }
+    def "ExtensionInfoLoader detects if extension not available anymore in jdk21"() {
+
+        given:
+        def projectBuilder = ProjectBuilder.builder()
+                .withName("test")
+                .withProjectDir(testProjectDir)
+        project = projectBuilder.build()
+        initLoader()
+        extension.getVersion().set("2211-jdk21.0")
+
+        and: "a localextensions.xml requesting a platform/ext dependency of jdk17"
+        def localextensions = testProjectDir.toPath().resolve(Path.of("hybris", "config", "localextensions.xml"))
+        Files.createDirectories(localextensions.getParent())
+        localextensions << """
+        <hybrisconfig xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance' xsi:noNamespaceSchemaLocation='../bin/platform/resources/schemas/extensions.xsd'>
+          <extensions>
+            <path dir='\${HYBRIS_BIN_DIR}' autoload='false' />
+        
+            <extension name='oauth2' />
+          </extensions>
+        </hybrisconfig>
+        """.stripIndent()
+
+        when:
+        def extensions = loader.loadAllNeededExtensions(buildAllKnownExtensions())
+
+        then:
+        thrown(ExtensionInfoException.class)
+    }
 }
