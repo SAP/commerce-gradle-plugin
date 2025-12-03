@@ -26,6 +26,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 <!-- ### Security -->
 <!-- in case of vulnerabilities. -->
 
+## [5.0.2] 2025-12-03
+
+### Fixed
+
+- [#103] should be fixed for good now.
+
 ## [5.0.1] 2025-12-01
 
 ### Added
@@ -495,7 +501,8 @@ Shout out to [@corneleberle] for providing the fix.
 
 :tada: Initial release :tada:
 
-[Unreleased]: https://github.com/SAP/commerce-gradle-plugin/compare/v5.0.1...HEAD
+[Unreleased]: https://github.com/SAP/commerce-gradle-plugin/compare/v5.0.2...HEAD
+[5.0.2]: https://github.com/SAP/commerce-gradle-plugin/compare/v5.0.1...v5.0.2
 [5.0.1]: https://github.com/SAP/commerce-gradle-plugin/compare/v5.0.0...v5.0.1
 [5.0.0]: https://github.com/SAP/commerce-gradle-plugin/compare/v4.1.0...v5.0.0
 [4.1.0]: https://github.com/SAP/commerce-gradle-plugin/compare/v4.0.0...v4.1.0
