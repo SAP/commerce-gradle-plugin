@@ -17,7 +17,7 @@ testing {
             if (this is JvmTestSuite) {
                 useJUnitJupiter()
                 dependencies {
-                    implementation(platform("org.spockframework:spock-bom:2.3-groovy-4.0"))
+                    implementation(platform("org.spockframework:spock-bom:2.4-groovy-4.0"))
                     implementation("org.spockframework:spock-core")
 
                     implementation(project())
