@@ -71,7 +71,7 @@ jobs:
         uses: gradle/actions/setup-gradle@4d9f0ba0025fe599b4ebab900eb7f3a1d93ef4c2 # v5
       - name: Build and Test
         run: ./gradlew check -x spotlessCheck
-      - uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5
+      - uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6
         if: ${{ failure() }}
         with:
           name: ${{ matrix.os }}-test-result
@@ -103,7 +103,7 @@ jobs:
         run: ./gradlew check -x spotlessCheck
         env:
           GRADLE_VERSION: "${{ matrix.GRADLE_VERSION }}"
-      - uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5
+      - uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6
         if: ${{ failure() }}
         with:
           name: ${{ matrix.GRADLE_VERSION }}-test-result
