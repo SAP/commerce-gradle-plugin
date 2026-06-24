@@ -11,6 +11,9 @@ on:
     branches:
       - main
 
+env:
+  JAVA_VERSION: '21'
+
 jobs:
   # Basic Gradle wrapper validation. This step is run first, due to security
   # concerns. Running our whole pipeline with Gradle with a corrupt wrapper,
@@ -41,7 +44,7 @@ jobs:
       - name: Set up Java
         uses: actions/setup-java@dded0888837ed1f317902acf8a20df0ad188d165 # v5
         with:
-          java-version: 17
+          java-version: '${{ env.JAVA_VERSION }}'
           distribution: 'sapmachine'
           cache: 'gradle'
       - name: Setup Gradle
@@ -64,7 +67,7 @@ jobs:
       - name: Set up Java
         uses: actions/setup-java@dded0888837ed1f317902acf8a20df0ad188d165 # v5
         with:
-          java-version: '17'
+          java-version: '${{ env.JAVA_VERSION }}'
           distribution: 'sapmachine'
           cache: 'gradle'
       - name: Setup Gradle
@@ -95,7 +98,7 @@ jobs:
       - name: Setup Java JDK
         uses: actions/setup-java@dded0888837ed1f317902acf8a20df0ad188d165 # v5
         with:
-          java-version: 17
+          java-version: '${{ env.JAVA_VERSION }}'
           distribution: 'sapmachine'
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@4d9f0ba0025fe599b4ebab900eb7f3a1d93ef4c2 # v5
@@ -121,7 +124,7 @@ jobs:
       - name: Setup Java JDK
         uses: actions/setup-java@dded0888837ed1f317902acf8a20df0ad188d165 # v5
         with:
-          java-version: 17
+          java-version: '${{ env.JAVA_VERSION }}'
           distribution: 'sapmachine'
           cache: 'gradle'
       - name: Setup Gradle
