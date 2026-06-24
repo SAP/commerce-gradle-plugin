@@ -2,10 +2,15 @@ package mpern.sap.commerce.ccv2.model;
 
 import static mpern.sap.commerce.ccv2.model.util.ParseUtils.validateNullOrWhitespace;
 
+import java.io.Serial;
+import java.io.Serializable;
 import java.util.Map;
 import java.util.Objects;
 
-public class Webapp {
+public class Webapp implements Serializable {
+
+    @Serial
+    private static final long serialVersionUID = 1L;
     public final String name;
     public final String contextPath;
 

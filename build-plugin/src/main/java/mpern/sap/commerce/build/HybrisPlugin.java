@@ -2,7 +2,6 @@ package mpern.sap.commerce.build;
 
 import static mpern.sap.commerce.commons.Constants.CCV2_EXTENSION;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.*;
 import java.nio.file.attribute.FileTime;
@@ -24,6 +23,7 @@ import mpern.sap.commerce.build.rules.HybrisAntRule;
 import mpern.sap.commerce.build.tasks.GlobClean;
 import mpern.sap.commerce.build.tasks.HybrisAntTask;
 import mpern.sap.commerce.build.tasks.UnpackPlatformSparseTask;
+import mpern.sap.commerce.build.util.HybrisPlatform;
 import mpern.sap.commerce.build.util.Version;
 
 public class HybrisPlugin implements Plugin<Project> {
@@ -64,9 +64,9 @@ public class HybrisPlugin implements Plugin<Project> {
 
         extension.getCleanGlob().convention("glob:**hybris/bin/{ext-**,platform**,modules**}");
 
-        extension.getBootstrapInclude().convention(project.provider(() -> List.of("hybris/**")));
+        extension.getBootstrapInclude().convention(providerFactory.provider(() -> List.of("hybris/**")));
         // this folder contains some utf-8 filenames that lead to issues on linux
-        extension.getBootstrapExclude().convention(project.provider(() -> List.of(
+        extension.getBootstrapExclude().convention(providerFactory.provider(() -> List.of(
                 "hybris/bin/ext-content/npmancillary/resources/npm/node_modules/http-server/node_modules/ecstatic/test/**")));
 
         final Configuration hybrisPlatform = project.getConfigurations().create(HYBRIS_PLATFORM_CONFIGURATION)
@@ -93,11 +93,21 @@ public class HybrisPlugin implements Plugin<Project> {
 
             // optional, add intExtPack if defined
             v = extension.getIntExtPackVersion().get();
-            if (v.length() > 0) {
+            if (!v.isEmpty()) {
                 version = Version.parseVersion(v);
                 dependencies.add(project.getDependencies().create(
                         "de.hybris.platform:hybris-commerce-integrations:" + version.getDependencyVersion() + "@zip"));
             }
+        });
+
+        HybrisPlatform platform = extension.getPlatform();
+
+        // Apply platform conventions to every HybrisAntTask in this project so that
+        // callers (HybrisAntRule, CloudV2Plugin, etc.) don't need to wire them
+        // manually.
+        project.getTasks().withType(HybrisAntTask.class).configureEach(t -> {
+            t.getPlatformHome().convention(platform.getPlatformHome());
+            t.getPlatformVersion().convention(platform.getVersion());
         });
 
         TaskProvider<?> bootstrap = project.getTasks().register("bootstrapPlatform", t -> {
@@ -105,19 +115,17 @@ public class HybrisPlugin implements Plugin<Project> {
             t.setDescription("Bootstraps the configured hybris distribution with the configured DB drivers");
         });
 
-        File hybrisBin = project.file("hybris/bin");
-
         project.getTasks().register("cleanPlatform", GlobClean.class, t -> {
             t.setGroup(HYBRIS_BOOTSTRAP);
             t.setDescription("Cleans all hybris platform artifacts");
 
-            t.getBaseFolder().set(hybrisBin.getAbsolutePath());
+            t.getBaseFolder().set(layout.getProjectDirectory().dir("hybris/bin"));
             t.getGlob().set(extension.getCleanGlob());
         });
 
         TaskProvider<GlobClean> cleanOnVersionChange = project.getTasks().register("cleanPlatformIfVersionChanged",
                 GlobClean.class, t -> {
-                    t.getBaseFolder().set(hybrisBin.getAbsolutePath());
+                    t.getBaseFolder().set(layout.getProjectDirectory().dir("hybris/bin"));
                     t.getGlob().set(extension.getCleanGlob());
                     t.onlyIf(o -> versionMismatch(extension, t.getLogger()));
                 });
@@ -141,15 +149,18 @@ public class HybrisPlugin implements Plugin<Project> {
                 .register("unpackPlatformSparse", UnpackPlatformSparseTask.class, t -> {
                     t.onlyIf(o -> isSparseEnabled(extension, t.getLogger()));
                     t.mustRunAfter(cleanOnVersionChange);
+                    t.getHybrisDependencies().from(hybrisPlatform);
+                    t.getBootstrapExclude().set(extension.getBootstrapExclude());
+                    t.getAlwaysIncluded().set(extension.getSparseBootstrap().getAlwaysIncluded());
+                    t.getPlatformVersion().set(platform.getVersion());
                 });
 
         FileCollection dbDriversCollection = dbDrivers;
         TaskProvider<Task> setupDBDriver = project.getTasks().register("setupDbDriver", t -> {
             t.mustRunAfter(unpackPlatform, unpackPlatformSparse);
             t.doLast(l -> fileSystemOperations.copy(c -> {
-                File driverDir = layout.getProjectDirectory().file("hybris/bin/platform/lib/dbdriver").getAsFile();
                 c.from(dbDriversCollection);
-                c.into(driverDir);
+                c.into(layout.getProjectDirectory().dir("hybris/bin/platform/lib/dbdriver"));
                 c.setDuplicatesStrategy(DuplicatesStrategy.WARN);
             }));
         });
@@ -175,7 +186,8 @@ public class HybrisPlugin implements Plugin<Project> {
         bootstrap.configure(t -> t.dependsOn(cleanOnVersionChange, unpackPlatform, unpackPlatformSparse, setupDBDriver,
                 touchDbDriverLastUpdate));
 
-        project.getTasks().addRule(new HybrisAntRule(project));
+        project.getTasks().addRule(new HybrisAntRule(project.getTasks(), extension.getAntTaskDependencies()));
+
         // sensible defaults
         TaskProvider<Task> yclean = project.getTasks().named("yclean");
         TaskProvider<Task> ybuild = project.getTasks().named("ybuild");
@@ -194,7 +206,7 @@ public class HybrisPlugin implements Plugin<Project> {
             t.args("createConfig");
             t.antProperty("input.template", "develop");
             t.onlyIf(s -> {
-                boolean configPresent = project.file("hybris/config").exists();
+                boolean configPresent = layout.getProjectDirectory().dir("hybris/config").getAsFile().exists();
                 if (configPresent) {
                     t.getLogger().lifecycle("hybris/config folder found, nothing to do");
                 }

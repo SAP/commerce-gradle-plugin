@@ -3,12 +3,17 @@ package mpern.sap.commerce.ccv2.model;
 import static mpern.sap.commerce.ccv2.model.util.ParseUtils.nullToEmpty;
 import static mpern.sap.commerce.ccv2.model.util.ParseUtils.validateNullOrWhitespace;
 
+import java.io.Serial;
+import java.io.Serializable;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-public class Property {
+public class Property implements Serializable {
+
+    @Serial
+    private static final long serialVersionUID = 1L;
 
     public static final Set<String> ALLOWED_PERSONAS = new HashSet<>(
             Arrays.asList("development", "staging", "production", ""));

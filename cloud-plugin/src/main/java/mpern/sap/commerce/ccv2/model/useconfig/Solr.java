@@ -2,9 +2,14 @@ package mpern.sap.commerce.ccv2.model.useconfig;
 
 import static mpern.sap.commerce.ccv2.model.util.ParseUtils.toEmpty;
 
+import java.io.Serial;
+import java.io.Serializable;
 import java.util.Map;
 
-public class Solr {
+public class Solr implements Serializable {
+
+    @Serial
+    private static final long serialVersionUID = 1L;
     public static final Solr NO_VALUE = new Solr("");
 
     public final String location;

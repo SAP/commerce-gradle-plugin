@@ -2,9 +2,14 @@ package mpern.sap.commerce.ccv2.model.useconfig;
 
 import static mpern.sap.commerce.ccv2.model.util.ParseUtils.toEmpty;
 
+import java.io.Serial;
+import java.io.Serializable;
 import java.util.Map;
 
-public class Properties {
+public class Properties implements Serializable {
+
+    @Serial
+    private static final long serialVersionUID = 1L;
     public static final Properties NO_VALUE = new Properties("", "", "");
     public final String location;
     public final String aspect;

@@ -15,17 +15,11 @@ import org.gradle.api.logging.Logging;
 import org.gradle.api.model.ObjectFactory;
 import org.gradle.api.tasks.util.PatternSet;
 
-import mpern.sap.commerce.build.HybrisPluginExtension;
 import mpern.sap.commerce.build.util.Extension;
 import mpern.sap.commerce.build.util.ExtensionType;
 import mpern.sap.commerce.build.util.Stopwatch;
 import mpern.sap.commerce.build.util.Version;
 
-/**
- * Responsible for the creation of
- * {@link mpern.sap.commerce.build.util.Extension} DTOs for the core build
- * plugin.
- */
 public class ExtensionInfoLoader {
 
     private static final String CUSTOM_DIR = "custom";
@@ -79,28 +73,25 @@ public class ExtensionInfoLoader {
 
     private static final Logger LOG = Logging.getLogger(ExtensionInfoLoader.class);
 
-    private final HybrisPluginExtension hybrisPluginExtension;
     private final FileCollection hybrisDependencies;
+    private final Set<String> alwaysIncluded;
+    private final String platformVersion;
 
     private final ArchiveOperations archiveOperations;
     private final ObjectFactory objectFactory;
     private final ProjectLayout layout;
 
     @Inject
-    public ExtensionInfoLoader(HybrisPluginExtension hybrisPluginExtension, FileCollection hybrisDependencies,
+    public ExtensionInfoLoader(FileCollection hybrisDependencies, Set<String> alwaysIncluded, String platformVersion,
             ArchiveOperations archiveOperations, ObjectFactory objectFactory, ProjectLayout layout) {
-        this.hybrisPluginExtension = hybrisPluginExtension;
         this.hybrisDependencies = hybrisDependencies;
+        this.alwaysIncluded = alwaysIncluded;
+        this.platformVersion = platformVersion;
         this.archiveOperations = archiveOperations;
         this.objectFactory = objectFactory;
         this.layout = layout;
     }
 
-    /**
-     * Gets the extensions from the Hybris project custom folder.
-     *
-     * @return found extensions
-     */
     public Map<String, Extension> getExtensionsFromCustomFolder() {
         Stopwatch stopwatch = new Stopwatch();
 
@@ -112,12 +103,6 @@ public class ExtensionInfoLoader {
         return result;
     }
 
-    /**
-     * Gets the extensions from the project dependecies in "hybrisPlatform"
-     * configuration.
-     *
-     * @return found extensions
-     */
     public Map<String, Extension> getExtensionsFromHybrisPlatformDependencies() {
         Stopwatch stopwatch = new Stopwatch();
 
@@ -133,22 +118,10 @@ public class ExtensionInfoLoader {
         return extensions;
     }
 
-    /**
-     * Gets the platform extension. Note that it does not have a real location in
-     * its directory property.
-     *
-     * @return the platform extension
-     */
     public Extension getPlatfromExtension() {
         return new Extension(PLATFORM_NAME, Path.of("platform"), ExtensionType.SAP_PLATFORM, Collections.emptyList());
     }
 
-    /**
-     * Loads all the extensions needed, based on the localextensions.xml.
-     *
-     * @param allKnownExtensions all extensions known
-     * @return the needed extensions
-     */
     public Map<String, Extension> loadAllNeededExtensions(Map<String, Extension> allKnownExtensions) {
         Stopwatch stopwatch = new Stopwatch();
 
@@ -172,8 +145,6 @@ public class ExtensionInfoLoader {
             addExtensionAndAllDepedencies(declaredExtName, allNeededExtensions, allKnownExtensions);
         }
 
-        // add alwaysIncluded extensions
-        Set<String> alwaysIncluded = hybrisPluginExtension.getSparseBootstrap().getAlwaysIncluded().get();
         for (String alwaysIncludedExtName : alwaysIncluded) {
             addExtensionAndAllDepedencies(alwaysIncludedExtName, allNeededExtensions, allKnownExtensions);
         }
@@ -183,11 +154,6 @@ public class ExtensionInfoLoader {
         return allNeededExtensions;
     }
 
-    /**
-     * Loads all the extensions already existing in the project folder.
-     *
-     * @return the existing extensions
-     */
     public Map<String, Extension> loadAlreadyExistingExtensions() {
         Stopwatch stopwatch = new Stopwatch();
 
@@ -253,8 +219,12 @@ public class ExtensionInfoLoader {
 
     private boolean isPlatformInnerExtension(String extName) {
         Version v = Version.UNDEFINED;
-        if (hybrisPluginExtension != null) {
-            v = Version.parseVersion(hybrisPluginExtension.getVersion().get());
+        if (platformVersion != null) {
+            try {
+                v = Version.parseVersion(platformVersion);
+            } catch (IllegalArgumentException ignored) {
+                // fall through to use UNDEFINED
+            }
         }
         return v.getJdk() >= 21 ? PLATFORM_EXT_NAMES_JDK21.contains(extName)
                 : PLATFORM_EXT_NAMES_JDK17.contains(extName);

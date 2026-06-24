@@ -2,9 +2,14 @@ package mpern.sap.commerce.ccv2.model.useconfig;
 
 import static mpern.sap.commerce.ccv2.model.util.ParseUtils.toEmpty;
 
+import java.io.Serial;
+import java.io.Serializable;
 import java.util.Map;
 
-public class Languages {
+public class Languages implements Serializable {
+
+    @Serial
+    private static final long serialVersionUID = 1L;
     public static final Languages NO_VALUE = new Languages("");
     public final String location;
 

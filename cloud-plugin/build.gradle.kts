@@ -1,3 +1,5 @@
+import org.gradle.plugin.compatibility.compatibility
+
 plugins {
     id("mpern.commons")
     id("mpern.plugin.basics")
@@ -27,6 +29,7 @@ gradlePlugin {
                     "public cloud",
                     "manifest",
                 )
+            compatibility { features { configurationCache = true } }
         }
     }
 }

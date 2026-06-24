@@ -6,18 +6,60 @@ If you also use the `sap.commerce.build` plugin, it preconfigures various tasks 
 
 [manifest]: https://help.sap.com/viewer/1be46286b36a4aa48205be5a96240672/latest/en-US/2be55790d99e4a1dad4caa7a1fc1738f.html
 
+> [!IMPORTANT]
+> **Breaking change (6.0.0): `CCV2.manifest` is now a `Provider<Manifest>`**
+>
+> In previous versions `CCV2.manifest` returned the `Manifest` object directly. It is now a
+> `Provider<Manifest>` to support the [Gradle configuration cache][config-cache].
+>
+> **Migration:** anywhere you previously accessed manifest data at configuration time, wrap the
+> access with `.map { }` to keep it lazy, or call `.get()` inside a task action (execution time).
+>
+> ```gradle.kts
+> // before (5.0.x / 5.0.2) — worked but broke configuration cache
+> val ver = CCV2.manifest.effectiveVersion
+> tasks.register("example") {
+>     doLast {
+>         logger.lifecycle("Version: {}", ver)
+>     }
+> }
+>
+> // after (6.0.0) — Option A: lazy via .map { }
+> // use this when you need to pass derived data as a @Input property of another task,
+> // or wire it into another Provider chain
+> tasks.register("example") {
+>     val ver = CCV2.manifest.map { it.effectiveVersion }
+>     inputs.property("version", ver) // ver is a Provider<String> — Gradle resolves it
+>     doLast {
+>         logger.lifecycle("Version: {}", ver.get())
+>     }
+> }
+>
+> // after (6.0.0) — Option B: capture the Provider, resolve in doLast
+> // use this for ad-hoc task actions that read multiple fields at once
+> tasks.register("example") {
+>     val manifest = CCV2.manifest // capture Provider<Manifest> at configuration time
+>     doLast {
+>         val m = manifest.get()
+>         logger.lifecycle("Version: {}, preview: {}", m.effectiveVersion, m.preview)
+>     }
+> }
+> ```
+
+[config-cache]: https://docs.gradle.org/current/userguide/configuration_cache.html
+
 ## Configuration
 
 The following example shows the full DSL (Domain Specific Language) with all default options and the dependencies the
 plugin pre-configures.
 
-```groovy
+```gradle.kts
 CCV2 {
     //target folder for the `generate*` tasks (details see below)
-    generatedConfiguration = file('generated-configuration')
+    generatedConfiguration = file("generated-configuration")
 
-    //Use this property to access the manifest.json in your Gradle build script
-    manifest = < parsed manifest.json >
+    // CCV2.manifest is a Provider<Manifest> wired automatically by the plugin.
+    // Use .map { } or resolve with .get() inside a task action — never at configuration time.
 }
 ```
 
@@ -33,9 +75,9 @@ Starting with 5.0.0, the CCV2 plugin fully supports preview releases both for SA
 [preview-manifest]: https://help.sap.com/docs/SAP_COMMERCE_CLOUD_PUBLIC_CLOUD/1be46286b36a4aa48205be5a96240672/811b9e1cb1094da5bbe8e384345e73cc.html?locale=en-US&version=LATEST
 [preview-pack]: https://help.sap.com/docs/SAP_COMMERCE_INTEGRATIONS/58d2065698d847efaa44e08c3556ae96/fdc6a80d9de54f00bdb6edc83a7c01a1.html?locale=en-US&version=LATEST
 
-To get the currently effective version (regular or preview release, whatever is currently configured) in your Gradle build script use `CCV2.manifest.effectiveVersion` (`String getEffectiveVersion()`).
+To get the currently effective version (regular or preview release, whatever is currently configured) in your Gradle build script use `CCV2.manifest.map { it.effectiveVersion }` (`String getEffectiveVersion()`).
 
-If your build needs to handle preview versions differently, you can check if a preview release is configured with `CCV2.manifest.preview` (`boolean isPreview()`)
+If your build needs to handle preview versions differently, you can check if a preview release is configured with `CCV2.manifest.map { it.preview }` (`boolean isPreview()`)
 
 >[!IMPORTANT]
 > **Preview Releases - Default Maven Coordinates**

@@ -8,6 +8,7 @@ import java.util.*;
 import javax.inject.Inject;
 
 import org.gradle.api.file.ConfigurableFileTree;
+import org.gradle.api.file.DirectoryProperty;
 import org.gradle.api.model.ObjectFactory;
 import org.gradle.api.provider.MapProperty;
 import org.gradle.api.provider.Property;
@@ -15,26 +16,19 @@ import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.Internal;
 import org.gradle.api.tasks.JavaExec;
 import org.gradle.api.tasks.options.Option;
+import org.gradle.work.DisableCachingByDefault;
 
-import mpern.sap.commerce.build.HybrisPlugin;
-import mpern.sap.commerce.build.HybrisPluginExtension;
-import mpern.sap.commerce.build.util.HybrisPlatform;
 import mpern.sap.commerce.build.util.Version;
 
+@DisableCachingByDefault(because = "Wraps the SAP Commerce Ant build; outputs are not portable")
 public abstract class HybrisAntTask extends JavaExec {
     private static final Version V_2205 = Version.parseVersion("2205.0");
 
     private List<String> fromCommandLine = Collections.emptyList();
-    private final HybrisPluginExtension extension;
-    private final ObjectFactory objectFactory;
 
     @Inject
     public HybrisAntTask(ObjectFactory objectFactory) {
         super();
-        this.extension = ((HybrisPluginExtension) getProject().getExtensions()
-                .getByName(HybrisPlugin.HYBRIS_EXTENSION));
-        this.objectFactory = objectFactory;
-
         getAntProperties().put("maven.update.dbdrivers", "false");
         getMainClass().set("org.apache.tools.ant.launch.Launcher");
     }
@@ -48,9 +42,7 @@ public abstract class HybrisAntTask extends JavaExec {
         ConfigurableFileTree files = buildPlatformAntClasspath();
         setClasspath(files);
 
-        HybrisPlatform platform = extension.getPlatform();
-
-        systemProperty("ant.home", getRelativeAntHomepath(platform.getPlatformHome().get().getAsFile().toPath()));
+        systemProperty("ant.home", getRelativeAntHomepath(getPlatformHome().get().getAsFile().toPath()));
         systemProperty("file.encoding", "UTF-8");
 
         Map<String, String> props = new LinkedHashMap<>(getAntProperties().get());
@@ -71,7 +63,7 @@ public abstract class HybrisAntTask extends JavaExec {
 
         props.forEach((k, v) -> args("-D" + k + "=" + v));
 
-        Version current = Version.parseVersion(platform.getVersion().get());
+        Version current = Version.parseVersion(getPlatformVersion().get());
 
         // ref. hybris/bin/platform/setantenv.sh in 2205
         if (current.compareTo(V_2205) >= 0) {
@@ -82,7 +74,7 @@ public abstract class HybrisAntTask extends JavaExec {
             jvmArgs("--add-exports", "java.xml/com.sun.org.apache.xpath.internal.objects=ALL-UNNAMED");
         }
 
-        workingDir(platform.getPlatformHome());
+        workingDir(getPlatformHome());
 
         super.exec();
     }
@@ -100,6 +92,7 @@ public abstract class HybrisAntTask extends JavaExec {
     }
 
     private ConfigurableFileTree buildPlatformAntClasspath() {
+        ObjectFactory objectFactory = getObjectFactory();
         ConfigurableFileTree files = objectFactory.fileTree().from("hybris/bin/platform");
         files.include("apache-ant*/lib/ant-launcher.jar");
         return files;
@@ -133,11 +126,20 @@ public abstract class HybrisAntTask extends JavaExec {
     @Internal
     public abstract Property<Boolean> getNoOp();
 
+    @Internal
+    public abstract DirectoryProperty getPlatformHome();
+
+    @Internal
+    public abstract Property<String> getPlatformVersion();
+
     @Input
     public abstract MapProperty<String, String> getAntProperties();
 
     @Input
     public abstract MapProperty<String, String> getFallbackAntProperties();
+
+    @Inject
+    protected abstract ObjectFactory getObjectFactory();
 
     private static class AntPathVisitor extends SimpleFileVisitor<Path> {
         private Path foundPath;

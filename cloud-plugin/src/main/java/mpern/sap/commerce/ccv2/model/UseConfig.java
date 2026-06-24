@@ -1,5 +1,7 @@
 package mpern.sap.commerce.ccv2.model;
 
+import java.io.Serial;
+import java.io.Serializable;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -10,7 +12,10 @@ import mpern.sap.commerce.ccv2.model.useconfig.Languages;
 import mpern.sap.commerce.ccv2.model.useconfig.Properties;
 import mpern.sap.commerce.ccv2.model.useconfig.Solr;
 
-public class UseConfig {
+public class UseConfig implements Serializable {
+
+    @Serial
+    private static final long serialVersionUID = 1L;
     public static final UseConfig NO_VALUE = new UseConfig(Extensions.NO_VALUE, Collections.emptyList(), Solr.NO_VALUE,
             Languages.NO_VALUE);
 

@@ -1,5 +1,7 @@
 package mpern.sap.commerce.ccv2.model;
 
+import java.io.Serial;
+import java.io.Serializable;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -7,7 +9,10 @@ import java.util.Set;
 
 import mpern.sap.commerce.ccv2.model.util.ParseUtils;
 
-public class TestConfiguration {
+public class TestConfiguration implements Serializable {
+
+    @Serial
+    private static final long serialVersionUID = 1L;
 
     public static final TestConfiguration NO_VALUE = new TestConfiguration(Collections.emptySet(),
             Collections.emptySet(), Collections.emptySet(), Collections.emptySet());

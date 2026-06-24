@@ -9,15 +9,18 @@ import java.nio.file.PathMatcher;
 import java.nio.file.attribute.BasicFileAttributes;
 
 import org.gradle.api.DefaultTask;
+import org.gradle.api.file.DirectoryProperty;
 import org.gradle.api.provider.Property;
 import org.gradle.api.tasks.*;
+import org.gradle.work.DisableCachingByDefault;
 
+@DisableCachingByDefault(because = "Cleans files in-place; no cacheable output")
 public abstract class GlobClean extends DefaultTask {
 
     @TaskAction
     public void cleanup() {
         PathMatcher matcher = FileSystems.getDefault().getPathMatcher(getGlob().getOrNull());
-        Path path = Path.of(getBaseFolder().get());
+        Path path = getBaseFolder().getAsFile().get().toPath();
         if (!Files.exists(path)) {
             return;
         }
@@ -47,6 +50,6 @@ public abstract class GlobClean extends DefaultTask {
     @Input
     public abstract Property<String> getGlob();
 
-    @Input
-    public abstract Property<String> getBaseFolder();
+    @Internal
+    public abstract DirectoryProperty getBaseFolder();
 }

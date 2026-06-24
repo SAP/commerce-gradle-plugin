@@ -1,7 +1,5 @@
 package mpern.sap.commerce.ccv2.tasks;
 
-import static mpern.sap.commerce.commons.Constants.CCV2_EXTENSION;
-
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -12,32 +10,33 @@ import javax.inject.Inject;
 
 import org.gradle.api.DefaultTask;
 import org.gradle.api.InvalidUserDataException;
-import org.gradle.api.provider.ProviderFactory;
+import org.gradle.api.file.ProjectLayout;
+import org.gradle.api.provider.Property;
+import org.gradle.api.tasks.Internal;
 import org.gradle.api.tasks.TaskAction;
 import org.gradle.internal.logging.text.StyledTextOutput;
 import org.gradle.internal.logging.text.StyledTextOutputFactory;
+import org.gradle.work.DisableCachingByDefault;
 
-import mpern.sap.commerce.ccv2.CCv2Extension;
+import mpern.sap.commerce.ccv2.model.Manifest;
 import mpern.sap.commerce.ccv2.validation.Error;
 import mpern.sap.commerce.ccv2.validation.Level;
 import mpern.sap.commerce.ccv2.validation.Validator;
 import mpern.sap.commerce.ccv2.validation.impl.*;
 
+@DisableCachingByDefault(because = "Validation output is not a cacheable artifact")
 public abstract class ValidateManifest extends DefaultTask {
 
-    private final StyledTextOutputFactory styledTextOutputFactory;
-    private final CCv2Extension extension;
-    private final Path projectDir;
-
     @Inject
-    public ValidateManifest(StyledTextOutputFactory styledTextOutputFactory, ProviderFactory providerFactory) {
-        this.styledTextOutputFactory = styledTextOutputFactory;
-        this.projectDir = getProject().getProjectDir().toPath();
-        this.extension = (CCv2Extension) getProject().getExtensions().getByName(CCV2_EXTENSION);
+    public ValidateManifest() {
+        super();
     }
 
     @TaskAction
     public void validateManifest() throws Exception {
+        Path projectDir = getLayout().getProjectDirectory().getAsFile().toPath();
+        Manifest manifest = getManifest().get();
+
         List<Validator> validators = new ArrayList<>();
 
         validators.add(new AspectValidator());
@@ -59,11 +58,11 @@ public abstract class ValidateManifest extends DefaultTask {
 
         List<Error> errors = new ArrayList<>();
         for (Validator validator : validators) {
-            errors.addAll(validator.validate(extension.getManifest()));
+            errors.addAll(validator.validate(manifest));
         }
         errors.sort(Comparator.comparing(Error::getLevel).thenComparing(Error::getLocation));
 
-        StyledTextOutput statusOut = styledTextOutputFactory.create(ValidateManifest.class);
+        StyledTextOutput statusOut = getStyledTextOutputFactory().create(ValidateManifest.class);
         statusOut.withStyle(StyledTextOutput.Style.Header)
                 .println("--------------------- Manifest Validation Results ----------------------\n");
         if (errors.isEmpty()) {
@@ -117,4 +116,13 @@ public abstract class ValidateManifest extends DefaultTask {
         code = code.replace("-", "");
         return "https://github.com/SAP/commerce-gradle-plugin/blob/master/docs/ccv2-validation.md#" + code;
     }
+
+    @Internal
+    public abstract Property<Manifest> getManifest();
+
+    @Inject
+    protected abstract ProjectLayout getLayout();
+
+    @Inject
+    protected abstract StyledTextOutputFactory getStyledTextOutputFactory();
 }

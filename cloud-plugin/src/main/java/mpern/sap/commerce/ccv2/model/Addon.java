@@ -3,10 +3,15 @@ package mpern.sap.commerce.ccv2.model;
 import static mpern.sap.commerce.ccv2.model.util.ParseUtils.emptyOrList;
 import static mpern.sap.commerce.ccv2.model.util.ParseUtils.toEmpty;
 
+import java.io.Serial;
+import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 
-public class Addon {
+public class Addon implements Serializable {
+
+    @Serial
+    private static final long serialVersionUID = 1L;
 
     public final String addon;
     public final String storefront;

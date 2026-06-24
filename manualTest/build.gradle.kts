@@ -30,7 +30,13 @@ hybris {
 }
 
 tasks.register("testManifestAccess") {
+    // Option A
+    val ver = CCV2.manifest.map { it.effectiveVersion }
+    inputs.property("version", ver)
+    // Option B
+    val manifest = CCV2.manifest
     doLast {
-        logger.lifecycle("Version: {}, preview? {}", CCV2.manifest.effectiveVersion, CCV2.manifest.preview)
+        val m = manifest.get()
+        logger.lifecycle("Version: {}, preview? {}", ver.get(), m.preview)
     }
 }

@@ -2,9 +2,14 @@ package mpern.sap.commerce.ccv2.model;
 
 import static mpern.sap.commerce.ccv2.model.util.ParseUtils.validateNullOrWhitespace;
 
+import java.io.Serial;
+import java.io.Serializable;
 import java.util.*;
 
-public class Aspect {
+public class Aspect implements Serializable {
+
+    @Serial
+    private static final long serialVersionUID = 1L;
 
     // https://help.sap.com/viewer/1be46286b36a4aa48205be5a96240672/v2011/en-US/8f494fb9617346188ddf21a971db84fc.html
     public static final String ADMIN_ASPECT = "admin";

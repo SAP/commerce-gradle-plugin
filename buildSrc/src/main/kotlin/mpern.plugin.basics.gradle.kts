@@ -40,7 +40,7 @@ testing {
             }
         }
 
-        val integrationTest by registering(JvmTestSuite::class) {
+        val integrationTest = register<JvmTestSuite>("integrationTest") {
             targets {
                 all {
                     testTask.configure {
@@ -50,7 +50,7 @@ testing {
             }
         }
 
-        register("functionalTest", JvmTestSuite::class) {
+        val functionalTest = register<JvmTestSuite>("functionalTest") {
             targets {
                 all {
                     testTask.configure {
@@ -67,7 +67,8 @@ tasks.named("check") {
 }
 
 gradlePlugin {
-    testSourceSets(sourceSets.get("functionalTest"))
+    testSourceSets.add(sourceSets.get("integrationTest"))
+    testSourceSets.add(sourceSets.get("functionalTest"))
 
     website = "https://github.com/SAP/commerce-gradle-plugin"
     vcsUrl = "https://github.com/SAP/commerce-gradle-plugin"

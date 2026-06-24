@@ -2,11 +2,16 @@ package mpern.sap.commerce.ccv2.model;
 
 import static mpern.sap.commerce.ccv2.model.util.ParseUtils.toEmpty;
 
+import java.io.Serial;
+import java.io.Serializable;
 import java.util.Map;
 
 import mpern.sap.commerce.build.util.Version;
 
-public class ExtensionPack {
+public class ExtensionPack implements Serializable {
+
+    @Serial
+    private static final long serialVersionUID = 1L;
     public final String name;
     public final String version;
     public final String previewVersion;

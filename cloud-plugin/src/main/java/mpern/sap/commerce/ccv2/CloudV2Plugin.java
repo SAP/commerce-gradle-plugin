@@ -3,11 +3,15 @@ package mpern.sap.commerce.ccv2;
 import static mpern.sap.commerce.commons.Constants.CCV2_EXTENSION;
 
 import java.io.File;
-import java.time.Instant;
 import java.util.*;
+
+import javax.inject.Inject;
 
 import org.gradle.api.*;
 import org.gradle.api.artifacts.Configuration;
+import org.gradle.api.file.ProjectLayout;
+import org.gradle.api.provider.Provider;
+import org.gradle.api.provider.ProviderFactory;
 import org.gradle.api.tasks.TaskProvider;
 import org.gradle.api.tasks.WriteProperties;
 import org.jetbrains.annotations.NotNull;
@@ -27,21 +31,41 @@ public class CloudV2Plugin implements Plugin<Project> {
     public static final String EXTENSION_PACK = "cloudExtensionPack";
     private static final String GROUP = "SAP Commerce Cloud in the Public Cloud Build";
     private static final String MANIFEST_PATH = "manifest.json";
-    private CCv2Extension extension;
+
+    private final ProjectLayout layout;
+    private final ProviderFactory providers;
+
+    @Inject
+    public CloudV2Plugin(ProjectLayout layout, ProviderFactory providers) {
+        this.layout = layout;
+        this.providers = providers;
+    }
 
     @Override
     public void apply(Project project) {
-        File manifestFile = project.file(MANIFEST_PATH);
+        File manifestFile = layout.getProjectDirectory().file(MANIFEST_PATH).getAsFile();
 
         if (!manifestFile.exists()) {
             throw new InvalidUserDataException(MANIFEST_PATH + " not found!");
         }
-        Manifest manifest = parseManifest(manifestFile);
 
-        extension = project.getExtensions().create(CCV2_EXTENSION, CCv2Extension.class, manifest);
-        extension.getGeneratedConfiguration().set(project.file("generated-configuration"));
+        Provider<Manifest> manifestProvider = providers.fileContents(layout.getProjectDirectory().file(MANIFEST_PATH))
+                .getAsText().map(text -> {
+                    @SuppressWarnings("unchecked")
+                    Map<String, Object> parsed = (Map<String, Object>) new JsonSlurper().parseText(text);
+                    return Manifest.fromMap(parsed);
+                });
 
-        final Configuration extensionPack = project.getConfigurations().create(EXTENSION_PACK);
+        CCv2Extension extension = project.getExtensions().create(CCV2_EXTENSION, CCv2Extension.class);
+        extension.getManifest().set(manifestProvider);
+        extension.getGeneratedConfiguration().convention(layout.getProjectDirectory().dir("generated-configuration"));
+
+        project.getConfigurations().create(EXTENSION_PACK);
+
+        // Read manifest once for configuration-time task registration. This is safe
+        // because fileContents tracks manifest.json as a configuration cache input and
+        // invalidates the cache when the file changes.
+        Manifest manifest = manifestProvider.get();
 
         project.getPlugins().withType(HybrisPlugin.class, hybrisPlugin -> {
             Object o = project.getExtensions().getByName(HybrisPlugin.HYBRIS_EXTENSION);
@@ -52,21 +76,14 @@ public class CloudV2Plugin implements Plugin<Project> {
                 configureWebTests(project, manifest.webTests);
             }
         });
-        configurePropertyFileGeneration(project, manifest);
-        configureExtensionGeneration(project, manifest);
+        configurePropertyFileGeneration(project, extension, manifest);
+        configureExtensionGeneration(project, extension, manifest);
 
         project.getTasks().register("validateManifest", ValidateManifest.class, t -> {
             t.setGroup(GROUP);
             t.setDescription("Validate manifest.json for common errors");
+            t.getManifest().set(manifestProvider);
         });
-    }
-
-    @NotNull
-    @SuppressWarnings("unchecked")
-    private Manifest parseManifest(File manifestFile) {
-        JsonSlurper slurper = new JsonSlurper();
-        Map<String, Object> parsed = (Map<String, Object>) slurper.parse(manifestFile);
-        return Manifest.fromMap(parsed);
     }
 
     private void configureDefaultDependencies(HybrisPluginExtension extension, Project project, Manifest manifest) {
@@ -120,6 +137,7 @@ public class CloudV2Plugin implements Plugin<Project> {
             }
             String storefrontParameter = String.join(",", storeFronts);
             String addonParameter = String.join(",", addons);
+            String template = addonInstall.template;
             int finalI = i;
             TaskProvider<HybrisAntTask> install = project.getTasks().register(String.format("addonInstall_%d", i),
                     HybrisAntTask.class, t -> {
@@ -129,7 +147,7 @@ public class CloudV2Plugin implements Plugin<Project> {
                         t.mustRunAfter("unpackPlatform", "unpackPlatformSparse");
                         t.args("addoninstall");
                         t.antProperty("addonnames", addonParameter);
-                        t.antProperty("addonStorefront." + addonInstall.template, storefrontParameter);
+                        t.antProperty("addonStorefront." + template, storefrontParameter);
                     });
             installManifestAddons.configure(t -> t.dependsOn(install));
         }
@@ -174,7 +192,7 @@ public class CloudV2Plugin implements Plugin<Project> {
         allWebTests.configure(configureTest(test));
     }
 
-    private void configurePropertyFileGeneration(Project project, Manifest manifest) {
+    private void configurePropertyFileGeneration(Project project, CCv2Extension extension, Manifest manifest) {
 
         Map<String, Map<String, Object>> allProps = new TreeMap<>();
         for (Property property : manifest.properties) {
@@ -206,14 +224,13 @@ public class CloudV2Plugin implements Plugin<Project> {
                         t.getDestinationFile()
                                 .set(extension.getGeneratedConfiguration().file(properties.getKey() + ".properties"));
                         t.setProperties(properties.getValue());
-                        t.getInputs().file(project.file(MANIFEST_PATH));
-                        t.setComment(String.format("GENERATED by task %s at %s", t.getName(), Instant.now()));
+                        t.setComment(String.format("GENERATED by task write_%s", properties.getKey()));
                     });
             generateCloudProperties.configure(t -> t.dependsOn(w));
         }
     }
 
-    private void configureExtensionGeneration(Project project, Manifest manifest) {
+    private void configureExtensionGeneration(Project project, CCv2Extension extension, Manifest manifest) {
         project.getTasks().register("generateCloudLocalextensions", GenerateLocalextensions.class, t -> {
             t.setGroup(GROUP);
             t.setDescription("generate localextensions.xml based on manifest");
@@ -223,6 +240,7 @@ public class CloudV2Plugin implements Plugin<Project> {
         });
     }
 
+    @NotNull
     private Action<HybrisAntTask> configureTest(TestConfiguration tests) {
         return t -> {
             String extensions = String.join(",", tests.extensions);

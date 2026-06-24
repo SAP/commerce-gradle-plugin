@@ -1,3 +1,5 @@
+import org.gradle.plugin.compatibility.compatibility
+
 plugins {
     id("mpern.commons")
     id("mpern.plugin.basics")
@@ -26,6 +28,7 @@ gradlePlugin {
                     "bootstrap",
                     "build",
                 )
+            compatibility { features { configurationCache = true } }
         }
     }
 }

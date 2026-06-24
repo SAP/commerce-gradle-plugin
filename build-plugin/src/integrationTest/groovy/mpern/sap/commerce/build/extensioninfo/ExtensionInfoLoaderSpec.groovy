@@ -1,6 +1,5 @@
 package mpern.sap.commerce.build.extensioninfo
 
-import static mpern.sap.commerce.build.HybrisPlugin.HYBRIS_EXTENSION
 import static mpern.sap.commerce.build.HybrisPlugin.HYBRIS_PLATFORM_CONFIGURATION
 import static mpern.sap.commerce.build.HybrisPlugin.PLATFORM_NAME
 
@@ -15,7 +14,6 @@ import spock.lang.Specification
 import spock.lang.TempDir
 
 import mpern.sap.commerce.build.ExtensionsTestUtils
-import mpern.sap.commerce.build.HybrisPluginExtension
 import mpern.sap.commerce.build.ProjectFolderTestUtils
 import mpern.sap.commerce.build.TestUtils
 import mpern.sap.commerce.build.util.Extension
@@ -31,16 +29,15 @@ class ExtensionInfoLoaderSpec extends Specification {
     File testProjectDir
 
     Project project
-    HybrisPluginExtension extension
+    FileCollection collection
     ExtensionInfoLoader loader
 
     def setup() {
     }
 
-    def initLoader() {
-        extension = project.getExtensions().create(HYBRIS_EXTENSION, HybrisPluginExtension.class)
-        FileCollection collection = project.configurations.create(HYBRIS_PLATFORM_CONFIGURATION)
-        loader = project.getObjects().newInstance(ExtensionInfoLoader.class, extension, collection)
+    def initLoader(Set<String> alwaysIncluded = Collections.emptySet(), String platformVersion = "2211.0") {
+        collection = project.configurations.create(HYBRIS_PLATFORM_CONFIGURATION)
+        loader = project.getObjects().newInstance(ExtensionInfoLoader.class, collection, alwaysIncluded, platformVersion)
     }
 
     def "load extensions from custom folder"() {
@@ -219,11 +216,7 @@ class ExtensionInfoLoaderSpec extends Specification {
                 .withName("test")
                 .withProjectDir(testProjectDir)
         project = projectBuilder.build()
-        initLoader()
-        extension.sparseBootstrap {
-            enabled = true
-            alwaysIncluded = ["yempty", "ybackoffice"]
-        }
+        initLoader(["yempty", "ybackoffice"] as Set)
 
         ExtensionsTestUtils.ensureLocalExtensions(testProjectDir.toPath())
 
@@ -429,8 +422,7 @@ class ExtensionInfoLoaderSpec extends Specification {
                 .withName("test")
                 .withProjectDir(testProjectDir)
         project = projectBuilder.build()
-        initLoader()
-        extension.getVersion().set("2211-jdk21.0")
+        initLoader(Collections.emptySet(), "2211-jdk21.0")
 
         and: "a localextensions.xml requesting a platform/ext dependency of jdk21"
         def localextensions = testProjectDir.toPath().resolve(Path.of("hybris", "config", "localextensions.xml"))
@@ -458,8 +450,7 @@ class ExtensionInfoLoaderSpec extends Specification {
                 .withName("test")
                 .withProjectDir(testProjectDir)
         project = projectBuilder.build()
-        initLoader()
-        extension.getVersion().set("2211-jdk21.0")
+        initLoader(Collections.emptySet(), "2211-jdk21.0")
 
         and: "a localextensions.xml requesting a platform/ext dependency of jdk17"
         def localextensions = testProjectDir.toPath().resolve(Path.of("hybris", "config", "localextensions.xml"))

@@ -6,13 +6,36 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
-<!-- uncomment headings as required -->
+
+### Changed
+
+- Both plugins are now fully compatible with the [Gradle configuration cache](https://docs.gradle.org/current/userguide/configuration_cache.html) ([#107])
+  - `manifest.json` and `hybris/bin/platform/build.number` are tracked as configuration inputs via `providers.fileContents`; the cache is invalidated automatically when either file changes
+  - All task types (`GlobClean`, `HybrisAntTask`, `UnpackPlatformSparseTask`, `GenerateLocalextensions`, `PatchLocalExtensions`, `ValidateManifest`) are annotated with `@DisableCachingByDefault` or `@CacheableTask` as appropriate
+- **BREAKING** `CCv2Extension.manifest` is now a `Provider<Manifest>` instead of a direct `Manifest` object ([#107])
+
+  Anywhere you previously accessed manifest data directly, you must now either use `.map { }` to derive a lazy value, or call `.get()` inside a task action:
+
+  ```gradle.kts
+  // before (5.0.x / 5.0.2)
+  val ver = CCV2.manifest.effectiveVersion
+
+  // after — lazy via .map { }
+  val ver: Provider<String> = CCV2.manifest.map { it.effectiveVersion }
+
+  // after — resolve in doLast
+  tasks.register("example") {
+      val manifest = CCV2.manifest
+      doLast { logger.lifecycle("Version: {}", manifest.get().effectiveVersion) }
+  }
+  ```
+
+  Additional details in the [docs](./docs/Plugin-sap.commerce.build.ccv2.md)
+- **BREAKING** Minimum required Java version bumped from 17 to 21
+
 
 <!-- ### Added -->
 <!-- for new features. -->
-
-<!-- #### Changed -->
-<!-- for changes in existing functionality. -->
 
 <!-- ### Deprecated -->
 <!-- for soon-to-be removed features. -->
@@ -501,6 +524,7 @@ Shout out to [@corneleberle] for providing the fix.
 
 :tada: Initial release :tada:
 
+[#107]: https://github.com/SAP/commerce-gradle-plugin/issues/107
 [Unreleased]: https://github.com/SAP/commerce-gradle-plugin/compare/v5.0.2...HEAD
 [5.0.2]: https://github.com/SAP/commerce-gradle-plugin/compare/v5.0.1...v5.0.2
 [5.0.1]: https://github.com/SAP/commerce-gradle-plugin/compare/v5.0.0...v5.0.1

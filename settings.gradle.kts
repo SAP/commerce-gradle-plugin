@@ -3,3 +3,5 @@ include("test-utils")
 include("plugin-commons")
 include("build-plugin")
 include("cloud-plugin")
+
+enableFeaturePreview("NO_IMPLICIT_LOOKUP_IN_PARENT_PROJECTS")

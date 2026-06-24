@@ -1,8 +1,10 @@
 .gradle
 .idea
+.kotlin
 /build
 /out
 /bin
+*/bin
 
 /NOTES.md
 .settings
@@ -19,3 +21,4 @@ test-user.properties
 
 .envrc
 .tool-versions
+build-plugin/hybris/bin/platform/build.number

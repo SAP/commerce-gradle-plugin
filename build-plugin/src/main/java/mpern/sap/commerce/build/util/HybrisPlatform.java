@@ -1,12 +1,10 @@
 package mpern.sap.commerce.build.util;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
 import java.io.IOException;
-import java.nio.file.*;
-import java.nio.file.attribute.BasicFileAttributes;
-import java.util.Optional;
+import java.io.StringReader;
 import java.util.Properties;
+
+import javax.inject.Inject;
 
 import org.gradle.api.file.Directory;
 import org.gradle.api.file.ProjectLayout;
@@ -22,11 +20,12 @@ public class HybrisPlatform {
 
     private final Provider<String> platformVersion;
 
-    @javax.inject.Inject
+    @Inject
     public HybrisPlatform(ProviderFactory providerFactory, ProjectLayout layout) {
         platformDir = providerFactory.provider(() -> layout.getProjectDirectory().dir("hybris/bin/platform"));
-
-        platformVersion = providerFactory.provider(this::readVersion);
+        Provider<String> buildNumberFileContents = providerFactory
+                .fileContents(platformDir.map(dir -> dir.file("build.number"))).getAsText();
+        platformVersion = buildNumberFileContents.map(HybrisPlatform::extractVersion).orElse("NONE");
     }
 
     public Provider<Directory> getPlatformHome() {
@@ -37,44 +36,13 @@ public class HybrisPlatform {
         return platformVersion;
     }
 
-    private String readVersion() {
-        Directory orNull = platformDir.getOrNull();
-
-        if (orNull == null) {
-            return "NONE";
-        }
-        Path buildFile = orNull.file("build.number").getAsFile().toPath();
+    private static String extractVersion(String fileContents) {
         Properties properties = new Properties();
-
-        try (BufferedReader br = new BufferedReader(new FileReader(buildFile.toFile()))) {
-            properties.load(br);
+        try (StringReader reader = new StringReader(fileContents)) {
+            properties.load(reader);
         } catch (IOException e) {
-            LOG.debug("could not open build.number", e);
+            LOG.debug("could not parse build.number", e);
         }
-        String bootstrappedVersion = properties.getProperty("version", "NONE");
-        return bootstrappedVersion;
-    }
-
-    private static class AntPathVisitor extends SimpleFileVisitor<Path> {
-        private Path foundPath;
-        private final PathMatcher antPathMatcher;
-
-        public AntPathVisitor() {
-            this.foundPath = null;
-            antPathMatcher = FileSystems.getDefault().getPathMatcher("glob:**/apache-ant*");
-        }
-
-        @Override
-        public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
-            if (antPathMatcher.matches(dir)) {
-                foundPath = dir;
-                return FileVisitResult.TERMINATE;
-            }
-            return FileVisitResult.CONTINUE;
-        }
-
-        public Optional<Path> getAntHome() {
-            return Optional.ofNullable(foundPath);
-        }
+        return properties.getProperty("version", "NONE");
     }
 }

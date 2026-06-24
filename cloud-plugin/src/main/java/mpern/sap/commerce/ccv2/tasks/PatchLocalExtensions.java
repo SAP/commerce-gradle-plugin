@@ -17,11 +17,11 @@ import org.gradle.api.GradleException;
 import org.gradle.api.file.ProjectLayout;
 import org.gradle.api.file.RegularFileProperty;
 import org.gradle.api.provider.Property;
-import org.gradle.api.tasks.Input;
-import org.gradle.api.tasks.InputFiles;
-import org.gradle.api.tasks.TaskAction;
+import org.gradle.api.tasks.*;
+import org.gradle.work.DisableCachingByDefault;
 import org.w3c.dom.*;
 
+@DisableCachingByDefault(because = "Patches an existing XML file in place; not idempotent across machines")
 public abstract class PatchLocalExtensions extends DefaultTask {
 
     private final Path projectDir;
@@ -95,7 +95,8 @@ public abstract class PatchLocalExtensions extends DefaultTask {
         transformer.transform(source, result);
     }
 
-    @InputFiles
+    @InputFile
+    @PathSensitive(PathSensitivity.NONE)
     public abstract RegularFileProperty getTarget();
 
     @Input

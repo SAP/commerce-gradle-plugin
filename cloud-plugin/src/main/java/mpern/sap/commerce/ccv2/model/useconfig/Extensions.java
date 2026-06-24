@@ -3,12 +3,17 @@ package mpern.sap.commerce.ccv2.model.useconfig;
 import static mpern.sap.commerce.ccv2.model.util.ParseUtils.emptyOrSet;
 import static mpern.sap.commerce.ccv2.model.util.ParseUtils.toEmpty;
 
+import java.io.Serial;
+import java.io.Serializable;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-public class Extensions {
+public class Extensions implements Serializable {
+
+    @Serial
+    private static final long serialVersionUID = 1L;
     public static final Extensions NO_VALUE = new Extensions("", Collections.emptySet());
     public final String location;
     public final Set<String> exclude;

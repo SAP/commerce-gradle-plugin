@@ -8,39 +8,40 @@ sourceSets["main"].java {
     srcDir(generated)
 }
 
-val generateSources by tasks.registering {
+val generateSources =
+    tasks.register("generateSources") {
 
-    inputs.property("projectDir", project.projectDir)
+        inputs.property("projectDir", project.projectDir)
 
-    outputs.dir(generated)
+        outputs.dir(generated)
 
-    doFirst {
-        val projectDir = inputs.properties["projectDir"] as File
-        val structure = File(outputs.files.singleFile, "mpern/sap/commerce/test/TestConstants.java")
-        val resourcesDir =
-            projectDir
-                .resolve("src/main/resources")
-                .toString()
-                .replace("\\", "\\\\")
-        structure.parentFile.mkdirs()
-        structure.writeText(
-            """
-            package mpern.sap.commerce.test;
-            
-            import java.nio.file.Path;
+        doFirst {
+            val projectDir = inputs.properties["projectDir"] as File
+            val structure = File(outputs.files.singleFile, "mpern/sap/commerce/test/TestConstants.java")
+            val resourcesDir =
+                projectDir
+                    .resolve("src/main/resources")
+                    .toString()
+                    .replace("\\", "\\\\")
+            structure.parentFile.mkdirs()
+            structure.writeText(
+                """
+                package mpern.sap.commerce.test;
+                
+                import java.nio.file.Path;
 
-            public class TestConstants {
-            
-                public static final Path TEST_RESOURCES = Path.of("$resourcesDir");
+                public class TestConstants {
+                
+                    public static final Path TEST_RESOURCES = Path.of("$resourcesDir");
 
-                public static Path testResource(String fileOrFolder) {
-                    return TEST_RESOURCES.resolve(fileOrFolder);
+                    public static Path testResource(String fileOrFolder) {
+                        return TEST_RESOURCES.resolve(fileOrFolder);
+                    }
                 }
-            }
-            """.trimIndent(),
-        )
+                """.trimIndent(),
+            )
+        }
     }
-}
 
 tasks.named("compileJava") {
     dependsOn(generateSources)
