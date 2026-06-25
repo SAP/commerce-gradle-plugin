@@ -16,7 +16,7 @@ If you also use the `sap.commerce.build` plugin, it preconfigures various tasks 
 > access with `.map { }` to keep it lazy, or call `.get()` inside a task action (execution time).
 >
 > ```gradle.kts
-> // before (5.0.x / 5.0.2) — worked but broke configuration cache
+> // before (5.0.x / 5.0.2) - worked but broke configuration cache
 > val ver = CCV2.manifest.effectiveVersion
 > tasks.register("example") {
 >     doLast {
@@ -24,18 +24,18 @@ If you also use the `sap.commerce.build` plugin, it preconfigures various tasks 
 >     }
 > }
 >
-> // after (6.0.0) — Option A: lazy via .map { }
+> // after (6.0.0) - Option A: lazy via .map { }
 > // use this when you need to pass derived data as a @Input property of another task,
 > // or wire it into another Provider chain
 > tasks.register("example") {
 >     val ver = CCV2.manifest.map { it.effectiveVersion }
->     inputs.property("version", ver) // ver is a Provider<String> — Gradle resolves it
+>     inputs.property("version", ver) // ver is a Provider<String> - Gradle resolves it
 >     doLast {
 >         logger.lifecycle("Version: {}", ver.get())
 >     }
 > }
 >
-> // after (6.0.0) — Option B: capture the Provider, resolve in doLast
+> // after (6.0.0) - Option B: capture the Provider, resolve in doLast
 > // use this for ad-hoc task actions that read multiple fields at once
 > tasks.register("example") {
 >     val manifest = CCV2.manifest // capture Provider<Manifest> at configuration time
@@ -59,7 +59,7 @@ CCV2 {
     generatedConfiguration = file("generated-configuration")
 
     // CCV2.manifest is a Provider<Manifest> wired automatically by the plugin.
-    // Use .map { } or resolve with .get() inside a task action — never at configuration time.
+    // Use .map { } or resolve with .get() inside a task action - never at configuration time.
 }
 ```
 

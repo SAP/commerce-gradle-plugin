@@ -13,6 +13,7 @@ import javax.inject.Inject;
 
 import org.gradle.api.*;
 import org.gradle.api.artifacts.Configuration;
+import org.gradle.api.execution.TaskExecutionGraph;
 import org.gradle.api.file.*;
 import org.gradle.api.logging.Logger;
 import org.gradle.api.provider.ProviderFactory;
@@ -115,26 +116,27 @@ public class HybrisPlugin implements Plugin<Project> {
             t.setDescription("Bootstraps the configured hybris distribution with the configured DB drivers");
         });
 
-        project.getTasks().register("cleanPlatform", GlobClean.class, t -> {
+        TaskProvider<GlobClean> cleanPlatform = project.getTasks().register("cleanPlatform", GlobClean.class, t -> {
             t.setGroup(HYBRIS_BOOTSTRAP);
             t.setDescription("Cleans all hybris platform artifacts");
 
             t.getBaseFolder().set(layout.getProjectDirectory().dir("hybris/bin"));
             t.getGlob().set(extension.getCleanGlob());
         });
-
+        TaskExecutionGraph graph = project.getGradle().getTaskGraph();
         TaskProvider<GlobClean> cleanOnVersionChange = project.getTasks().register("cleanPlatformIfVersionChanged",
                 GlobClean.class, t -> {
                     t.getBaseFolder().set(layout.getProjectDirectory().dir("hybris/bin"));
                     t.getGlob().set(extension.getCleanGlob());
                     t.onlyIf(o -> versionMismatch(extension, t.getLogger()));
+                    t.onlyIf("cleanPlatform is not in the task graph", spec -> !graph.hasTask(":cleanPlatform"));
                 });
 
         FileCollection hybrisPlafomCollecion = hybrisPlatform;
         TaskProvider<Task> unpackPlatform = project.getTasks().register("unpackPlatform", t -> {
             t.onlyIf(o -> versionMismatch(extension, t.getLogger()));
             t.onlyIf(o -> !isSparseEnabled(extension, t.getLogger()));
-            t.mustRunAfter(cleanOnVersionChange);
+            t.mustRunAfter(cleanOnVersionChange, cleanPlatform);
             t.doLast(a -> fileSystemOperations.copy(c -> {
                 c.from(providerFactory.provider(
                         () -> hybrisPlafomCollecion.getFiles().stream().map(archiveOperations::zipTree).toList()));
@@ -148,7 +150,7 @@ public class HybrisPlugin implements Plugin<Project> {
         TaskProvider<UnpackPlatformSparseTask> unpackPlatformSparse = project.getTasks()
                 .register("unpackPlatformSparse", UnpackPlatformSparseTask.class, t -> {
                     t.onlyIf(o -> isSparseEnabled(extension, t.getLogger()));
-                    t.mustRunAfter(cleanOnVersionChange);
+                    t.mustRunAfter(cleanOnVersionChange, cleanPlatform);
                     t.getHybrisDependencies().from(hybrisPlatform);
                     t.getBootstrapExclude().set(extension.getBootstrapExclude());
                     t.getAlwaysIncluded().set(extension.getSparseBootstrap().getAlwaysIncluded());

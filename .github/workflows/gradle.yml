@@ -13,6 +13,7 @@ on:
 
 env:
   JAVA_VERSION: '21'
+  GRADLE_OPTS: "-Dorg.gradle.configuration-cache.read-only=true"
 
 jobs:
   # Basic Gradle wrapper validation. This step is run first, due to security

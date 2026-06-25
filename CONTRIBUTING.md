@@ -74,46 +74,9 @@ SAP uses [the standard DCO text of the Linux Foundation](https://developercertif
 
 _This section is only relevant for project maintainers._
 
-- [ ] Update `CHANGELOG.md`
-  - [ ] Add new link to git log at the bottom of the file, and update `[Unreleased]`, e.g
-
-     ```md
-     [Unreleased]: https://github.com/SAP/commerce-gradle-plugin/compare/vX.Y.Z...HEAD
-     [X.Z.Z]: https://github.com/SAP/commerce-gradle-plugin/compare/<previous release>...vX.Y.Z
-     ```
-
-  - [ ] Add new heading for release, reset template for `[Unreleased]`
-  
-    ```md
-    ## [Unreleased]
-    <!-- uncomment headings as required -->
-
-     <!-- ### Added -->
-     <!-- for new features. -->
-
-     <!-- #### Changed -->
-     <!-- for changes in existing functionality. -->
-
-     <!-- ### Deprecated -->
-     <!-- for soon-to-be removed features. -->
-
-     <!-- ### Removed -->
-     <!-- for now removed features. -->
-
-     <!-- ### Fixed -->
-     <!-- for any bug fixes. -->
-
-     <!-- ### Security -->
-     <!-- in case of vulnerabilities. -->
-
-    ## [X.Y.Z] yyyy-MM-dd
-
-    <previous [Unreleased] content>
-    ```
-
 - [ ] Documentation in `./docs` updated as required?
-- [ ] Use  `-Prelease.dryRun` to verify if versions in `README.md` are properly updated.\
-      Don't forget to `git restore README.md` after dry run!
+- [ ] Use  `-Prelease.dryRun` to verify if versions in `README.md` and `CHANGELOG.md` are properly updated.\
+      Don't forget to `git restore README.md CHANGELOG.md` after dry run!
 - [ ] Once everything is verified, run `release` without dry run
 - [ ] Create a new GH Release for the release tag `vX.Y.Z`; copy-paste the changelog as release description.\
       Release name: `vX.Y.Z - <short summary in a few words>`

@@ -73,7 +73,7 @@ class ConfigurationCacheTest extends Specification {
                 .withArguments('--configuration-cache', 'validateManifest')
                 .buildAndFail()  // manifest.2005.json may have validation errors, that's fine
 
-        then: "the cache was not reused — task graph was recalculated"
+        then: "the cache was not reused - task graph was recalculated"
         !secondResult.output.contains("Reusing configuration cache")
     }
 }

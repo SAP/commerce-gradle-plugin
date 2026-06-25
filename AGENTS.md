@@ -6,8 +6,8 @@ This file provides guidance to code agents when working with code in this reposi
 
 This is a multi-module Gradle plugin project that provides two published plugins for SAP Commerce (Hybris) development:
 
-- `sap.commerce.build` — automates developer setup, bootstraps the platform, and wraps Ant targets as Gradle tasks
-- `sap.commerce.build.ccv2` — reads `manifest.json` to configure and build CCv2 (SAP Commerce Cloud in the Public Cloud) projects locally
+- `sap.commerce.build` - automates developer setup, bootstraps the platform, and wraps Ant targets as Gradle tasks
+- `sap.commerce.build.ccv2` - reads `manifest.json` to configure and build CCv2 (SAP Commerce Cloud in the Public Cloud) projects locally
 
 ## Build Commands
 
@@ -58,7 +58,7 @@ commerce-gradle-plugin/
 
 ## Architecture
 
-**`build-plugin`** (`HybrisPlugin.java`): Registers the `hybris` extension and tasks for bootstrapping the SAP Commerce platform — `bootstrapPlatform`, `cleanPlatform`, `unpackPlatform`, `setupDbDriver`. Uses `HybrisAntRule` to dynamically create `y<target>` tasks that delegate to the SAP Commerce Ant build.
+**`build-plugin`** (`HybrisPlugin.java`): Registers the `hybris` extension and tasks for bootstrapping the SAP Commerce platform - `bootstrapPlatform`, `cleanPlatform`, `unpackPlatform`, `setupDbDriver`. Uses `HybrisAntRule` to dynamically create `y<target>` tasks that delegate to the SAP Commerce Ant build.
 
 **`cloud-plugin`** (`CloudV2Plugin.java`): Reads `manifest.json` at configuration time using `JsonSlurper` (Groovy) and maps it to the `Manifest` model. Applies on top of `build-plugin` when both are active. Registers CCv2-specific tasks: `validateManifest`, `generateCloudLocalextensions`, `generateCloudProperties`, `installManifestAddons`, `cloudTests`, `cloudWebTests`.
 
@@ -68,9 +68,9 @@ commerce-gradle-plugin/
 
 Each plugin subproject has three test suites (configured in `mpern.plugin.basics.gradle.kts`):
 
-- `test` — unit tests (Spock `Specification`)
-- `integrationTest` — tests using real fixture files from `test-utils/src/main/resources/`
-- `functionalTest` — end-to-end tests using Gradle TestKit
+- `test` - unit tests (Spock `Specification`)
+- `integrationTest` - tests using real fixture files from `test-utils/src/main/resources/`
+- `functionalTest` - end-to-end tests using Gradle TestKit
 
 All tests use [Spock Framework](https://spockframework.org/) with JUnit Jupiter. `check` runs all three suites.
 
