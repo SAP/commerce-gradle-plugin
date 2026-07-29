@@ -80,8 +80,10 @@ jobs:
         with:
           name: ${{ matrix.os }}-test-result
           path: |
-            build/reports
-            build/test-results
+            build-plugin/build/reports
+            build-plugin/build/test-results
+            cloud-plugin/build/reports
+            cloud-plugin/build/test-results
 
   # Check supported Gradle releases
   # https://gradle.org/releases/
