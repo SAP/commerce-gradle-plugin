@@ -62,12 +62,24 @@ class UseConfigValidatorSpec extends Specification {
 
         then:
         errors.size() == 6
-        errors.any{ it.location == "useConfig.properties[0]" && it.message.contains("absolute") }
-        errors.any{ it.location == "useConfig.properties[1]" && it.message.contains("relative") }
-        errors.any{ it.location == "useConfig.properties[2]" && it.message.contains("relative") }
-        errors.any{ it.location == "useConfig.properties[3]" && it.message.contains("not found") }
-        errors.any{ it.location == "useConfig.properties[4]" && it.message.contains("invalid") }
-        errors.any{ it.location == "useConfig.properties[5]" && it.message.contains("invalid") }
+        errors.any{
+            it.location == "useConfig.properties[0]" && it.message.contains("absolute")
+        }
+        errors.any{
+            it.location == "useConfig.properties[1]" && it.message.contains("relative")
+        }
+        errors.any{
+            it.location == "useConfig.properties[2]" && it.message.contains("relative")
+        }
+        errors.any{
+            it.location == "useConfig.properties[3]" && it.message.contains("not found")
+        }
+        errors.any{
+            it.location == "useConfig.properties[4]" && it.message.contains("invalid")
+        }
+        errors.any{
+            it.location == "useConfig.properties[5]" && it.message.contains("invalid")
+        }
     }
 
     def "localextensions.xml must be a valid localextensions.xml file"() {
@@ -93,7 +105,9 @@ class UseConfigValidatorSpec extends Specification {
 
         then:
         errors.size() == 1
-        errors.any{ it.location == 'useConfig.extensions.location' && it.message.contains("valid")}
+        errors.any{
+            it.location == 'useConfig.extensions.location' && it.message.contains("valid")
+        }
     }
 
     def "localextensions.xml must only contain extension names"() {
@@ -126,7 +140,9 @@ class UseConfigValidatorSpec extends Specification {
 
         then:
         errors.size() == 1
-        errors.any{ it.location == 'useConfig.extensions.location' && it.message.contains("`extension.dir`")}
+        errors.any{
+            it.location == 'useConfig.extensions.location' && it.message.contains("`extension.dir`")
+        }
     }
 
     def "properties must use valid personas and aspects"() {
@@ -165,8 +181,12 @@ class UseConfigValidatorSpec extends Specification {
 
         then:
         errors.size() == 2
-        errors.any{ it.location == "useConfig.properties[1]" && it.message.contains('`invalid`')}
-        errors.any{ it.location == "useConfig.properties[3]" && it.message.contains('`invalid`')}
+        errors.any{
+            it.location == "useConfig.properties[1]" && it.message.contains('`invalid`')
+        }
+        errors.any{
+            it.location == "useConfig.properties[3]" && it.message.contains('`invalid`')
+        }
     }
 
     def "properties must by a valid Java properties file"() {
@@ -202,7 +222,9 @@ class UseConfigValidatorSpec extends Specification {
 
         then:
         errors.size() == 1
-        errors.any{ it.level == Level.WARNING && it.location == "useConfig.properties[0]" && it.message.contains('charset')}
+        errors.any{
+            it.level == Level.WARNING && it.location == "useConfig.properties[0]" && it.message.contains('charset')
+        }
     }
 
     def "solr customization must have required folder structure"() {
@@ -239,8 +261,12 @@ class UseConfigValidatorSpec extends Specification {
 
         then:
         missingFolder.size() == 2
-        missingFolder.any{ it.location == "useConfig.solr.location" && it.message.contains("server/solr/configsets/default/conf")}
-        missingFolder.any{ it.location == "solrVersion" && it.level == Level.WARNING}
+        missingFolder.any{
+            it.location == "useConfig.solr.location" && it.message.contains("server/solr/configsets/default/conf")
+        }
+        missingFolder.any{
+            it.location == "solrVersion" && it.level == Level.WARNING
+        }
         folderExists.isEmpty()
     }
 }

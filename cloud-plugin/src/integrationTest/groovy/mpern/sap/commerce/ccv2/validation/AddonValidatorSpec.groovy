@@ -39,8 +39,14 @@ class AddonValidatorSpec extends Specification {
 
         then:
         errors.size() == 3
-        errors.any{ it.level == Level.ERROR && it.message.contains("`yb2bacceleratorstorefront`")}
-        errors.any{ it.level == Level.ERROR && it.message.contains("`commerceorgsamplesaddon`")}
-        errors.any{ it.level == Level.ERROR && it.message.contains("`smarteditaddon`")}
+        errors.any{
+            it.level == Level.ERROR && it.message.contains("`yb2bacceleratorstorefront`")
+        }
+        errors.any{
+            it.level == Level.ERROR && it.message.contains("`commerceorgsamplesaddon`")
+        }
+        errors.any{
+            it.level == Level.ERROR && it.message.contains("`smarteditaddon`")
+        }
     }
 }

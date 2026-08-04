@@ -47,6 +47,8 @@ class AspectWebappValidatorSpec extends Specification {
 
         then:
         errors.size() == 1
-        errors.any{ it.level == Level.ERROR && it.message.contains('`otherstorefront`') }
+        errors.any{
+            it.level == Level.ERROR && it.message.contains('`otherstorefront`')
+        }
     }
 }
