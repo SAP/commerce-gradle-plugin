@@ -37,7 +37,7 @@ class CCv2Tests extends Specification {
         TestUtils.generateDummyPlatform(deps, "2005.0")
         TestUtils.generateDummyIntegrationPack(deps, '2005.0')
 
-        Path dummy =TestConstants.testResource("ccv2-test-manifest.json");
+        Path dummy = TestConstants.testResource("ccv2-test-manifest.json");
         Files.copy(dummy, testProjectPath.resolve("manifest.json"))
 
         buildFile << """

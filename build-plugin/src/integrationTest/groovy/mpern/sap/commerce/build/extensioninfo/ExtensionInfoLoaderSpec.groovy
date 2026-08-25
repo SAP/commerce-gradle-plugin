@@ -55,7 +55,7 @@ class ExtensionInfoLoaderSpec extends Specification {
         then:
         extensions.size() == 2
 
-        with(extensions.get("myextensionone" )) {
+        with(extensions.get("myextensionone")) {
             it.extensionType == ExtensionType.CUSTOM
             it.relativeLocation == Path.of("custom/module/myextensionone")
             it.requiredExtensions.empty
@@ -259,7 +259,7 @@ class ExtensionInfoLoaderSpec extends Specification {
         then:
         extensions.size() == 1
         extensions.containsKey(PLATFORM_NAME)
-        with (extensions.get(PLATFORM_NAME)) {
+        with(extensions.get(PLATFORM_NAME)) {
             it.name == PLATFORM_NAME
             it.extensionType == ExtensionType.SAP_PLATFORM
             it.relativeLocation == Path.of("platform")
@@ -305,7 +305,11 @@ class ExtensionInfoLoaderSpec extends Specification {
         then:
 
         println(extensions.size())
-        println(extensions.sort { it.key }.collect { "${it.key} - ${it.value.relativeLocation}" }.join('\n'))
+        println(extensions.sort {
+            it.key
+        }.collect {
+            "${it.key} - ${it.value.relativeLocation}"
+        }.join('\n'))
 
         extensions.size() == 11
 
@@ -360,7 +364,7 @@ class ExtensionInfoLoaderSpec extends Specification {
             it.requiredExtensions.empty
         }
 
-        with (extensions.get(PLATFORM_NAME)) {
+        with(extensions.get(PLATFORM_NAME)) {
             it.name == PLATFORM_NAME
             it.extensionType == ExtensionType.SAP_PLATFORM
             it.relativeLocation == Path.of("platform")

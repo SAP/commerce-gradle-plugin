@@ -23,6 +23,8 @@ class SolrVersionValidatorSpec extends Specification {
 
         then:
         faultySolr.size() == 1
-        faultySolr.any{ it.location == "solrVersion" && it.level == Level.ERROR }
+        faultySolr.any{
+            it.location == "solrVersion" && it.level == Level.ERROR
+        }
     }
 }

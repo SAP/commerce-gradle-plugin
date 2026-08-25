@@ -14,7 +14,9 @@ class ExtensionResolverSpec extends Specification {
 
     Path projectRoot = Path.of("manualTest")
 
-    @IgnoreIf({ !Files.exists(instance.projectRoot.resolve("hybris/bin/platform")) })
+    @IgnoreIf({
+        !Files.exists(instance.projectRoot.resolve("hybris/bin/platform"))
+    })
     def "test extension resolver"() {
         given:
         def resolver = new ManifestExtensionsResolver(projectRoot)

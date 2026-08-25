@@ -71,7 +71,7 @@ class ConfigurationCacheTest extends Specification {
         and: "second run re-evaluates with new manifest"
         def secondResult = runner
                 .withArguments('--configuration-cache', 'validateManifest')
-                .buildAndFail()  // manifest.2005.json may have validation errors, that's fine
+                .buildAndFail() // manifest.2005.json may have validation errors, that's fine
 
         then: "the cache was not reused - task graph was recalculated"
         !secondResult.output.contains("Reusing configuration cache")

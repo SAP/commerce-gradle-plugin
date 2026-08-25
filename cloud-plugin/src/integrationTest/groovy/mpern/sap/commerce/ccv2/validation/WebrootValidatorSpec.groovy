@@ -57,8 +57,14 @@ class WebrootValidatorSpec extends Specification {
 
         then:
         webrootErrors.size() == 3
-        webrootErrors.any{it.code == "E-017" && it.location == 'properties[0]' && it.message.contains("hac.webroot")}
-        webrootErrors.any{it.code == "E-017" && it.location == "aspects[?name == 'backoffice'].properties[0]" && it.message.contains("backoffice.webroot")}
-        webrootErrors.any{it.code == "E-017" && it.location == 'useConfig.properties[0].location (webroot.properties)' && it.message.contains("demostorefront.webroot")}
+        webrootErrors.any{
+            it.code == "E-017" && it.location == 'properties[0]' && it.message.contains("hac.webroot")
+        }
+        webrootErrors.any{
+            it.code == "E-017" && it.location == "aspects[?name == 'backoffice'].properties[0]" && it.message.contains("backoffice.webroot")
+        }
+        webrootErrors.any{
+            it.code == "E-017" && it.location == 'useConfig.properties[0].location (webroot.properties)' && it.message.contains("demostorefront.webroot")
+        }
     }
 }

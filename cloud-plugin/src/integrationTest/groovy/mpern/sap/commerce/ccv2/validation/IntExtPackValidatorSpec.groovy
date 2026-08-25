@@ -32,11 +32,11 @@ class IntExtPackValidatorSpec extends Specification {
 
         where:
         commerce | pack
-        "2005"   | "2005.2"
-        "2011"   | "2102.0"
-        "2105"   | "2108.0"
-        "2205"   | "2205.0"
-        "2211"   | "2211.0"
+        "2005" | "2005.2"
+        "2011" | "2102.0"
+        "2105" | "2108.0"
+        "2205" | "2205.0"
+        "2211" | "2211.0"
     }
 
     def "Int Ext Pack validation recognizes invalid combinations"(String commerce, String pack, String message) {
@@ -60,14 +60,16 @@ class IntExtPackValidatorSpec extends Specification {
 
         then:
         result.size() == 1
-        result.any{ it.level == Level.ERROR && it.message.toLowerCase().contains(message)}
+        result.any{
+            it.level == Level.ERROR && it.message.toLowerCase().contains(message)
+        }
 
         where:
-        commerce | pack     | message
-        "2005"   | "2015.2" | "not compatible"
-        "1811"   | "2005.2" | "available"
-        "2105"   | "2108"   | "qualified"
-        "2211"   | "2211"   | "qualified"
-        "2211"   | "2108.1" | "not compatible"
+        commerce | pack | message
+        "2005" | "2015.2" | "not compatible"
+        "1811" | "2005.2" | "available"
+        "2105" | "2108" | "qualified"
+        "2211" | "2211" | "qualified"
+        "2211" | "2108.1" | "not compatible"
     }
 }

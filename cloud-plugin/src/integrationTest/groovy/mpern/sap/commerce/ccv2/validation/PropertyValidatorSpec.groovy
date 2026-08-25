@@ -39,7 +39,11 @@ class PropertyValidatorSpec extends Specification {
 
         then:
         errors.size() == 2
-        errors.any{ it.level == Level.WARNING && it.location == 'properties[0]' && it.message.contains("`clustermode`")}
-        errors.any{ it.level == Level.ERROR && it.location == 'properties[1]' && it.message.contains("`invalid`")}
+        errors.any{
+            it.level == Level.WARNING && it.location == 'properties[0]' && it.message.contains("`clustermode`")
+        }
+        errors.any{
+            it.level == Level.ERROR && it.location == 'properties[1]' && it.message.contains("`invalid`")
+        }
     }
 }

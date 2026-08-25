@@ -142,7 +142,7 @@ class BootstrapTest extends Specification {
         !Files.exists(testProjectDir.resolve(Path.of("hybris/bin/ext-accelerator")))
 
         buildFile.text.contains("version=$providedVersion")
-        Files.exists(testProjectDir.resolve(Path.of( "hybris/bin/ext-template/yaccelerator/src/dummy.java")))
+        Files.exists(testProjectDir.resolve(Path.of("hybris/bin/ext-template/yaccelerator/src/dummy.java")))
     }
 
     def "boostrap sets up db drivers"() {

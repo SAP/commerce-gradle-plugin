@@ -156,6 +156,6 @@ class VersionTest extends Specification {
 
         then:
         x != y
-        y > x
+        y> x
     }
 }
