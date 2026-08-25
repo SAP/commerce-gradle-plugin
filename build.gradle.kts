@@ -78,3 +78,11 @@ scmVersion {
 }
 
 project.version = scmVersion.version
+
+// https://github.com/diffplug/spotless/issues/2850#issuecomment-5207457291
+allprojects {
+    val everyClean = rootProject.allprojects.map { p -> p.tasks.matching { it.name == "clean" } }
+    tasks.matching { it.name.startsWith("spotless") }.configureEach {
+        mustRunAfter(everyClean)
+    }
+}
