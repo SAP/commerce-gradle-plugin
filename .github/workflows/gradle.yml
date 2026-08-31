@@ -43,7 +43,7 @@ jobs:
       - name: REUSE Compliance Check
         uses: fsfe/reuse-action@676e2d560c9a403aa252096d99fcab3e1132b0f5 # v6
       - name: Set up Java
-        uses: actions/setup-java@dded0888837ed1f317902acf8a20df0ad188d165 # v5
+        uses: actions/setup-java@dd06d9cba3e5552c54d9f8ea23572deb30010f7c # v6
         with:
           java-version: '${{ env.JAVA_VERSION }}'
           distribution: 'sapmachine'
@@ -66,7 +66,7 @@ jobs:
       - name: Check out repo
         uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7
       - name: Set up Java
-        uses: actions/setup-java@dded0888837ed1f317902acf8a20df0ad188d165 # v5
+        uses: actions/setup-java@dd06d9cba3e5552c54d9f8ea23572deb30010f7c # v6
         with:
           java-version: '${{ env.JAVA_VERSION }}'
           distribution: 'sapmachine'
@@ -99,7 +99,7 @@ jobs:
       - name: Check out repo
         uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7
       - name: Setup Java JDK
-        uses: actions/setup-java@dded0888837ed1f317902acf8a20df0ad188d165 # v5
+        uses: actions/setup-java@dd06d9cba3e5552c54d9f8ea23572deb30010f7c # v6
         with:
           java-version: '${{ env.JAVA_VERSION }}'
           distribution: 'sapmachine'
@@ -125,7 +125,7 @@ jobs:
       - name: Check out repo
         uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7
       - name: Setup Java JDK
-        uses: actions/setup-java@dded0888837ed1f317902acf8a20df0ad188d165 # v5
+        uses: actions/setup-java@dd06d9cba3e5552c54d9f8ea23572deb30010f7c # v6
         with:
           java-version: '${{ env.JAVA_VERSION }}'
           distribution: 'sapmachine'
