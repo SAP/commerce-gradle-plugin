@@ -27,7 +27,7 @@ jobs:
       - name: Check out repo
         uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7
       - name: Validate Gradle wrapper
-        uses: gradle/actions/wrapper-validation@3f131e8634966bd73d06cc69884922b02e6faf92 # v6
+        uses: gradle/actions/wrapper-validation@9c971963bec38e04b3d30dcc455b5382be2fdbfb # v6
 
   # Basic Compliance check. Checks if codeStyle is correct and if reuse
   # is applied correctly
@@ -49,7 +49,7 @@ jobs:
           distribution: 'sapmachine'
           cache: 'gradle'
       - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@3f131e8634966bd73d06cc69884922b02e6faf92 # v6
+        uses: gradle/actions/setup-gradle@9c971963bec38e04b3d30dcc455b5382be2fdbfb # v6
       - name: Check code style
         run: ./gradlew spotlessCheck
 
@@ -72,7 +72,7 @@ jobs:
           distribution: 'sapmachine'
           cache: 'gradle'
       - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@3f131e8634966bd73d06cc69884922b02e6faf92 # v6
+        uses: gradle/actions/setup-gradle@9c971963bec38e04b3d30dcc455b5382be2fdbfb # v6
       - name: Build and Test
         run: ./gradlew check -x spotlessCheck
       - uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7
@@ -104,7 +104,7 @@ jobs:
           java-version: '${{ env.JAVA_VERSION }}'
           distribution: 'sapmachine'
       - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@3f131e8634966bd73d06cc69884922b02e6faf92 # v6
+        uses: gradle/actions/setup-gradle@9c971963bec38e04b3d30dcc455b5382be2fdbfb # v6
       - name: Build and Test
         run: ./gradlew check -x spotlessCheck
         env:
@@ -131,7 +131,7 @@ jobs:
           distribution: 'sapmachine'
           cache: 'gradle'
       - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@3f131e8634966bd73d06cc69884922b02e6faf92 # v6
+        uses: gradle/actions/setup-gradle@9c971963bec38e04b3d30dcc455b5382be2fdbfb # v6
       - name: Publish Plugin
         env:
           GRADLE_PUBLISH_KEY: ${{secrets.PUBLISH_KEY}}
