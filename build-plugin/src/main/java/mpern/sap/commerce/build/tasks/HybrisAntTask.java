@@ -12,12 +12,14 @@ import org.gradle.api.file.DirectoryProperty;
 import org.gradle.api.model.ObjectFactory;
 import org.gradle.api.provider.MapProperty;
 import org.gradle.api.provider.Property;
+import org.gradle.api.services.ServiceReference;
 import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.Internal;
 import org.gradle.api.tasks.JavaExec;
 import org.gradle.api.tasks.options.Option;
 import org.gradle.work.DisableCachingByDefault;
 
+import mpern.sap.commerce.build.util.PlatformVersionService;
 import mpern.sap.commerce.build.util.Version;
 
 @DisableCachingByDefault(because = "Wraps the SAP Commerce Ant build; outputs are not portable")
@@ -63,7 +65,7 @@ public abstract class HybrisAntTask extends JavaExec {
 
         props.forEach((k, v) -> args("-D" + k + "=" + v));
 
-        Version current = Version.parseVersion(getPlatformVersion().get());
+        Version current = Version.parseVersion(getPlatformVersionService().get().getVersion());
 
         // ref. hybris/bin/platform/setantenv.sh in 2205
         if (current.compareTo(V_2205) >= 0) {
@@ -131,6 +133,9 @@ public abstract class HybrisAntTask extends JavaExec {
 
     @Internal
     public abstract Property<String> getPlatformVersion();
+
+    @ServiceReference("platformVersion")
+    public abstract Property<PlatformVersionService> getPlatformVersionService();
 
     @Input
     public abstract MapProperty<String, String> getAntProperties();

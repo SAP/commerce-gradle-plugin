@@ -25,6 +25,7 @@ import mpern.sap.commerce.build.tasks.GlobClean;
 import mpern.sap.commerce.build.tasks.HybrisAntTask;
 import mpern.sap.commerce.build.tasks.UnpackPlatformSparseTask;
 import mpern.sap.commerce.build.util.HybrisPlatform;
+import mpern.sap.commerce.build.util.PlatformVersionService;
 import mpern.sap.commerce.build.util.Version;
 
 public class HybrisPlugin implements Plugin<Project> {
@@ -60,6 +61,11 @@ public class HybrisPlugin implements Plugin<Project> {
     @Override
     public void apply(Project project) {
         HybrisPluginExtension extension = project.getExtensions().create(HYBRIS_EXTENSION, HybrisPluginExtension.class);
+
+        var versionService = project.getGradle().getSharedServices().registerIfAbsent("platformVersion",
+                PlatformVersionService.class, spec -> spec.getParameters().getPlatformDir()
+                        .set(project.getLayout().getProjectDirectory().dir("hybris/bin/platform")));
+        extension.getPlatform().setVersionService(versionService);
         extension.getSparseBootstrap().getEnabled().convention(false);
         extension.getSparseBootstrap().getAlwaysIncluded().convention(Collections.emptySet());
 
