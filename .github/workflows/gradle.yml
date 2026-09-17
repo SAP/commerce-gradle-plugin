@@ -13,7 +13,6 @@ on:
 
 env:
   JAVA_VERSION: '21'
-  GRADLE_OPTS: "-Dorg.gradle.configuration-cache.read-only=true"
 
 jobs:
   # Basic Gradle wrapper validation. This step is run first, due to security
@@ -74,7 +73,7 @@ jobs:
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@3f131e8634966bd73d06cc69884922b02e6faf92 # v6
       - name: Build and Test
-        run: ./gradlew check -x spotlessCheck
+        run: ./gradlew check -x spotlessCheck -x spotlessApply
       - uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7
         if: ${{ failure() }}
         with:
@@ -106,7 +105,7 @@ jobs:
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@3f131e8634966bd73d06cc69884922b02e6faf92 # v6
       - name: Build and Test
-        run: ./gradlew check -x spotlessCheck
+        run: ./gradlew check -x spotlessCheck -x spotlessApply
         env:
           GRADLE_VERSION: "${{ matrix.GRADLE_VERSION }}"
       - uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7
