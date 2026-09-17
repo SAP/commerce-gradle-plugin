@@ -20,6 +20,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 <!-- ### Removed -->
 <!-- for now removed features. -->
 
+<!-- ### Fixed -->
+<!-- for any bug fixes. -->
+
+<!-- ### Security -->
+<!-- in case of vulnerabilities. -->
+
+## [6.0.1] 2026-09-17
+<!-- uncomment headings as required -->
+
+<!-- ### Added -->
+<!-- for new features. -->
+
+<!-- #### Changed -->
+<!-- for changes in existing functionality. -->
+
+<!-- ### Deprecated -->
+<!-- for soon-to-be removed features. -->
+
+<!-- ### Removed -->
+<!-- for now removed features. -->
+
 ### Fixed
 
 - `HybrisAntTask`: "Could not parse NONE" when `bootstrapPlatform` and an ant target run in the same invocation ([#129])
@@ -545,7 +566,8 @@ Shout out to [@corneleberle] for providing the fix.
 
 :tada: Initial release :tada:
 
-[Unreleased]: https://github.com/SAP/commerce-gradle-plugin/compare/v6.0.0..HEAD
+[Unreleased]: https://github.com/SAP/commerce-gradle-plugin/compare/v6.0.1..HEAD
+[6.0.1]: https://github.com/SAP/commerce-gradle-plugin/compare/v6.0.0...v6.0.1
 [6.0.0]: https://github.com/SAP/commerce-gradle-plugin/compare/v5.0.2....v6.0.0
 [5.0.2]: https://github.com/SAP/commerce-gradle-plugin/compare/v5.0.1...v5.0.2
 [5.0.1]: https://github.com/SAP/commerce-gradle-plugin/compare/v5.0.0...v5.0.1
