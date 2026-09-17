@@ -96,6 +96,35 @@ class BootstrapTest extends Specification {
         result.task(":unpackPlatformSparse").outcome == SKIPPED
     }
 
+    def "platform version is readable after bootstrapPlatform in the same build"() {
+        // Regression test for issue #129: PlatformVersionService reads build.number at execution
+        // time, so tasks after bootstrapPlatform see the real version even with --configuration-cache.
+        given:
+        buildFile << """
+            hybris {
+                version = '$providedVersion'
+            }
+            tasks.register("checkVersion") {
+                dependsOn("bootstrapPlatform")
+                def versionProp = hybris.platform.version
+                doLast {
+                    def v = versionProp.get()
+                    if (v == "NONE") throw new GradleException("version is NONE after bootstrap")
+                }
+            }
+        """
+
+        when:
+        def result = runner
+                .withArguments('bootstrapPlatform', 'checkVersion', '--stacktrace',
+                '--configuration-cache', '--build-cache', '--parallel')
+                .build()
+
+        then:
+        result.task(":bootstrapPlatform").outcome == SUCCESS
+        result.task(":checkVersion").outcome == SUCCESS
+    }
+
     def "boostrap replaces platform if wrong version"() {
 
         given:

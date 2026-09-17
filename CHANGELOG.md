@@ -20,11 +20,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 <!-- ### Removed -->
 <!-- for now removed features. -->
 
-<!-- ### Fixed -->
-<!-- for any bug fixes. -->
+### Fixed
+
+- `HybrisAntTask`: "Could not parse NONE" when `bootstrapPlatform` and an ant target run in the same invocation ([#129])
+  - `build.number` is now read via a `BuildService`, so the version is resolved at execution time rather than frozen at configuration time
 
 <!-- ### Security -->
 <!-- in case of vulnerabilities. -->
+
+[#129]: https://github.com/SAP/commerce-gradle-plugin/issues/129
 
 ## [6.0.0] 2026-06-25
 
