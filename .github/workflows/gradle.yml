@@ -92,7 +92,7 @@ jobs:
     name: Gradle Backwards Compatibility
     env:
       # renovate: gradle-backwards-compatibility
-      GRADLE_VERSION: "8.14.5"
+      GRADLE_VERSION: "8.14.6"
     steps:
       - name: Check out repo
         uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7
